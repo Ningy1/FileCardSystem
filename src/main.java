@@ -8,6 +8,8 @@ public class main {
 		// New changes
 		
 		// irgendeinen mist 
+		
+		System.out.println("Hello World");
 	}
 
 }
