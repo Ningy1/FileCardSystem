@@ -33,12 +33,8 @@ public class Login extends Application  {
 	
 	// in case the user wants to quit the login window by clicking on the X on the top right, he needs to deal with a confirm window
 	loginWindow.setOnCloseRequest(e -> {
-		boolean answer = ConfirmBox.display("Confirmation", "Are you sure you want to quit?");
-		if(answer==true){
-			loginWindow.close();
-		}else {
-			e.consume();
-			}
+		e.consume();
+		closeProgram();
 	});
 	
 	username = new Label("Username:");
@@ -59,5 +55,15 @@ public class Login extends Application  {
 	loginWindow.setScene(loginScene);
 	
 	loginWindow.show();
+	}
+	
+	private void closeProgram()
+	{
+		{
+			boolean answer = ConfirmBox.display("Confirmation", "Are you sure you want to quit?");
+			if(answer){
+				loginWindow.close();
+			}
+		}
 	}
 }
