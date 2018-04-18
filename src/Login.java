@@ -1,12 +1,17 @@
 import javafx.application.Application;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public class Login extends Application  {
@@ -19,6 +24,7 @@ public class Login extends Application  {
 	private Label password;
 	private TextField usernameField;
 	private PasswordField passwordField;
+	private ImageView imageFilecardsystem;
 	
 	/* Start of the Program in this class */
 	
@@ -39,23 +45,42 @@ public class Login extends Application  {
 	
 	username = new Label("Username:");
 	password = new Label("Password:");
-	loginButton = new Button("Login");
+	loginButton = new Button("Log in");
 	registerButton = new Button("Register");
-	usernameField = new TextField();
+	usernameField = new TextField();											// here we could implement that the last used username will be shown by passing it into the constructor
 	passwordField = new PasswordField();
+	passwordField.setPromptText("Enter a password");
+	imageFilecardsystem = new ImageView(new Image("Images/FileCard.png"));
+	imageFilecardsystem.setFitHeight(350);
+	imageFilecardsystem.setFitWidth(350);
+	
 	
 	registerButton.setOnAction(e -> loginWindow.setScene(registerScene));											  // the scene should change after the user clicks on the register button
 	loginButton.setOnAction(e -> AlertBox.display("Logged in", "You successfully logged into the File Card System."));// this should be changed later on 
 																														//(should open the main window of the program after a successful login)
 
-	VBox loginWindowLayout = new VBox(20);																			   // very simple layout, needs further details
-	loginWindowLayout.getChildren().addAll(username, usernameField, password, passwordField, loginButton, registerButton);
+	GridPane loginWindowLayout = new GridPane();
+	loginWindowLayout.setStyle("-fx-background-color: #FFA70D;");
+	loginWindowLayout.setPadding(new Insets(10, 10, 10, 10));
+	loginWindowLayout.setHgap(10);
+	loginWindowLayout.setVgap(8);
+	
+	loginWindowLayout.setConstraints(imageFilecardsystem, 3, 0, 40, 50);
+	loginWindowLayout.setConstraints(username, 41, 25);
+	loginWindowLayout.setConstraints(usernameField, 42, 25);
+	loginWindowLayout.setConstraints(password, 41, 26);
+	loginWindowLayout.setConstraints(passwordField, 42, 26);
+	loginWindowLayout.setConstraints(loginButton, 41, 27);
+	loginWindowLayout.setConstraints(registerButton, 42, 27);
+	loginWindowLayout.getChildren().addAll(imageFilecardsystem, username, usernameField, password, passwordField, loginButton, registerButton);
+	//loginWindowLayout.setGridLinesVisible(true); 				// for debugging of the GridPane
 	
 	loginScene = new Scene(loginWindowLayout, 800, 500);
 	loginWindow.setScene(loginScene);
-	
 	loginWindow.show();
 	}
+	
+	
 	
 	private void closeProgram()
 	{
