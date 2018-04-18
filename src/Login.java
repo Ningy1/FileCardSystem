@@ -20,6 +20,8 @@ public class Login extends Application  {
 	private TextField usernameField;
 	private PasswordField passwordField;
 	
+	/* Start of the Program in this class */
+	
 	public static void main(String[] args) {
 		launch(args);
 	}
@@ -28,6 +30,16 @@ public class Login extends Application  {
 		
 	loginWindow = primaryStage;
 	loginWindow.setTitle("Login");
+	
+	loginWindow.setOnCloseRequest(e -> {
+		boolean answer = ConfirmBox.display("Confirmation", "Are you sure you want to quit?");
+		if(answer==true){
+			loginWindow.close();
+		}else {
+			e.consume();
+			}
+	});
+	
 	username = new Label("Username:");
 	password = new Label("Password:");
 	loginButton = new Button("Login");
@@ -35,7 +47,8 @@ public class Login extends Application  {
 	usernameField = new TextField();
 	passwordField = new PasswordField();
 	
-	loginButton.setOnAction(e -> loginWindow.setScene(registerScene));
+	registerButton.setOnAction(e -> loginWindow.setScene(registerScene));
+	loginButton.setOnAction(e -> AlertBox.display("Logged in", "You successfully logged into the File Card System."));
 	
 	VBox loginWindowLayout = new VBox(20);
 	loginWindowLayout.getChildren().addAll(username, usernameField, password, passwordField, loginButton, registerButton);
