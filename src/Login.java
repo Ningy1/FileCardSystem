@@ -23,7 +23,7 @@ public class Login extends Application  {
 	/* Start of the Program in this class */
 	
 	public static void main(String[] args) {
-		launch(args);
+		launch(args);			// calls the start-method of the Application class
 	}
 
 	public void start(Stage primaryStage) throws Exception {
@@ -31,6 +31,7 @@ public class Login extends Application  {
 	loginWindow = primaryStage;
 	loginWindow.setTitle("Login");
 	
+	// in case the user wants to quit the login window by clicking on the X on the top right, he needs to deal with a confirm window
 	loginWindow.setOnCloseRequest(e -> {
 		boolean answer = ConfirmBox.display("Confirmation", "Are you sure you want to quit?");
 		if(answer==true){
@@ -47,16 +48,16 @@ public class Login extends Application  {
 	usernameField = new TextField();
 	passwordField = new PasswordField();
 	
-	registerButton.setOnAction(e -> loginWindow.setScene(registerScene));
-	loginButton.setOnAction(e -> AlertBox.display("Logged in", "You successfully logged into the File Card System."));
-	
-	VBox loginWindowLayout = new VBox(20);
+	registerButton.setOnAction(e -> loginWindow.setScene(registerScene));											  // the scene should change after the user clicks on the register button
+	loginButton.setOnAction(e -> AlertBox.display("Logged in", "You successfully logged into the File Card System."));// this should be changed later on 
+																														//(should open the main window of the program after a successful login)
+
+	VBox loginWindowLayout = new VBox(20);																			   // very simple layout, needs further details
 	loginWindowLayout.getChildren().addAll(username, usernameField, password, passwordField, loginButton, registerButton);
 	
 	loginScene = new Scene(loginWindowLayout, 800, 500);
 	loginWindow.setScene(loginScene);
 	
 	loginWindow.show();
-	
 	}
 }
