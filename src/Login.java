@@ -70,9 +70,15 @@ public class Login extends Application  {
 		
 			});											  // the scene should change after the user clicks on the register button
 */	
-	loginButton.setOnAction(e -> AlertBox.display("Logged in", "You successfully logged into the File Card System."));// this should be changed later on 
-																														//(should open the main window of the program after a successful login)
-
+	loginButton.setOnAction(new EventHandler<ActionEvent>() {
+        @Override public void handle(ActionEvent e) {
+        	AlertBox.display("Logged in", "You successfully logged into the File Card System.");
+        	// this should be changed later on 
+			//(should open the main window of the program after a successful login)
+        }
+    });
+	
+	
 	GridPane loginWindowLayout = new GridPane();
 	loginWindowLayout.setStyle("-fx-background-color: #FFA70D;");
 	loginWindowLayout.setPadding(new Insets(10, 10, 10, 10));
