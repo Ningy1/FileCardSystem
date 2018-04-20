@@ -1,4 +1,6 @@
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -33,7 +35,7 @@ public class Login extends Application  {
 	}
 
 	public void start(Stage primaryStage) throws Exception {
-		
+	HSQLDB.getInstance();
 	loginWindow = primaryStage;
 	loginWindow.setTitle("Login");
 	
@@ -55,7 +57,17 @@ public class Login extends Application  {
 	imageFilecardsystem.setFitWidth(350);
 	
 	
-	registerButton.setOnAction(e -> loginWindow.setScene(registerScene));											  // the scene should change after the user clicks on the register button
+/*	registerButton.setOnAction(new EventHandler<ActionEvent>()
+			{
+
+				@Override
+				public void handle(ActionEvent arg0) {
+					loginWindow.setScene(registerScene);
+					registerScene = new Scene(loginWindowLayout, 800, 500);
+				}
+		
+			});											  // the scene should change after the user clicks on the register button
+*/	
 	loginButton.setOnAction(e -> AlertBox.display("Logged in", "You successfully logged into the File Card System."));// this should be changed later on 
 																														//(should open the main window of the program after a successful login)
 
