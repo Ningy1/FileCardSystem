@@ -78,15 +78,22 @@ public class Login extends Application  {
 			//(should open the main window of the program after a successful login)
         	ResultSet rs;
 			try {
-				rs = db.query("select * from user WHERE name = '"+usernameField.getText()+"'");
-			
+				rs = db.query("SELECT * FROM user WHERE name = '"+usernameField.getText()+"' AND password = '"+passwordField.getText()+"'");
 			if(rs.isBeforeFirst())
 			{
 				AlertBox.display("Logged in", "You successfully logged into the File Card System.");
 			}
 			else
 			{
-				AlertBox.display("Error", "You have to register first");
+				rs = db.query("SELECT * FROM user WHERE name = '"+usernameField.getText()+"'");
+				if(rs.isBeforeFirst())
+				{	
+					AlertBox.display("Error", "Password is wrong");
+				}
+				else
+				{
+					AlertBox.display("Error", "Username does not exist");
+				}
 			}
 			} catch (SQLException e1) {
 				// TODO Auto-generated catch block
