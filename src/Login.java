@@ -1,3 +1,4 @@
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import javafx.application.Application;
@@ -72,9 +73,25 @@ public class Login extends Application  {
 */	
 	loginButton.setOnAction(new EventHandler<ActionEvent>() {
         @Override public void handle(ActionEvent e) {
-        	AlertBox.display("Logged in", "You successfully logged into the File Card System.");
+        	
         	// this should be changed later on 
 			//(should open the main window of the program after a successful login)
+        	ResultSet rs;
+			try {
+				rs = db.query("select * from user WHERE name = '"+usernameField.getText()+"'");
+			
+			if(rs.isBeforeFirst())
+			{
+				AlertBox.display("Logged in", "You successfully logged into the File Card System.");
+			}
+			else
+			{
+				AlertBox.display("Error", "You have to register first");
+			}
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
         }
     });
 	
