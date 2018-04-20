@@ -1,3 +1,5 @@
+import java.sql.SQLException;
+
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -27,7 +29,7 @@ public class Login extends Application  {
 	private TextField usernameField;
 	private PasswordField passwordField;
 	private ImageView imageFilecardsystem;
-	
+	private HSQLDB db;
 	/* Start of the Program in this class */
 	
 	public static void main(String[] args) {
@@ -35,7 +37,7 @@ public class Login extends Application  {
 	}
 
 	public void start(Stage primaryStage) throws Exception {
-	HSQLDB.getInstance();
+	db = HSQLDB.getInstance();
 	loginWindow = primaryStage;
 	loginWindow.setTitle("Login");
 	
@@ -100,6 +102,14 @@ public class Login extends Application  {
 			boolean answer = ConfirmBox.display("Confirmation", "Are you sure you want to quit?");
 			if(answer){
 				loginWindow.close();
+				try {
+					db.close();
+					System.out.println("Connection closed");
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
 			}
 		}
 	}
