@@ -4,6 +4,9 @@
 	import java.sql.SQLException;
 	import java.sql.Statement;
 
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
+
 	public class HSQLDB {
 		
 		static Connection con = null;
@@ -50,6 +53,41 @@
 				throw new SQLException("Error in expression: "+sqlStatement);
 			}
 		}
-
+	
+		
+//////////////////////////////////////AUSTAUSCH DER METHODEN, VON DER MAIN ZU HSQLDB///////////////////////
+		public void dbLoginQuery(TextField usernameField, PasswordField passwordField)
+		{
+			// this should be changed later on 
+			//(should open the main window of the program after a successful login)
+	    	ResultSet rs;
+			try {
+				rs = query("SELECT * FROM user WHERE name = '"+usernameField.getText()+"' AND password = '"+passwordField.getText()+"'");
+			if(rs.isBeforeFirst())
+			{
+				AlertBox.display("Logged in", "You successfully logged into the File Card System.");
+			}
+			else
+			{
+				rs = query("SELECT * FROM user WHERE name = '"+usernameField.getText()+"'");
+				if(rs.isBeforeFirst())
+				{	
+					AlertBox.display("Error", "Password is wrong");
+				}
+				else
+				{
+					AlertBox.display("Error", "Username does not exist");
+				}
+			}
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+		}
+		
+		public void dbRegisterQuery()
+		{
+			// dbRegister query needs to be implemented
+		}
 	}
+
 
