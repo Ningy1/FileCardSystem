@@ -121,7 +121,7 @@ public class Login extends Application  {
 	{
 		Label title = new Label("Register to the File Card System");
 		title.setId("header");
-		Label firstName = new Label("Fist Name:");
+		Label firstName = new Label("First Name:");
 		TextField firstNameField = new TextField();
 		Label lastName = new Label("Last Name:");
 		TextField lastNameField = new TextField();
