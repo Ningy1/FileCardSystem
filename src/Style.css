@@ -1,0 +1,40 @@
+#header{
+	-fx-font-size: 18pt;
+}
+
+#pane{
+    -fx-background-image: url("Images/FileCard.png");
+    -fx-background-color: derive(#FFA70D,0%);
+    -fx-background-repeat: no-repeat;   
+    -fx-background-size: 400 400;
+    -fx-background-position: 12.5% 50%;
+    -fx-alignment: center center;
+}
+
+#button{
+	-fx-background-color: #fa4518;
+	-fx-border: none;
+	-fx-color: white;
+	-fx-padding: 15px 32px;
+	-fx-text-align: center;
+	-fx-text-decoration: none;
+	-fx-opacity: 0.6;
+	-fx-transition: 0.3s;
+	-fx-font-size: 16px;
+}
+
+#button:hover{
+	-fx-opacity: 1;
+}
+
+.label{
+	-fx-font-size: 12pt;
+	-fx-font-family: "Segoe UI Semibold";
+	-fx-text-fill: beige;
+	-fx-opacity: 0.9;
+}
+
+.text-field{
+	-fx-font-size: 12pt;
+	-fy-font-family: "Segoe UI Semibold";
+}
