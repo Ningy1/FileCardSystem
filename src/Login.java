@@ -72,7 +72,7 @@ public class Login extends Application  {
 		});
 
 		
-		Scene cssStyle = new Scene(new LoginLayout(loginWindow,db),1000,600);
+		Scene cssStyle = new Scene(new LoginLayout(loginWindow,this),1000,600);
 		cssStyle.getStylesheets().addAll(this.getClass().getResource("Style.css").toExternalForm());
 		loginWindow.setScene(cssStyle);
 		loginWindow.show();
@@ -80,14 +80,11 @@ public class Login extends Application  {
 	
 
 	
-///////////////////////////AUSLAGERUNG IN HSQLDB////////////////////////////////////
 
 
-	/*private void dbLoginQuery(TextField usernameField, PasswordField passwordField)
+	public void dbLoginQuery(TextField usernameField, PasswordField passwordField)
 	{
-		// this should be changed later on 
-		//(should open the main window of the program after a successful login)
-    	ResultSet rs;
+	  	ResultSet rs;
 		try {
 			rs = db.query("SELECT * FROM user WHERE name = '"+usernameField.getText()+"' AND password = '"+passwordField.getText()+"'");
 		if(rs.isBeforeFirst())
@@ -109,10 +106,22 @@ public class Login extends Application  {
 		} catch (SQLException e1) {
 			e1.printStackTrace();
 		}
-	}*/
-	/*
-	private void dbRegisterQuery()
+	}
+	
+	public void dbRegisterQuery(TextField firstNameField, TextField lastNameFiled, PasswordField password1, PasswordField password2)
 	{
-		// dbRegister query needs to be implemented
-	}*/
+		if(password1.getText().equals(password2.getText()))
+		{
+			try {
+				db.update("INSERT INTO user (name, surname, password) VALUES('"+firstNameField.getText()+"','"+lastNameFiled.getText()+"','"+password1.getText()+"')");
+				AlertBox.display("Congrat", firstNameField.getText()+" is now in the system");
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else
+		{
+			AlertBox.display("Error", "Password musst be identical in both fields");
+		}
+	}
 }

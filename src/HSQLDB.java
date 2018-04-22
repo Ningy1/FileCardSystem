@@ -45,6 +45,8 @@ import javafx.scene.control.TextField;
 		}
 		
 		public void update(String sqlStatement) throws SQLException {
+			int result = con.createStatement().executeUpdate(sqlStatement); 
+			/*
 			Statement statement = null;
 			statement = con.createStatement();
 			int result = statement.executeUpdate(sqlStatement); 
@@ -52,11 +54,12 @@ import javafx.scene.control.TextField;
 			if (result != 0) {
 				throw new SQLException("Error in expression: "+sqlStatement);
 			}
+			*/
 		}
 	
 		
 //////////////////////////////////////AUSTAUSCH DER METHODEN, VON DER MAIN ZU HSQLDB///////////////////////
-		public void dbLoginQuery(TextField usernameField, PasswordField passwordField)
+	/*	public void dbLoginQuery(TextField usernameField, PasswordField passwordField)
 		{
 			// this should be changed later on 
 			//(should open the main window of the program after a successful login)
@@ -87,7 +90,7 @@ import javafx.scene.control.TextField;
 		public void dbRegisterQuery()
 		{
 			// dbRegister query needs to be implemented
-		}
+		}*/
 	}
 
 

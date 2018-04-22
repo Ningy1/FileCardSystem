@@ -13,29 +13,43 @@ import javafx.stage.Stage;
 public class Register extends GridPane {
 	
 
+	Login LoginViewControl;
+	Label title;
+	Label firstName;
+	TextField firstNameField = new TextField() ;
+	Label lastName;
+	TextField lastNameField;
+	Label password1;
+	PasswordField passwordField1;
+	Label password2;
+	PasswordField passwordField2;
+	Button registerButton;
+	Button cancelButton;
+	
+	public Register(Stage create, Login LoginViewControl) {
+	
+	this.LoginViewControl = LoginViewControl;
+	
+	title = new Label("Register to the File Card System");
+	firstName = new Label("First Name:");
+	TextField firstNameField = new TextField() ;
+	lastName = new Label("Last Name:");
+	lastNameField = new TextField();
+	password1 = new Label("Password:");
+	passwordField1 = new PasswordField();
+	password2 = new Label("Verify entered password:");
+	passwordField2 = new PasswordField();
+	registerButton = new Button("Register now");
+	cancelButton = new Button("Cancel registration");
 	
 	
-	
-	public Register(Stage create, HSQLDB db) {
-	
-	Label title = new Label("Register to the File Card System");
 	title.setId("header");
-	Label firstName = new Label("First Name:");
-	TextField firstNameField = new TextField();
-	Label lastName = new Label("Last Name:");
-	TextField lastNameField = new TextField();
-	Label password1 = new Label("Password:");
-	PasswordField passwordField1 = new PasswordField();
-	Label password2 = new Label("Verify entered password:");
-	PasswordField passwordField2 = new PasswordField();
-	Button registerButton = new Button("Register now");
 	registerButton.setId("button");
-	Button cancelButton = new Button("Cancel registration");
 	cancelButton.setId("button");
 	
-	registerButton.setOnAction(e-> db.dbRegisterQuery());
+	registerButton.setOnAction(e-> this.LoginViewControl.dbRegisterQuery(firstNameField, lastNameField, passwordField1, passwordField2));
 	cancelButton.setOnAction(e -> {
-		Scene cssStyle = new Scene(new LoginLayout(create,db),1000,600);
+		Scene cssStyle = new Scene(new LoginLayout(create,this.LoginViewControl),1000,600);
 		cssStyle.getStylesheets().addAll(this.getClass().getResource("Style.css").toExternalForm());
 		create.setScene(cssStyle);
 	});	
