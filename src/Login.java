@@ -110,7 +110,32 @@ public class Login extends Application  {
 	
 	public void dbRegisterQuery(TextField firstNameField, TextField lastNameFiled, PasswordField password1, PasswordField password2)
 	{
-		if(password1.getText().equals(password2.getText()))
+		int error = 0;
+		
+		for(int i = 0; i < firstNameField.getText().length(); i++)
+		{
+			int c = (int)firstNameField.getText().charAt(i);
+			if(c < 65 || (c > 90 && c < 97) || c > 122 )
+			{
+				firstNameField.setText("Insert only valid character");
+				error = 1;
+			}
+		}
+		for(int i = 0; i < lastNameFiled.getText().length(); i++)
+		{
+			int c = (int)lastNameFiled.getText().charAt(i);
+			if(c < 65 || (c > 90 && c < 97) || c > 122 )
+			{
+				lastNameFiled.setText("Insert only valid character");
+				error = 1;
+			}
+		}
+		if(lastNameFiled.getText().length() < 1 || firstNameField.getText().length() <1 || password1.getText().length() < 1)
+		{
+			error = 1;
+			AlertBox.display("Error", "Fill out all fields");
+			
+		} else if(password1.getText().equals(password2.getText()) && error==0)
 		{
 			try {
 				db.update("INSERT INTO user (firstname, lastname, password) VALUES('"+firstNameField.getText()+"','"+lastNameFiled.getText()+"','"+password1.getText()+"')");
@@ -121,7 +146,7 @@ public class Login extends Application  {
 			}
 		} else
 		{
-			AlertBox.display("Error", "Password musst be identical in both fields");
+			AlertBox.display("Error", "Password has to be identical in both fields");
 		}
 	}
 }
