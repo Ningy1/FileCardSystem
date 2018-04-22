@@ -86,14 +86,14 @@ public class Login extends Application  {
 	{
 	  	ResultSet rs;
 		try {
-			rs = db.query("SELECT * FROM user WHERE name = '"+usernameField.getText()+"' AND password = '"+passwordField.getText()+"'");
+			rs = db.query("SELECT * FROM user WHERE firstname = '"+usernameField.getText()+"' AND password = '"+passwordField.getText()+"'");
 		if(rs.isBeforeFirst())
 		{
 			AlertBox.display("Logged in", "You successfully logged into the File Card System.");
 		}
 		else
 		{
-			rs = db.query("SELECT * FROM user WHERE name = '"+usernameField.getText()+"'");
+			rs = db.query("SELECT * FROM user WHERE firstname = '"+usernameField.getText()+"'");
 			if(rs.isBeforeFirst())
 			{	
 				AlertBox.display("Error", "Password is wrong");
@@ -113,7 +113,7 @@ public class Login extends Application  {
 		if(password1.getText().equals(password2.getText()))
 		{
 			try {
-				db.update("INSERT INTO user (name, surname, password) VALUES('"+firstNameField.getText()+"','"+lastNameFiled.getText()+"','"+password1.getText()+"')");
+				db.update("INSERT INTO user (firstname, lastname, password) VALUES('"+firstNameField.getText()+"','"+lastNameFiled.getText()+"','"+password1.getText()+"')");
 				AlertBox.display("Congrat", firstNameField.getText()+" is now in the system");
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block

@@ -17,7 +17,7 @@ import javafx.scene.control.TextField;
 		         //Registering the HSQLDB JDBC driver
 		         Class.forName("org.hsqldb.jdbc.JDBCDriver");
 		         //Creating the connection with HSQLDB
-		         con = DriverManager.getConnection("jdbc:hsqldb:file:neue;shutdown=true","SA","");
+		         con = DriverManager.getConnection("jdbc:hsqldb:file:FileCardSystemDB;shutdown=true","SA","");
 		         // Check if Connection was successfull
 		         if (con!= null){
 		            System.out.println("Connection created successfully");
