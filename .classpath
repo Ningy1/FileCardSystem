@@ -6,6 +6,6 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/Study/Desktop/Java/FileCardSystem/hsqldb/lib/hsqldb.jar"/>
+	<classpathentry kind="lib" path="hsqldb/lib/hsqldb.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
