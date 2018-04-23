@@ -3,3 +3,4 @@ INSERT INTO BLOCKS VALUES(0,2147483647,0)
 COMMIT
 /*C2*/SET SCHEMA PUBLIC
 CREATE TABLE filecards(\u000aid integer identity primary key not null,\u000aside1 varchar(80) not null,\u000aside2 varchar(80) not null,\u000acategory varchar(80) not null,\u000asubcategory varchar(80),\u000aviewed integer default 0,\u000asuccess integer default 0,\u000alevel integer default 1)
+DISCONNECT
