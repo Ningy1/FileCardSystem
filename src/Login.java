@@ -1,3 +1,4 @@
+import java.security.GeneralSecurityException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import javafx.application.Application;
@@ -90,6 +91,10 @@ public class Login extends Application  {
 		if(rs.isBeforeFirst())
 		{
 			AlertBox.display("Logged in", "You successfully logged into the File Card System.");
+			
+			// Nur zu Testzwecken bei dem LoginButton implementiert
+			new EditFileCards();
+			//
 		}
 		else
 		{
