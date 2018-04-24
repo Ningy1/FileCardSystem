@@ -58,8 +58,7 @@ public class EditFileCards {
         
         table.setItems(data);
         
-        String SQL = "Select * from filecards";            
-       
+        String SQL = "Select * from filecards";
 		ResultSet rs = null;
 		try {
 			rs = HSQLDB.getInstance().query(SQL);

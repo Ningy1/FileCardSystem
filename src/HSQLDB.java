@@ -17,7 +17,13 @@ import javafx.scene.control.TextField;
 		         //Registering the HSQLDB JDBC driver
 		         Class.forName("org.hsqldb.jdbc.JDBCDriver");
 		         //Creating the connection with HSQLDB
+		    
 		         con = DriverManager.getConnection("jdbc:hsqldb:file:FileCardSystemDB;shutdown=true","SA","");
+		        
+			        
+			         update("Create table if not exists user (id integer identity primary key not null, firstname varchar(80) not null, lastname varchar(80) not null, password varchar(80) not null, username varchar(80))");
+			         update("Create table if not exists filecards (id integer identity primary key not null, sidea varchar(80) not null, sideb varchar(80) not null, category varchar(80) not null, subcategory varchar(80) not null)");
+		         
 		         // Check if Connection was successfull
 		         if (con!= null){
 		            System.out.println("Connection created successfully");
@@ -51,10 +57,12 @@ import javafx.scene.control.TextField;
 			statement = con.createStatement();
 			int result = statement.executeUpdate(sqlStatement); 
 			statement.close();
+			
 			if (result != 0) {
 				throw new SQLException("Error in expression: "+sqlStatement);
 			}
 			*/
+			
 		}
 	
 		
