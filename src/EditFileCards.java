@@ -16,6 +16,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -34,7 +35,7 @@ public class EditFileCards {
   //  TextField addSubcategory = new TextField();
     
     Button addButton = new Button("Add");
-    
+    // Lists for comboboxes
     ObservableList<String> optionsCategory = 
     	    FXCollections.observableArrayList(
     	        "Vocabel",
@@ -72,25 +73,29 @@ public class EditFileCards {
 		id.setMinWidth(50);
         id.setCellValueFactory(
                 new PropertyValueFactory<FileCardsDB, Integer>("id"));
- 
+        id.setMaxWidth(400);
 		TableColumn sideA = new TableColumn("SideA");
 		sideA.setMinWidth(100);
         sideA.setCellValueFactory(
                 new PropertyValueFactory<FileCardsDB, String>("sideA"));
+        sideA.setMaxWidth(400);
         TableColumn sideB = new TableColumn("SideB");
         sideB.setMinWidth(100);
         sideB.setCellValueFactory(
                 new PropertyValueFactory<FileCardsDB, String>("sideB"));
+        sideB.setMaxWidth(400);
         TableColumn category = new TableColumn("Category");
         category.setMinWidth(100);
         category.setCellValueFactory(
                 new PropertyValueFactory<FileCardsDB, String>("category"));
+        category.setMaxWidth(400);
         TableColumn subcategory = new TableColumn("Subcategory");
         subcategory.setMinWidth(100);
         subcategory.setCellValueFactory(
                 new PropertyValueFactory<FileCardsDB, String>("subcategory"));
+        subcategory.setMaxWidth(400);
         
-        table.setItems(data);
+        
 
         table.getColumns().addAll(id, sideA, sideB, category, subcategory);
         
@@ -113,18 +118,18 @@ public class EditFileCards {
 			e.printStackTrace();
 		}
         
- 
+        table.setItems(data);
         // Texfields to enter new filecards
         addCategory = new ComboBox(optionsCategory);
         addSubcategory = new ComboBox();
         addSubcategory.setDisable(true);
         addSideA.setPromptText("SideA");
-    	addSideA.setMaxWidth(sideA.getPrefWidth());
-        addSideB.setMaxWidth(sideB.getPrefWidth());
+    	addSideA.setMaxWidth(sideA.getMaxWidth());
+        addSideB.setMaxWidth(sideB.getMaxWidth());
         addSideB.setPromptText("SideB");
-        addCategory.setMaxWidth(category.getPrefWidth());
+        addCategory.setMaxWidth(category.getMaxWidth());
         addCategory.setPromptText("Category");
-        addSubcategory.setMaxWidth(category.getPrefWidth());
+        addSubcategory.setMaxWidth(category.getMaxWidth());
         addSubcategory.setPromptText("Subcategory");
         
         
@@ -164,8 +169,12 @@ public class EditFileCards {
         });
         
         hbox.getChildren().addAll(addSideA, addSideB, addCategory, addSubcategory, addButton);
+        hbox.setHgrow(addButton, Priority.ALWAYS);
         GridPane root = new GridPane();
         root.getChildren().addAll(table, hbox);
+        root.setHgrow(hbox, Priority.ALWAYS);
+        root.setHgrow(table, Priority.ALWAYS);
+
         GridPane.setConstraints(table, 0, 0);
         GridPane.setConstraints(hbox, 0, 1);
        
