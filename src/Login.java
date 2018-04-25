@@ -93,10 +93,9 @@ public class Login extends Application  {
 		{
 			AlertBox.display("Logged in", "You successfully logged into the File Card System.");
 			
-			// Nur zu Testzwecken bei dem LoginButton implementiert
+			
 			userInterface.createUI(uiStage,usernameField.getText(),uiStage.getScene());
-			//new EditFileCards();
-			//
+			
 		}
 		else
 		{

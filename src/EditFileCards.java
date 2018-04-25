@@ -70,27 +70,27 @@ public class EditFileCards {
 		table.setEditable(true);
 		
 		TableColumn id = new TableColumn("ID");
-		id.setMinWidth(50);
+		id.setPrefWidth(50);
         id.setCellValueFactory(
                 new PropertyValueFactory<FileCardsDB, Integer>("id"));
         id.setMaxWidth(400);
 		TableColumn sideA = new TableColumn("SideA");
-		sideA.setMinWidth(100);
+		sideA.setPrefWidth(100);
         sideA.setCellValueFactory(
                 new PropertyValueFactory<FileCardsDB, String>("sideA"));
         sideA.setMaxWidth(400);
         TableColumn sideB = new TableColumn("SideB");
-        sideB.setMinWidth(100);
+        sideB.setPrefWidth(100);
         sideB.setCellValueFactory(
                 new PropertyValueFactory<FileCardsDB, String>("sideB"));
         sideB.setMaxWidth(400);
         TableColumn category = new TableColumn("Category");
-        category.setMinWidth(100);
+        category.setPrefWidth(100);
         category.setCellValueFactory(
                 new PropertyValueFactory<FileCardsDB, String>("category"));
         category.setMaxWidth(400);
         TableColumn subcategory = new TableColumn("Subcategory");
-        subcategory.setMinWidth(100);
+        subcategory.setPrefWidth(100);
         subcategory.setCellValueFactory(
                 new PropertyValueFactory<FileCardsDB, String>("subcategory"));
         subcategory.setMaxWidth(400);
@@ -123,15 +123,20 @@ public class EditFileCards {
         addCategory = new ComboBox(optionsCategory);
         addSubcategory = new ComboBox();
         addSubcategory.setDisable(true);
-        addSideA.setPromptText("SideA");
     	addSideA.setMaxWidth(sideA.getMaxWidth());
+    	addSideA.setPrefWidth(sideA.getPrefWidth());
+    	addSideA.setPromptText("SideA");
         addSideB.setMaxWidth(sideB.getMaxWidth());
+        addSideB.setPrefWidth(sideB.getPrefWidth());
         addSideB.setPromptText("SideB");
         addCategory.setMaxWidth(category.getMaxWidth());
+        addCategory.setPrefWidth(category.getPrefWidth());
         addCategory.setPromptText("Category");
-        addSubcategory.setMaxWidth(category.getMaxWidth());
+        addSubcategory.setMaxWidth(subcategory.getMaxWidth());
+        addSubcategory.setPrefWidth(subcategory.getPrefWidth());
         addSubcategory.setPromptText("Subcategory");
-        
+        addButton.setMinWidth(id.getMinWidth());
+        addButton.setPrefWidth(id.getPrefWidth());
         
         
         // Adjust Combobox to show only subcateogries for specific category
@@ -168,12 +173,9 @@ public class EditFileCards {
             
         });
         
-        hbox.getChildren().addAll(addSideA, addSideB, addCategory, addSubcategory, addButton);
-        hbox.setHgrow(addButton, Priority.ALWAYS);
+        hbox.getChildren().addAll(addButton, addSideA, addSideB, addCategory, addSubcategory);
         GridPane root = new GridPane();
         root.getChildren().addAll(table, hbox);
-        root.setHgrow(hbox, Priority.ALWAYS);
-        root.setHgrow(table, Priority.ALWAYS);
 
         GridPane.setConstraints(table, 0, 0);
         GridPane.setConstraints(hbox, 0, 1);
