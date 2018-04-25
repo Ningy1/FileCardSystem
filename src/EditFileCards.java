@@ -26,6 +26,7 @@ public class EditFileCards {
 	private Stage editStage = new Stage();
 	private Label labelTitle = new Label();
 	private HBox hbox = new HBox();
+	private ResultSet rs = null;
 	static EditFileCards instanceEditFileCards = null;
 	
 	TextField addSideA = new TextField();
@@ -100,20 +101,15 @@ public class EditFileCards {
         table.getColumns().addAll(id, sideA, sideB, category, subcategory);
         
         // Read entries from database
-        String SQL = "Select * from filecards";
-		ResultSet rs = null;
+        
 		try {
-			rs = HSQLDB.getInstance().query(SQL);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-        try {
+			rs = HSQLDB.getInstance().query("Select * from filecards");
+
 			while(rs.next())
 			{
 				data.add(new FileCardsDB(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5)));
 			}
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -156,16 +152,17 @@ public class EditFileCards {
         // Eventhandler Button add new entries
         addButton.setOnAction(e ->{
                 try {
-					HSQLDB.getInstance().query("insert into filecards (sidea, sideb, category, subcategory)"
+					HSQLDB.getInstance().update("insert into filecards (sidea, sideb, category, subcategory)"
 							+ "values('"+addSideA.getText()+"','"+addSideB.getText()+"','"+ addCategory.getValue()+"','"+addSubcategory.getValue()+"')");
-				} catch (SQLException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					
+					rs = HSQLDB.getInstance().query("Select * from filecards where sidea='"+addSideA.getText()+"' and sideb='"+addSideB.getText()+"' and category='"+addCategory.getValue()+"' and subcategory='"+addSubcategory.getValue()+"';");
+					while(rs.next()) {
+						data.add(new FileCardsDB(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5)));
+					}
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-                     
                 addSideA.clear();
                 addSideB.clear();
                 addCategory.setValue(null);
