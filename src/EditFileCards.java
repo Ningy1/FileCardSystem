@@ -3,6 +3,8 @@ import java.sql.SQLException;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -36,6 +38,7 @@ public class EditFileCards {
     TextField addSideB = new TextField();
     ComboBox addCategory;
     ComboBox addSubcategory;
+    ComboBox filterButton;
   //  TextField addSubcategory = new TextField();
     
     Button addButton = new Button("Add");
@@ -147,6 +150,8 @@ public class EditFileCards {
         
         table.setItems(data);
         // Texfields to enter new filecards
+        filterButton = new ComboBox(optionsCategory);
+        filterButton.getItems().add("All");
         addCategory = new ComboBox(optionsCategory);
         addSubcategory = new ComboBox();
         addSubcategory.setDisable(true);
@@ -164,7 +169,8 @@ public class EditFileCards {
         addSubcategory.setPromptText("Subcategory");
         addButton.setMinWidth(id.getMinWidth());
         addButton.setPrefWidth(id.getPrefWidth());
-        
+        filterButton.setMinWidth(sideA.getMinWidth());
+        filterButton.setPrefWidth(sideA.getPrefWidth());
         
         // Adjust Combobox to show only subcateogries for specific category
         addCategory.valueProperty().addListener((obs, oldValue, newValue) -> {
@@ -200,8 +206,44 @@ public class EditFileCards {
                 addSubcategory.setValue(null);
             
         });
+        //////////////////// FilterButton
+          filterButton.valueProperty().addListener((obs, oldValue, newValue) -> {
+        	try {
+	            if (newValue == null) {
+	            	
+	            } else if (newValue.equals("Vocabel")){
+	            		
+	    			rs = HSQLDB.getInstance().query("Select * from filecards where category='Vocabel';");
+	    			data.clear();
+	    			while(rs.next()) {
+	    				data.add(new FileCardsDB(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5)));
+	    				
+	    			}
+	            } else if (newValue.equals("Definition")){
+	            		
+	    			rs = HSQLDB.getInstance().query("Select * from filecards where category='Definition';");
+	    			data.clear();
+	    			while(rs.next()) {
+	    				data.add(new FileCardsDB(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5)));
+	    			}
+	    		} else if (newValue.equals("All")){
+	        		
+					rs = HSQLDB.getInstance().query("Select * from filecards");
+					data.clear();
+					while(rs.next()) {
+						data.add(new FileCardsDB(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5)));
+					}
+	    		}
+    		} catch (Exception e1) {
+    			// TODO Auto-generated catch block
+    			e1.printStackTrace();
+    		}
+        });
         
-        hbox.getChildren().addAll(addButton, addSideA, addSideB, addCategory, addSubcategory);
+        /////////////- FilterButton
+          
+          
+        hbox.getChildren().addAll(addButton, addSideA, addSideB, addCategory, addSubcategory, filterButton);
         GridPane root = new GridPane();
         root.getChildren().addAll(table, hbox);
 
