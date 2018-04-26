@@ -59,6 +59,12 @@ public class UserInterface {
 		btnResults.setPrefSize(175, 60);
 		btnLogout.setPrefSize(175, 60);
 		btnSettings.setPrefSize(175, 60);
+		
+		btnEdit.setId("button");
+		btnResults.setId("button");
+		btnLogout.setId("button");
+		btnSettings.setId("button");
+		btnTest.setId("button");
 
 		
 		gridPane.setId("pane");
@@ -140,7 +146,7 @@ public class UserInterface {
 		});
 		
 		btnResults.setOnAction(e -> {
-			//Some Code
+			new ResultsWindow(uiStage, cssStyle);
 		});
 		
 		btnLogout.setOnAction(e -> {
