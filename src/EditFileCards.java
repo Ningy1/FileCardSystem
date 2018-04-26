@@ -3,6 +3,7 @@ import java.sql.SQLException;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
@@ -11,9 +12,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -75,21 +78,49 @@ public class EditFileCards {
         id.setCellValueFactory(
                 new PropertyValueFactory<FileCardsDB, Integer>("id"));
         id.setMaxWidth(400);
-		TableColumn sideA = new TableColumn("SideA");
+		
+        
+        TableColumn sideA = new TableColumn("SideA");
 		sideA.setPrefWidth(100);
         sideA.setCellValueFactory(
                 new PropertyValueFactory<FileCardsDB, String>("sideA"));
         sideA.setMaxWidth(400);
+        sideA.setCellFactory(TextFieldTableCell.forTableColumn());
+        sideA.setOnEditCommit(
+            new EventHandler<CellEditEvent<FileCardsDB, String>>() {
+                @Override
+                public void handle(CellEditEvent<FileCardsDB, String> t) {
+                    ((FileCardsDB) t.getTableView().getItems().get(
+                        t.getTablePosition().getRow())
+                        ).setSideA(t.getNewValue());
+                    try {
+						HSQLDB.getInstance().update("update filecards set sidea='"+t.getNewValue()+"' where id="+((FileCardsDB) t.getTableView().getItems().get(
+						        t.getTablePosition().getRow())
+						        ).getId().toString()+";");
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+                }
+            }
+        );
+
+        
+        
         TableColumn sideB = new TableColumn("SideB");
         sideB.setPrefWidth(100);
         sideB.setCellValueFactory(
                 new PropertyValueFactory<FileCardsDB, String>("sideB"));
         sideB.setMaxWidth(400);
+        
+        
         TableColumn category = new TableColumn("Category");
         category.setPrefWidth(100);
         category.setCellValueFactory(
                 new PropertyValueFactory<FileCardsDB, String>("category"));
         category.setMaxWidth(400);
+        
+        
         TableColumn subcategory = new TableColumn("Subcategory");
         subcategory.setPrefWidth(100);
         subcategory.setCellValueFactory(
