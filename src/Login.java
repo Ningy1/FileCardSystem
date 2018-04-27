@@ -25,7 +25,6 @@ import javafx.stage.Stage;
 public class Login extends Application  {
 
 	private HSQLDB db;
-	private UserInterface userInterface = new UserInterface();
 	
 	/* Start of the Program in this class */
 	
@@ -93,8 +92,10 @@ public class Login extends Application  {
 		{
 			AlertBox.display("Logged in", "You successfully logged into the File Card System.");
 			
-			
-			userInterface.createUI(uiStage,usernameField.getText(),uiStage.getScene());
+			new UserInterface(uiStage,usernameField.getText(),uiStage.getScene());
+			uiStage.close();
+			usernameField.clear();
+			passwordField.clear();
 			
 		}
 		else

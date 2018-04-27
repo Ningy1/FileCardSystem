@@ -32,9 +32,10 @@ public class UserInterface {
 	private GridPane gridPane;
 	
 	
-	public void createUI(Stage uiStage, String name, Scene loginScene) {
+	public UserInterface(Stage loginStage, String name, Scene loginScene) {
 		
-	
+		Stage uiStage = new Stage();
+		
 		uiStage.setTitle("File Card System");
 		
 		header = new Label("Welcome "+name);
@@ -130,6 +131,7 @@ public class UserInterface {
 		Scene cssStyle = new Scene(gridPane,1000,600);
 		cssStyle.getStylesheets().addAll(this.getClass().getResource("Style.css").toExternalForm());
 		uiStage.setScene(cssStyle);
+		uiStage.show();
 		
 		
 		//gridPane.setGridLinesVisible(true); //Debugging
@@ -155,8 +157,10 @@ public class UserInterface {
 			
 			boolean answer = ConfirmBox.display("", "Are you sure you want to logout?");
 			if(answer) {
-				uiStage.setScene(loginScene);
+				loginStage.setScene(loginScene);
+				uiStage.close();
+				loginStage.show();
 			}
 			});
-		}
+	}
 }
