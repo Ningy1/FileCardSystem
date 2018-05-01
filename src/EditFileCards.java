@@ -1,14 +1,9 @@
 import java.sql.ResultSet;
-import java.sql.SQLException;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.transformation.FilteredList;
-import javafx.collections.transformation.SortedList;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -22,7 +17,6 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class EditFileCards {
@@ -89,22 +83,12 @@ public class EditFileCards {
         	// Add necessary mehtod
             @Override
             public void handle(CellEditEvent<FileCardsDB, String> edit) {
-            	// Set the cell value to the new value
-                (edit.getTableView().getItems().get(
-                		edit.getTablePosition().getRow())
-                    ).setSideA(edit.getNewValue());
-                (edit.getTableView().getItems().get(
-                		edit.getTablePosition().getRow())
-                    ).setSideA(edit.getNewValue());
-                // Update the entry in the database as well
-                try {
-					HSQLDB.getInstance().update("update filecards set sidea='"+edit.getNewValue()+"';");
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+            	
+            	deleteCurrentEntry();
             }
         });
+        
+        
         
         // Set up the columns   
         TableColumn<FileCardsDB, String> sideB = new TableColumn<FileCardsDB, String>("SideB");
@@ -120,17 +104,11 @@ public class EditFileCards {
         	// Add necessary mehtod
             @Override
             public void handle(CellEditEvent<FileCardsDB, String> edit) {
-            	// Set the cell value to the new value
-                (edit.getTableView().getItems().get(
-                		edit.getTablePosition().getRow())
-                    ).setSideA(edit.getNewValue());
-                // Update the entry in the database as well
-                try {
-					HSQLDB.getInstance().update("update filecards set sideb='"+edit.getNewValue()+"';");
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+            	// We have to delete the old entries and create new entries
+            	// Get the IDs of the current entries
+            	
+            	deleteCurrentEntry();
+            	
             }
         });
         
@@ -142,7 +120,7 @@ public class EditFileCards {
         // Add columns to the tableView
         table.getColumns().addAll(sideA, sideB);
         
-        // Read entries from database
+        // Read entries from database for Start
 		try {
 			rs = HSQLDB.getInstance().query("SELECT w1.wordID, w2.wordID, w1.word, w2.word  "
 					+ "FROM (Words w1 join Words w2 on w1.UserID = w2.UserID) " + 
@@ -203,6 +181,12 @@ public class EditFileCards {
         HBox.setHgrow(labelCategory, Priority.ALWAYS);
         HBox.setHgrow(filterCategory, Priority.ALWAYS);
         
+        
+        // Actionlistener for removing an entry
+        deleteButton.setOnAction(edit -> {
+        	
+        	deleteCurrentEntry();
+        });
         
         // Actionlistener for Button to add new entries
         addButton.setOnAction(e ->{
@@ -288,7 +272,7 @@ public class EditFileCards {
         		}
     			data.clear();        		
     			while(rs.next()) {
-    				data.add(new FileCardsDB(rs.getInt(2), rs.getInt(2), rs.getString(3), rs.getString(4)));
+    				data.add(new FileCardsDB(rs.getInt(1), rs.getInt(2), rs.getString(3), rs.getString(4)));
     			}
     		} catch (Exception e1) {
     			// TODO Auto-generated catch block
@@ -326,6 +310,31 @@ public class EditFileCards {
         editStage.show();
         
 	}
+	public void deleteCurrentEntry()
+    {
+    	Integer wordID1 = table.getSelectionModel().getSelectedItem().getIdSideA();
+    	Integer wordID2 = table.getSelectionModel().getSelectedItem().getIdSideB();
+
+    	// Remove the current entry (with the old values) from the observable list
+    	data.remove(table.getSelectionModel().getSelectedItem());
+    	// Remove the current entry (with the old values) from the database
+    	String[] split;
+    	split = filterCategory.getValue().split("_");
+    	try {
+    	if(!(split[1].equals("Definition")))
+    	{
+    		HSQLDB.getInstance().update("DELETE FROM Translate where WordID1 = "+wordID1+" "
+    				+ " AND WordID2 = "+wordID2+"");
+    	} else if(split[1].equals("Definition"))
+    	{
+    		HSQLDB.getInstance().update("DELETE FROM Definition where DefinitionID = "+wordID2+"");
+    	}
+    	        
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
 
 	
 }
