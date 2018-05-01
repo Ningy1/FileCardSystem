@@ -24,6 +24,7 @@ import javafx.stage.Stage;
 
 public class Login extends Application  {
 
+	static int userID = -1;
 	private HSQLDB db;
 	
 	/* Start of the Program in this class */
@@ -90,8 +91,9 @@ public class Login extends Application  {
 			rs = db.query("SELECT * FROM user WHERE firstname = '"+usernameField.getText()+"' AND password = '"+passwordField.getText()+"'");
 		if(rs.isBeforeFirst())
 		{
+			rs.next();
 			AlertBox.display("Logged in", "You successfully logged into the File Card System.");
-			
+			userID = rs.getInt(1);
 			new UserInterface(uiStage,usernameField.getText(),uiStage.getScene());
 			uiStage.close();
 			usernameField.clear();

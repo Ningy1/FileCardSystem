@@ -21,9 +21,42 @@ import javafx.scene.control.TextField;
 		         con = DriverManager.getConnection("jdbc:hsqldb:file:FileCardSystemDB;shutdown=true","SA","");
 		        
 			        
-			         update("Create table if not exists user (id integer identity primary key not null, firstname varchar(80) not null, lastname varchar(80) not null, password varchar(80) not null, username varchar(80))");
-			         update("Create table if not exists filecards (id integer identity primary key not null, sidea varchar(80) not null, sideb varchar(80) not null, category varchar(80) not null, subcategory varchar(80) not null)");
-		         
+			         update("CREATE TABLE IF NOT EXISTS User ("
+			         		+ "UserID INTEGER IDENTITY PRIMARY KEY NOT NULL, "
+			         		+ "Firstname VARCHAR(80) NOT NULL, "
+			         		+ "Lastname VARCHAR(80) NOT NULL, "
+			         		+ "Password VARCHAR(80) not null)"
+			         		);
+			        
+			         update("CREATE TABLE IF NOT EXISTS Words ("
+				         		+ "WordID INTEGER IDENTITY PRIMARY KEY NOT NULL, "
+				         		+ "Word VARCHAR(80) NOT NULL, "
+				         		+ "Language VARCHAR(80) NOT NULL, "
+				         		+ "UserID INTEGER not null,"
+				         		+ "FOREIGN KEY (UserID) REFERENCES User (UserID) "
+				           		+ "ON DELETE CASCADE "
+				         		+ "ON UPDATE CASCADE)"
+				         		);
+			         update("CREATE TABLE IF NOT EXISTS Definition ("
+				         		+ "DefinitionID INTEGER IDENTITY PRIMARY KEY NOT NULL, "
+				         		+ "Definition VARCHAR(80) NOT NULL, "
+				         		+ "WordID INTEGER NOT NULL, "
+				         		+ "FOREIGN KEY (WordID) REFERENCES Words (WordID) "
+				         		+ "ON DELETE CASCADE "
+				         		+ "ON UPDATE CASCADE)"
+				         		);
+			         update("CREATE TABLE IF NOT EXISTS Translate ("
+				         		+ "WordID1 INTEGER NOT NULL, "
+				         		+ "WordID2 INTEGER NOT NULL, "
+				         		+ "PRIMARY KEY(WordID1, WORDID2), "
+				         		+ "FOREIGN KEY (WordID1) REFERENCES Words (WordID) "
+				         		+ "ON DELETE CASCADE "
+				         		+ "ON UPDATE CASCADE, "
+				         		+ "FOREIGN KEY (WordID2) REFERENCES Words (WordID) "
+				         		+ "ON DELETE CASCADE "
+				         		+ "ON UPDATE CASCADE) "
+				         		);
+				  
 		         // Check if Connection was successfull
 		         if (con!= null){
 		            System.out.println("Connection created successfully");
