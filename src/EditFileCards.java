@@ -39,25 +39,32 @@ public class EditFileCards {
 	private TextField addSideB = new TextField(); // col2
 	private Button addButton = new Button("Add");
 	private Button deleteButton = new Button("Delete");
-	private ComboBox<String> filterCategory; // Filter tableview
-    
+	private ComboBox<String> filterCategory; // Filter Category tableview
+	private ComboBox<String> filterSubCategory; // Filter SubCategory tableview
+
 	
 	
 	// Result of a sql query
 	private ResultSet rs = null;
 		  
     
-    // Lists for combobox to filter for categories
+    // Lists for combobox to filter for Categories and Subcategories
     ObservableList<String> optionsCategory = 
+    	    FXCollections.observableArrayList(
+    	        "Translation",
+    	        "Definition"
+    	    ); 
+    ObservableList<String> optionsSubCategoryDefiniton = 
+    	    FXCollections.observableArrayList(
+    	        "English",
+    	        "German"
+    	    ); 
+    ObservableList<String> optionsSubCategoryTranslation = 
     	    FXCollections.observableArrayList(
     	        "English_Spanish",
     	        "English_German",
-    	        "English_French",
-    	        "English_Definition",
-    	        "German_Definition"
+    	        "English_French"
     	    ); 
-    
-
 	
 	
 	
@@ -139,10 +146,13 @@ public class EditFileCards {
 		// Feed the tableview with the data of the observable list
         table.setItems(data);
         
-        // Fill Combobox with options
+        // Fill Comboboxes with options
         filterCategory = new ComboBox<String>(optionsCategory);
-        // Set default text of Combobox
+        filterSubCategory = new ComboBox<String>();
+        // Set default text of Comboboxes
         filterCategory.setPromptText("Please Choose");
+        filterSubCategory.setPromptText("Please Choose");
+        filterSubCategory.setDisable(true);
         // Set size of the columns
      	sideA.setPrefWidth(150);
      	sideA.setMaxWidth(700);
@@ -167,18 +177,18 @@ public class EditFileCards {
         deleteButton.setMaxWidth(sideB.getMaxWidth());
         deleteButton.setMinWidth(sideB.getMinWidth());
         deleteButton.setPrefWidth(sideB.getPrefWidth());
-        filterCategory.setMaxWidth(sideB.getMaxWidth());
-        filterCategory.setMinWidth(sideB.getMinWidth());
-        filterCategory.setPrefWidth(sideB.getPrefWidth());
-        labelCategory.setMaxWidth(sideA.getMaxWidth());
-        labelCategory.setMinWidth(sideA.getMinWidth());
-        labelCategory.setPrefWidth(sideA.getPrefWidth());
+        filterSubCategory.setMaxWidth(sideB.getMaxWidth());
+        filterSubCategory.setMinWidth(sideB.getMinWidth());
+        filterSubCategory.setPrefWidth(sideB.getPrefWidth());
+        filterCategory.setMaxWidth(sideA.getMaxWidth());
+        filterCategory.setMinWidth(sideA.getMinWidth());
+        filterCategory.setPrefWidth(sideA.getPrefWidth());
         // Let elements grow equally in horizontal direction
         HBox.setHgrow(addButton, Priority.ALWAYS);
         HBox.setHgrow(deleteButton, Priority.ALWAYS);
         HBox.setHgrow(addSideA, Priority.ALWAYS);
         HBox.setHgrow(addSideB, Priority.ALWAYS);
-        HBox.setHgrow(labelCategory, Priority.ALWAYS);
+        HBox.setHgrow(filterSubCategory, Priority.ALWAYS);
         HBox.setHgrow(filterCategory, Priority.ALWAYS);
         
         
@@ -247,12 +257,24 @@ public class EditFileCards {
         });
         
         // Filter Functionality for database
-        // Add ChangeListener to the Combobox
+        
+        // Add ChangeListener to the Combobox Category
         filterCategory.valueProperty().addListener((obs, oldValue, newValue) -> {
-        	try {
-        		String[] split = filterCategory.getValue().split("_");
-        		if(!(split[1].equals("Definition")))
+        		if(filterCategory.getValue().equals("Definition"))
         		{
+        			filterSubCategory.setItems(optionsSubCategoryDefiniton);
+        			filterSubCategory.setDisable(false);
+        		} else if(filterCategory.getValue().equals("Translation")) {
+        			filterSubCategory.setItems(optionsSubCategoryTranslation);
+        			filterSubCategory.setDisable(false);
+        		}
+        });
+     // Add ChangeListener to the Combobox SubCategory
+        filterSubCategory.valueProperty().addListener((obs, oldValue, newValue) -> {
+        	try {
+        		if(filterCategory.getValue().equals("Translation") && (filterSubCategory.getValue() != null))
+        		{
+            		String[] split = filterSubCategory.getValue().split("_");
         			rs = HSQLDB.getInstance().query("SELECT w1.wordID, w2.wordID, w1.word, w2.word  "
         					+ "FROM (Words w1 join Words w2 on w1.UserID = w2.UserID) "  
         					+ "join Translate t on t.wordID1=w1.wordID and t.wordID2=w2.wordID "  
@@ -261,14 +283,15 @@ public class EditFileCards {
         					+ "AND w2.Language = '"+split[1]+"' "); 
         			sideA.setText(split[0]);
         			sideB.setText(split[1]);
-        		} else if(split[1].equals("Definition"))
+        		} else if(filterCategory.getValue().equals("Definition") && (filterSubCategory.getValue() != null))
         		{
+            		String[] split = filterSubCategory.getValue().split("_");
         			rs = HSQLDB.getInstance().query("SELECT w.wordID, d.definitionID, w.word, d.Definition  "
         					+ "FROM Words w NATURAL JOIN Definition d "
         					+ "WHERE w.UserID = "+ Login.userID
         					+ "AND w.Language = '"+split[0]+"' "); 
         			sideA.setText(split[0]);
-        			sideB.setText(split[1]);
+        			sideB.setText(filterCategory.getValue());
         		}
     			data.clear();        		
     			while(rs.next()) {
@@ -279,11 +302,10 @@ public class EditFileCards {
     			e1.printStackTrace();
     		}
         });
-        
         // Arrange different elements in boxes and bind them together in grid  
         hboxTextFields.getChildren().addAll(addSideA, addSideB);
         hboxButtons.getChildren().addAll(addButton, deleteButton);
-        hboxTitle.getChildren().addAll(labelCategory, filterCategory);
+        hboxTitle.getChildren().addAll(filterCategory,filterSubCategory );
         root.getChildren().addAll(hboxTitle, table, hboxTextFields, hboxButtons);
         
         labelCategory.setAlignment(Pos.CENTER);
