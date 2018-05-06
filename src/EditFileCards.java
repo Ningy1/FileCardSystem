@@ -1,4 +1,6 @@
 import java.sql.ResultSet;
+import java.sql.SQLException;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -92,6 +94,7 @@ public class EditFileCards {
             public void handle(CellEditEvent<FileCardsDB, String> edit) {
             	
             	deleteCurrentEntry();
+            	
             }
         });
         
@@ -113,8 +116,37 @@ public class EditFileCards {
             public void handle(CellEditEvent<FileCardsDB, String> edit) {
             	// We have to delete the old entries and create new entries
             	// Get the IDs of the current entries
-            	
-            	deleteCurrentEntry();
+            	if(filterCategory.getValue().equals("Translation"))
+            	{
+                	String[] split = filterSubCategory.getValue().split("_");
+                	String wordOld = edit.getOldValue();
+                	String wordNew = edit.getNewValue();
+                	
+                	int wordID2; 
+                	try {
+	            		HSQLDB.getInstance().update("insert into Words (Word, Language, UserID)"
+								+ "values('"+wordNew+"','"+split[1]+"', "+Login.userID+")");
+						
+							rs = HSQLDB.getInstance().query("SELECT wordID "
+									+ "FROM words "
+									+ "WHERE word = '"+wordNew
+									+ "' AND Language = '"+split[1]
+									+ "' AND UserID = "+Login.userID);
+						
+	                	rs.next();
+	                	wordID2 = rs.getInt(1);
+	                	
+	                	HSQLDB.getInstance().update("UPDATE Translate SET WordID2 ="+wordID2+" WHERE WordID1 = "+edit.getRowValue().getIdSideA()+" AND WordID2 ="+edit.getRowValue().getIdSideB()+"");
+	                	table.getSelectionModel().getSelectedItem().setSideB(edit.getNewValue());
+	                	table.getSelectionModel().getSelectedItem().setIdSideB(wordID2);;
+                	} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+            	}
             	
             }
         });

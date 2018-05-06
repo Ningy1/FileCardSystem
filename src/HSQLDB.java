@@ -46,7 +46,8 @@ import javafx.scene.control.TextField;
 				         		+ "Success INTEGER, "
 				         		+ "FOREIGN KEY (WordID) REFERENCES Words (WordID) "
 				         		+ "ON DELETE CASCADE "
-				         		+ "ON UPDATE CASCADE)"
+				         		+ "ON UPDATE CASCADE, "
+				         		+ "UNIQUE (Definition, WordID))"
 				         		);
 			         update("CREATE TABLE IF NOT EXISTS Translate ("
 				         		+ "WordID1 INTEGER NOT NULL, "
