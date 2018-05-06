@@ -174,9 +174,11 @@ public class EditFileCards {
         addButton.setMaxWidth(sideA.getMaxWidth());
         addButton.setMinWidth(sideA.getMinWidth());
         addButton.setPrefWidth(sideA.getPrefWidth());
+        addButton.setDisable(true);
         deleteButton.setMaxWidth(sideB.getMaxWidth());
         deleteButton.setMinWidth(sideB.getMinWidth());
         deleteButton.setPrefWidth(sideB.getPrefWidth());
+        deleteButton.setDisable(true);
         filterSubCategory.setMaxWidth(sideB.getMaxWidth());
         filterSubCategory.setMinWidth(sideB.getMinWidth());
         filterSubCategory.setPrefWidth(sideB.getPrefWidth());
@@ -205,9 +207,9 @@ public class EditFileCards {
         		Integer wordID2 = 0;
 
                 try {
-                	if(filterCategory.getValue() != null)
+                	if((filterCategory.getValue() != null)  && (filterSubCategory.getValue() != null))
                 	{
-	                	String[] split = filterCategory.getValue().split("_");
+	                	String[] split = filterSubCategory.getValue().split("_");
 	                	
 						HSQLDB.getInstance().update("insert into Words (Word, Language, UserID)"
 								+ "values('"+addSideA.getText()+"','"+split[0]+"', "+Login.userID+")");
@@ -219,7 +221,7 @@ public class EditFileCards {
 	                	rs.next();
 	                	wordID1 = rs.getInt(1);
 	                	
-	                	if(!(split[1].equals("Definition")))
+	                	if(filterCategory.getValue().equals("Translation"))
 	                	{
 	                		HSQLDB.getInstance().update("insert into Words (Word, Language, UserID)"
 	    							+ "values('"+addSideB.getText()+"','"+split[1]+"', "+Login.userID+")");
@@ -233,7 +235,7 @@ public class EditFileCards {
 	                    	HSQLDB.getInstance().update("insert into Translate (WordID1, WordID2)"
 	    							+ "values("+wordID1+",'"+wordID2+"')");
 							data.add(new FileCardsDB(wordID1, wordID2, addSideA.getText(), addSideB.getText()));	
-	                	}  else if(split[1].equals("Definition"))
+	                	}  else if(filterCategory.getValue().equals("Definition"))
 	                	{
 	                		HSQLDB.getInstance().update("insert into Definition (definition, WordID)"
 	    							+ "values('"+addSideB.getText()+"','"+wordID1+"')");
@@ -264,9 +266,13 @@ public class EditFileCards {
         		{
         			filterSubCategory.setItems(optionsSubCategoryDefiniton);
         			filterSubCategory.setDisable(false);
+        			addButton.setDisable(true);
+        			deleteButton.setDisable(true);
         		} else if(filterCategory.getValue().equals("Translation")) {
         			filterSubCategory.setItems(optionsSubCategoryTranslation);
         			filterSubCategory.setDisable(false);
+        			addButton.setDisable(true);
+        			deleteButton.setDisable(true);
         		}
         });
      // Add ChangeListener to the Combobox SubCategory
@@ -283,6 +289,8 @@ public class EditFileCards {
         					+ "AND w2.Language = '"+split[1]+"' "); 
         			sideA.setText(split[0]);
         			sideB.setText(split[1]);
+        			addButton.setDisable(false);
+        			deleteButton.setDisable(false);
         		} else if(filterCategory.getValue().equals("Definition") && (filterSubCategory.getValue() != null))
         		{
             		String[] split = filterSubCategory.getValue().split("_");
@@ -292,6 +300,8 @@ public class EditFileCards {
         					+ "AND w.Language = '"+split[0]+"' "); 
         			sideA.setText(split[0]);
         			sideB.setText(filterCategory.getValue());
+        			addButton.setDisable(false);
+        			deleteButton.setDisable(false);
         		}
     			data.clear();        		
     			while(rs.next()) {
@@ -334,28 +344,32 @@ public class EditFileCards {
 	}
 	public void deleteCurrentEntry()
     {
-    	Integer wordID1 = table.getSelectionModel().getSelectedItem().getIdSideA();
-    	Integer wordID2 = table.getSelectionModel().getSelectedItem().getIdSideB();
-
-    	// Remove the current entry (with the old values) from the observable list
-    	data.remove(table.getSelectionModel().getSelectedItem());
-    	// Remove the current entry (with the old values) from the database
-    	String[] split;
-    	split = filterCategory.getValue().split("_");
-    	try {
-    	if(!(split[1].equals("Definition")))
+		
+    	
+    	if(table.getSelectionModel().getSelectedItem() != null && table.getSelectionModel().getSelectedItem() != null) 
     	{
-    		HSQLDB.getInstance().update("DELETE FROM Translate where WordID1 = "+wordID1+" "
-    				+ " AND WordID2 = "+wordID2+"");
-    	} else if(split[1].equals("Definition"))
-    	{
-    		HSQLDB.getInstance().update("DELETE FROM Definition where DefinitionID = "+wordID2+"");
+    		int wordID1 = table.getSelectionModel().getSelectedItem().getIdSideA();
+        	int wordID2 = table.getSelectionModel().getSelectedItem().getIdSideB();
+	    	// Remove the current entry (with the old values) from the observable list
+	    	data.remove(table.getSelectionModel().getSelectedItem());
+	    	// Remove the current entry (with the old values) from the database
+	    	String[] split;
+	    	split = filterSubCategory.getValue().split("_");
+	    	try {
+	    	if(filterCategory.getValue().equals("Translation"))
+	    	{
+	    		HSQLDB.getInstance().update("DELETE FROM Translate where WordID1 = "+wordID1+" "
+	    				+ " AND WordID2 = "+wordID2+"");
+	    	} else if(filterCategory.getValue().equals("Definition"))
+	    	{
+	    		HSQLDB.getInstance().update("DELETE FROM Definition where DefinitionID = "+wordID2+"");
+	    	}
+	    	        
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
     	}
-    	        
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
     }
 
 	
