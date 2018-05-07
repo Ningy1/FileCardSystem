@@ -1,5 +1,6 @@
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -93,8 +94,74 @@ public class EditFileCards {
             @Override
             public void handle(CellEditEvent<FileCardsDB, String> edit) {
             	
-            	deleteCurrentEntry();
+            	if(filterCategory.getValue().equals("Translation"))
+            	{
+                	String[] split = filterSubCategory.getValue().split("_");
+                	String wordNew = edit.getNewValue();
+                	
+                	int wordID1; 
+                	try {
+	            		HSQLDB.getInstance().update("insert into Words (Word, Language, UserID)"
+								+ "values('"+wordNew+"','"+split[0]+"', "+Login.userID+")");
+						
+							rs = HSQLDB.getInstance().query("SELECT wordID "
+									+ "FROM words "
+									+ "WHERE word = '"+wordNew
+									+ "' AND Language = '"+split[0]
+									+ "' AND UserID = "+Login.userID);
+						
+	                	rs.next();
+	                	wordID1 = rs.getInt(1);
+	                	
+	                	HSQLDB.getInstance().update("UPDATE Translate SET WordID1 ="+wordID1+" "
+	                			+ "WHERE WordID1 = "+edit.getRowValue().getIdSideA()+" "
+	                					+ "AND WordID2 ="+edit.getRowValue().getIdSideB()+"");
+	                	table.getSelectionModel().getSelectedItem().setSideA(edit.getNewValue());
+	                	table.getSelectionModel().getSelectedItem().setIdSideA(wordID1);
+                	} catch(java.sql.SQLIntegrityConstraintViolationException e) {
+                		System.out.println(table.getSelectionModel().getSelectedItem().getSideA());
+                		table.getSelectionModel().getSelectedItem().setSideA(edit.getOldValue());
+                	} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+            	} else if(filterCategory.getValue().equals("Definition"))
+            	{
+            		String[] split = filterSubCategory.getValue().split("_");
+                	String wordNew = edit.getNewValue();
+                	
+                	int wordID1; 
+                	
+                	try {
+                		HSQLDB.getInstance().update("insert into Words (Word, Language, UserID)"
+								+ "values('"+wordNew+"','"+split[0]+"', "+Login.userID+")");
+						
+							rs = HSQLDB.getInstance().query("SELECT wordID "
+									+ "FROM words "
+									+ "WHERE word = '"+wordNew
+									+ "' AND Language = '"+split[0]
+									+ "' AND UserID = "+Login.userID);
+						
+	                	rs.next();
+	                	wordID1 = rs.getInt(1);
+	                	
+	                	HSQLDB.getInstance().update("UPDATE Definition SET WordID ="+wordID1+" "
+	                			+ "WHERE DefinitionID = "+edit.getRowValue().getIdSideB()+" "
+	                					+ "AND WordID ="+edit.getRowValue().getIdSideA()+"");
+	                	table.getSelectionModel().getSelectedItem().setSideA(edit.getNewValue());
+	                	table.getSelectionModel().getSelectedItem().setIdSideA(wordID1);
+	            	} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
             	
+            	}
             }
         });
         
@@ -119,7 +186,6 @@ public class EditFileCards {
             	if(filterCategory.getValue().equals("Translation"))
             	{
                 	String[] split = filterSubCategory.getValue().split("_");
-                	String wordOld = edit.getOldValue();
                 	String wordNew = edit.getNewValue();
                 	
                 	int wordID2; 
@@ -136,9 +202,26 @@ public class EditFileCards {
 	                	rs.next();
 	                	wordID2 = rs.getInt(1);
 	                	
-	                	HSQLDB.getInstance().update("UPDATE Translate SET WordID2 ="+wordID2+" WHERE WordID1 = "+edit.getRowValue().getIdSideA()+" AND WordID2 ="+edit.getRowValue().getIdSideB()+"");
+	                	HSQLDB.getInstance().update("UPDATE Translate SET WordID2 ="+wordID2+" "
+	                			+ "WHERE WordID1 = "+edit.getRowValue().getIdSideA()+" "
+	                					+ "AND WordID2 ="+edit.getRowValue().getIdSideB()+"");
 	                	table.getSelectionModel().getSelectedItem().setSideB(edit.getNewValue());
 	                	table.getSelectionModel().getSelectedItem().setIdSideB(wordID2);;
+                	} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+            	} else if(filterCategory.getValue().equals("Definition"))
+            	{
+                	
+                	try {
+	            		HSQLDB.getInstance().update("UPDATE Definition SET Definition = '"+edit.getNewValue()+"' "
+	            				+ "WHERE Definition = '"+edit.getOldValue()+" ' "
+	            						+ "AND WordID = "+edit.getRowValue().getIdSideA()+"");
+	                	table.getSelectionModel().getSelectedItem().setSideB(edit.getNewValue());
                 	} catch (SQLException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
