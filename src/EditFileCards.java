@@ -21,6 +21,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -268,7 +269,7 @@ public class EditFileCards {
 			rs = HSQLDB.getInstance().query("SELECT w1.wordID, w2.wordID, w1.word, w2.word  "
 					+ "FROM (Words w1 join Words w2 on w1.UserID = w2.UserID) " + 
 					"join Translate t on t.wordID1=w1.wordID and t.wordID2=w2.wordID " + 
-					"where w1.userid = 1");
+					"where w1.userid = -1");
 			// Iterate through the ResultSet and add each row to the Observable List
 			while(rs.next())
 			{
@@ -329,6 +330,22 @@ public class EditFileCards {
         HBox.setHgrow(filterSubCategory, Priority.ALWAYS);
         HBox.setHgrow(filterCategory, Priority.ALWAYS);
         
+        // ActionListener for key pressed (Enter) when adding entry and focusing on textfieldSideA again
+        addSideB.setOnKeyReleased(e -> {
+        	if(!(addSideA.getText().isEmpty()) && e.getCode().equals(KeyCode.ENTER))
+        	{
+	        	addButton.fire();
+	        	addSideA.requestFocus();
+        	}
+        });
+        // ActionListener for key pressed (delete) when focusing on a row in the tableview
+        
+        table.setOnKeyReleased(e -> {
+        	if(e.getCode().equals(KeyCode.DELETE) || e.getCode().equals(KeyCode.BACK_SPACE))
+        	{
+        		deleteCurrentEntry();
+        	}
+        });
         
         // Actionlistener for removing an entry
         deleteButton.setOnAction(edit -> {
