@@ -2,6 +2,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
 
+import javax.sound.midi.MidiDevice.Info;
+
+import com.sun.javafx.image.impl.ByteIndexed.Getter;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -119,8 +123,9 @@ public class EditFileCards {
 	                	table.getSelectionModel().getSelectedItem().setSideA(edit.getNewValue());
 	                	table.getSelectionModel().getSelectedItem().setIdSideA(wordID1);
                 	} catch(java.sql.SQLIntegrityConstraintViolationException e) {
-                		System.out.println(table.getSelectionModel().getSelectedItem().getSideA());
-                		table.getSelectionModel().getSelectedItem().setSideA(edit.getOldValue());
+                		data.get(table.getSelectionModel().getSelectedIndex()).setSideA(edit.getOldValue());
+                		edit.getTableView().getColumns().get(0).setVisible(false);
+                		edit.getTableView().getColumns().get(0).setVisible(true);
                 	} catch (SQLException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -128,6 +133,10 @@ public class EditFileCards {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
+					
+
+            		
+
             	} else if(filterCategory.getValue().equals("Definition"))
             	{
             		String[] split = filterSubCategory.getValue().split("_");
@@ -153,7 +162,11 @@ public class EditFileCards {
 	                					+ "AND WordID ="+edit.getRowValue().getIdSideA()+"");
 	                	table.getSelectionModel().getSelectedItem().setSideA(edit.getNewValue());
 	                	table.getSelectionModel().getSelectedItem().setIdSideA(wordID1);
-	            	} catch (SQLException e) {
+	            	} catch(java.sql.SQLIntegrityConstraintViolationException e) {
+                		data.get(table.getSelectionModel().getSelectedIndex()).setSideA(edit.getOldValue());
+                		edit.getTableView().getColumns().get(0).setVisible(false);
+                		edit.getTableView().getColumns().get(0).setVisible(true);
+                	} catch (SQLException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					} catch (Exception e) {
@@ -207,6 +220,10 @@ public class EditFileCards {
 	                					+ "AND WordID2 ="+edit.getRowValue().getIdSideB()+"");
 	                	table.getSelectionModel().getSelectedItem().setSideB(edit.getNewValue());
 	                	table.getSelectionModel().getSelectedItem().setIdSideB(wordID2);;
+                	} catch(java.sql.SQLIntegrityConstraintViolationException e) {
+                		data.get(table.getSelectionModel().getSelectedIndex()).setSideB(edit.getOldValue());
+                		edit.getTableView().getColumns().get(0).setVisible(false);
+                		edit.getTableView().getColumns().get(0).setVisible(true);
                 	} catch (SQLException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -222,6 +239,10 @@ public class EditFileCards {
 	            				+ "WHERE Definition = '"+edit.getOldValue()+" ' "
 	            						+ "AND WordID = "+edit.getRowValue().getIdSideA()+"");
 	                	table.getSelectionModel().getSelectedItem().setSideB(edit.getNewValue());
+                	} catch(java.sql.SQLIntegrityConstraintViolationException e) {
+                		data.get(table.getSelectionModel().getSelectedIndex()).setSideB(edit.getOldValue());
+                		edit.getTableView().getColumns().get(0).setVisible(false);
+                		edit.getTableView().getColumns().get(0).setVisible(true);
                 	} catch (SQLException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
