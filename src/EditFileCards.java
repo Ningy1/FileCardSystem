@@ -22,6 +22,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -50,6 +51,17 @@ public class EditFileCards {
 	private ComboBox<String> filterCategory; // Filter Category tableview
 	private ComboBox<String> filterSubCategory; // Filter SubCategory tableview
 
+	
+	// EventHandler to delete selected row with delete Button when editing mode of cell is not entered
+	EventHandler<KeyEvent> handleDeleteOnKey = new EventHandler<KeyEvent>() {
+		@Override
+		public void handle(KeyEvent e) {
+			if((table.editingCellProperty().getValue()==null) && (e.getCode().equals(KeyCode.DELETE) || e.getCode().equals(KeyCode.BACK_SPACE)))
+        	{
+        		deleteCurrentEntry();
+        	}
+		}
+	};
 	
 	
 	// Result of a sql query
@@ -98,7 +110,7 @@ public class EditFileCards {
         	// Add necessary mehtod
             @Override
             public void handle(CellEditEvent<FileCardsDB, String> edit) {
-            	
+        		
             	if(filterCategory.getValue().equals("Translation"))
             	{
                 	String[] split = filterSubCategory.getValue().split("_");
@@ -124,9 +136,7 @@ public class EditFileCards {
 	                	table.getSelectionModel().getSelectedItem().setSideA(edit.getNewValue());
 	                	table.getSelectionModel().getSelectedItem().setIdSideA(wordID1);
                 	} catch(java.sql.SQLIntegrityConstraintViolationException e) {
-                		data.get(table.getSelectionModel().getSelectedIndex()).setSideA(edit.getOldValue());
-                		edit.getTableView().getColumns().get(0).setVisible(false);
-                		edit.getTableView().getColumns().get(0).setVisible(true);
+                		deleteCurrentEntry();
                 	} catch (SQLException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -176,6 +186,8 @@ public class EditFileCards {
 					}
             	
             	}
+        		table.addEventHandler(KeyEvent.KEY_RELEASED, handleDeleteOnKey);
+
             }
         });
         
@@ -338,14 +350,18 @@ public class EditFileCards {
 	        	addSideA.requestFocus();
         	}
         });
+        
         // ActionListener for key pressed (delete) when focusing on a row in the tableview
         
-        table.setOnKeyReleased(e -> {
-        	if(e.getCode().equals(KeyCode.DELETE) || e.getCode().equals(KeyCode.BACK_SPACE))
-        	{
-        		deleteCurrentEntry();
-        	}
-        });
+//        table.setOnKeyReleased(e -> {
+//        	if(e.getCode().equals(KeyCode.DELETE) || e.getCode().equals(KeyCode.BACK_SPACE))
+//        	{
+//        		deleteCurrentEntry();
+//        	}
+//        });
+        
+        
+		table.addEventHandler(KeyEvent.KEY_RELEASED, handleDeleteOnKey);
         
         // Actionlistener for removing an entry
         deleteButton.setOnAction(edit -> {
