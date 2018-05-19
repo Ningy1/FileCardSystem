@@ -177,21 +177,21 @@ public class EditFileCards {
 		return rs;
 
 	}
-	
+
 	public ResultSet isDuplicateDefinition(int wordID1, String definition) {
-		ResultSet rs=null;
+		ResultSet rs = null;
 		try {
-			rs = HSQLDB.getInstance()
-					.query("Select definitionid " + "from definition " + "where wordid =" + wordID1 + " " + "and definition = '"
-							+ definition + "' ");
+			rs = HSQLDB.getInstance().query("Select definitionid " + "from definition " + "where wordid =" + wordID1
+					+ " " + "and definition = '" + definition + "' ");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return rs;
 	}
+
 	public ResultSet insertDefinition(String word1, String word2, String language1, String language2, int userID) {
-		ResultSet rs=null;
+		ResultSet rs = null;
 		int wordID1;
 		int wordID2;
 		try {
@@ -204,9 +204,10 @@ public class EditFileCards {
 			rs = isDuplicateDefinition(wordID1, word2);
 			if (!rs.next()) {
 				System.out.println("InsertDefinition");
-				HSQLDB.getInstance()
-						.update("INSERT INTO Definition (wordid, definition)" + "values(" + wordID1 + ",'" + word2 + "')");
-				rs = HSQLDB.getInstance().query("SELECT definitionid FROM Definition where wordid = "+wordID1+" AND definition ='"+word2+"'");
+				HSQLDB.getInstance().update(
+						"INSERT INTO Definition (wordid, definition)" + "values(" + wordID1 + ",'" + word2 + "')");
+				rs = HSQLDB.getInstance().query("SELECT definitionid FROM Definition where wordid = " + wordID1
+						+ " AND definition ='" + word2 + "'");
 				rs.next();
 				wordID2 = rs.getInt(1);
 				data.add(new FileCardsDB(wordID1, wordID2, word1, word2));
@@ -219,9 +220,10 @@ public class EditFileCards {
 		}
 		return rs;
 	}
-	public ResultSet updateDefinition(String word1New, String word2New, int wordID1old, int wordID2old, String language1,
-			String language2, int userID) {
-		ResultSet rs=null;
+
+	public ResultSet updateDefinition(String word1New, String word2New, int wordID1old, int wordID2old,
+			String language1, String language2, int userID) {
+		ResultSet rs = null;
 		int wordID1;
 		int wordID2;
 		try {
@@ -236,9 +238,8 @@ public class EditFileCards {
 			rs = isDuplicateDefinition(wordID1, word2New);
 			if (!rs.next()) {
 				System.out.println("Updating Definition");
-				HSQLDB.getInstance()
-						.update("UPDATE Definition " + "SET WordID =" + wordID1 + ", definition = '" +word2New+"' "
-								+ " WHERE definitionID = " + wordID2old +"");
+				HSQLDB.getInstance().update("UPDATE Definition " + "SET WordID =" + wordID1 + ", definition = '"
+						+ word2New + "' " + " WHERE definitionID = " + wordID2old + "");
 				// Insert the new value + wordID in the Observable List (update tableView)
 				table.getSelectionModel().getSelectedItem().setSideA(word1New);
 				table.getSelectionModel().getSelectedItem().setIdSideA(wordID1);
@@ -267,16 +268,50 @@ public class EditFileCards {
 			// Remove the current entry (with the old values) from the database
 			try {
 				if (filterCategory.getValue().equals("Translation")) {
-					HSQLDB.getInstance().update("DELETE FROM Translate "
-							+ "where (WordID1 = " + wordID1 + " "
-							+ " AND WordID2 = " + wordID2 + ") "
-							+ " OR (WordID1 = " + wordID2 + " "
-							+ " AND WordID2 = " + wordID1 +")");
+					HSQLDB.getInstance()
+							.update("DELETE FROM Translate " + "where (WordID1 = " + wordID1 + " " + " AND WordID2 = "
+									+ wordID2 + ") " + " OR (WordID1 = " + wordID2 + " " + " AND WordID2 = " + wordID1
+									+ ")");
 					deleteWords(wordID1);
 					deleteWords(wordID2);
 
 				} else if (filterCategory.getValue().equals("Definition")) {
-					System.out.println("WordID2: "+wordID2);
+					System.out.println("WordID2: " + wordID2);
+					HSQLDB.getInstance().update("DELETE FROM Definition where DefinitionID = " + wordID2 + "");
+					deleteWords(wordID1);
+				}
+
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public void deleteCurrentEntry(String word1, String word2) {
+
+		int wordID1 = -1;
+		int wordID2 = -1;
+		for (int i = 0; i < data.size(); i++) {
+			if (data.get(i).sideA.equals(word1) && data.get(i).sideB.equals(word2)) {
+				wordID1 = data.get(i).idSideA;
+				wordID2 = data.get(i).idSideB;
+				data.remove(i);
+				i = data.size();
+			}
+
+			// Remove the current entry (with the old values) from the database
+			try {
+				if (filterCategory.getValue().equals("Translation")) {
+					HSQLDB.getInstance()
+							.update("DELETE FROM Translate " + "where (WordID1 = " + wordID1 + " " + " AND WordID2 = "
+									+ wordID2 + ") " + " OR (WordID1 = " + wordID2 + " " + " AND WordID2 = " + wordID1
+									+ ")");
+					deleteWords(wordID1);
+					deleteWords(wordID2);
+
+				} else if (filterCategory.getValue().equals("Definition")) {
+					System.out.println("WordID2: " + wordID2);
 					HSQLDB.getInstance().update("DELETE FROM Definition where DefinitionID = " + wordID2 + "");
 					deleteWords(wordID1);
 				}
@@ -291,10 +326,9 @@ public class EditFileCards {
 	public void deleteWords(int wordID) {
 		try {
 			HSQLDB.getInstance()
-					.update("DELETE FROM words " + "where WordID = " + wordID + " "
-							+ " AND "+wordID+"  not in(SELECT wordid1 " + "from translate " + "UNION " + "SELECT wordid2 "
-							+ "from translate)"
-							+ " AND WordID  not in(SELECT wordid " + "from definition )");
+					.update("DELETE FROM words " + "where WordID = " + wordID + " " + " AND " + wordID
+							+ "  not in(SELECT wordid1 " + "from translate " + "UNION " + "SELECT wordid2 "
+							+ "from translate)" + " AND WordID  not in(SELECT wordid " + "from definition )");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -352,10 +386,9 @@ public class EditFileCards {
 
 					try {
 						// We need to update the table Definition with the new entity
-						updateDefinition(wordNew, edit.getRowValue().getSideB(), 
-								edit.getRowValue().getIdSideA(), edit.getRowValue().getIdSideB(),
-								filterSubCategoryA.getValue(), filterSubCategoryB.getValue(),
-								Login.userID);
+						updateDefinition(wordNew, edit.getRowValue().getSideB(), edit.getRowValue().getIdSideA(),
+								edit.getRowValue().getIdSideB(), filterSubCategoryA.getValue(),
+								filterSubCategoryB.getValue(), Login.userID);
 						edit.getTableView().getColumns().get(0).setVisible(false);
 						edit.getTableView().getColumns().get(0).setVisible(true);
 					} catch (Exception e) {
@@ -406,17 +439,15 @@ public class EditFileCards {
 
 					try {
 						// We need to update the table Definition with the new entity
-						updateDefinition(edit.getRowValue().getSideA(), wordNew, 
-								edit.getRowValue().getIdSideA(), edit.getRowValue().getIdSideB(),
-								filterSubCategoryA.getValue(), filterSubCategoryB.getValue(),
-								Login.userID);
+						updateDefinition(edit.getRowValue().getSideA(), wordNew, edit.getRowValue().getIdSideA(),
+								edit.getRowValue().getIdSideB(), filterSubCategoryA.getValue(),
+								filterSubCategoryB.getValue(), Login.userID);
 						edit.getTableView().getColumns().get(0).setVisible(false);
 						edit.getTableView().getColumns().get(0).setVisible(true);
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-
 
 				}
 
@@ -526,8 +557,14 @@ public class EditFileCards {
 
 		// Actionlistener for removing an entry
 		deleteButton.setOnAction(edit -> {
+			if ((filterCategory.getValue() != null) && (filterSubCategoryA.getValue() != null)
+					&& (filterSubCategoryB.getValue() != null)) {
+				deleteCurrentEntry(addSideA.getText(), addSideB.getText());
+			}
+			addSideA.clear();
+			addSideB.clear();
+			addSideA.requestFocus();
 
-			deleteCurrentEntry();
 		});
 
 		// Actionlistener for Button to add new entries
@@ -544,9 +581,9 @@ public class EditFileCards {
 						rs = insertTranslate(addSideA.getText(), addSideB.getText(), filterSubCategoryA.getValue(),
 								filterSubCategoryB.getValue(), Login.userID);
 
-						 } else if (filterCategory.getValue().equals("Definition")) {
-						 rs = insertDefinition(addSideA.getText(), addSideB.getText(), 
-								 filterSubCategoryA.getValue(), filterSubCategoryB.getValue(), Login.userID);
+					} else if (filterCategory.getValue().equals("Definition")) {
+						rs = insertDefinition(addSideA.getText(), addSideB.getText(), filterSubCategoryA.getValue(),
+								filterSubCategoryB.getValue(), Login.userID);
 					}
 				}
 			} catch (Exception e1) {
