@@ -19,6 +19,15 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
 
+/**
+ * This class is used to represent data in a tableiew and give the user the
+ * ability to filter for specific categories and to manipulate(adding, deleting)
+ * data
+ * 
+ * 
+ * @author Erik
+ *
+ */
 public class EditFileCards {
 
 	// Tableview - visualizes the data
@@ -55,7 +64,6 @@ public class EditFileCards {
 			"Spanish");
 	ObservableList<String> optionsSubCategoryDefintion = FXCollections.observableArrayList("Defintion");
 
-	
 	public EditFileCards() {
 		// Name the new stage (window)
 		editStage.setTitle("MyFileCards");
@@ -74,10 +82,20 @@ public class EditFileCards {
 		// Arrange Elements in the window
 		arrangeElements();
 	}
-	
-	
-	
-	
+
+	/**
+	 * This method checks if a word already is present in a DB Table by a select
+	 * query. If the Resultset is not empty, the word already exists for the user
+	 * and the language.
+	 * 
+	 * @param wordNew,
+	 *            the word to check
+	 * @param language,
+	 *            the language of the word
+	 * @param userID,
+	 *            the userID of the user
+	 * @return the ResultSet of the query
+	 */
 	public ResultSet isDuplicateWord(String wordNew, String language, int userID) {
 		ResultSet rs = null;
 		try {
@@ -90,6 +108,18 @@ public class EditFileCards {
 		return rs;
 	}
 
+	/**
+	 * This method inserts a word in a DB Table and returns the ResultSet with the
+	 * new generated wordID
+	 * 
+	 * @param wordNew,
+	 *            the word to insert
+	 * @param language,
+	 *            the language of the word
+	 * @param userID,
+	 *            the userID of the User @return, The ResultSet with the worID of
+	 *            the inserted word
+	 */
 	public ResultSet insertWord(String wordNew, String language, int userID) {
 		ResultSet rs = null;
 		try {
@@ -108,6 +138,16 @@ public class EditFileCards {
 		return rs;
 	}
 
+	/**
+	 * This method checks if the translate entity already exists and returns the
+	 * ResultSet
+	 * 
+	 * @param wordID1,
+	 *            the wordID1 of the first word
+	 * @param wordID2,
+	 *            the wordID2 of the second word
+	 * @return the ResultSet, if empty, the entity doesn`t exist
+	 */
 	public ResultSet isDuplicateTranslate(int wordID1, int wordID2) {
 		ResultSet rs = null;
 		try {
@@ -121,81 +161,77 @@ public class EditFileCards {
 		return rs;
 	}
 
-	public ResultSet updateTranslate(String word1New, String word2New, int wordID1old, int wordID2old, String language1,
-			String language2, int userID) {
+	/**
+	 * This method inserts a new DB Translate or Definition Table entry if it does not already
+	 * exists and returns the ResultSet of the new entry or null.
+	 * 
+	 * @param word1,
+	 *            the word of the first column to be insert
+	 * @param word2,
+	 *            the word of the second column to be insert
+	 * @param language1,
+	 *            the language of the first word to be insert
+	 * @param language2,
+	 *            the language of the second word to be insert
+	 * @param userID,
+	 *            the userID of the User
+	 * @return the ResultSet of the new inserted Translate entry
+	 */
+	public ResultSet insertEntry(String word1, String word2, String language1, String language2, int userID) {
 		ResultSet rs = null;
 		int wordID1;
 		int wordID2;
 		try {
-			rs = isDuplicateWord(word1New, language1, userID);
-			if (!rs.next()) {
-				System.out.println("WordDup1");
-				rs = insertWord(word1New, language1, userID);
-				rs.next();
+			if (filterCategory.getValue().equals("Translation")) {
+				rs = isDuplicateWord(word1, language1, userID);
+				if (!rs.next()) {
+					rs = insertWord(word1, language1, userID);
+					rs.next();
+				}
+				wordID1 = rs.getInt(1);
+				rs = isDuplicateWord(word2, language2, userID);
+				if (!rs.next()) {
+					rs = insertWord(word2, language2, userID);
+					rs.next();
+				}
+				wordID2 = rs.getInt(1);
+				rs = isDuplicateTranslate(wordID1, wordID2);
+				if (!rs.next()) {
+					System.out.println("InsertTranslate");
+					HSQLDB.getInstance().update(
+							"INSERT INTO Translate (wordid1, wordid2)" + "values(" + wordID1 + "," + wordID2 + ")");
+					data.add(new FileCardsDB(wordID1, wordID2, word1, word2));
+				} else {
+					System.out.println("Already existing translate");
+				}
+				rs = HSQLDB.getInstance()
+						.query("SELECT * " + "FROM Translate " + "WHERE (WordID1 =" + wordID1 + " " + "AND WordID2 ="
+								+ wordID2 + ") " + "OR (WordID1 =" + wordID2 + " " + "AND WordID2 =" + wordID1
+								+ ")");
+			} else if (filterCategory.getValue().equals("Definition")) {
+				rs = isDuplicateWord(word1, language1, userID);
+				if (!rs.next()) {
+					rs = insertWord(word1, language1, userID);
+					rs.next();
+				}
+				wordID1 = rs.getInt(1);
+				rs = isDuplicateDefinition(wordID1, word2);
+				if (!rs.next()) {
+					System.out.println("InsertDefinition");
+					HSQLDB.getInstance().update(
+							"INSERT INTO Definition (wordid, definition)" + "values(" + wordID1 + ",'" + word2 + "')");
+					rs = HSQLDB.getInstance().query("SELECT definitionid FROM Definition where wordid = " + wordID1
+							+ " AND definition ='" + word2 + "'");
+					rs.next();
+					wordID2 = rs.getInt(1);
+					data.add(new FileCardsDB(wordID1, wordID2, word1, word2));
+				} else {
+					System.out.println("Already existing definition");
+				}
+				rs = HSQLDB.getInstance()
+						.query("SELECT * " + "FROM Definition " + "WHERE WordID ='" + wordID1 + "' " + "AND definition ='"
+								+ word2 + "')");
 			}
-			wordID1 = rs.getInt(1);
-			rs = isDuplicateWord(word2New, language2, userID);
-			if (!rs.next()) {
-				System.out.println("WordDup2");
-				rs = insertWord(word2New, language2, userID);
-				rs.next();
-			}
-			wordID2 = rs.getInt(1);
-
-			rs = isDuplicateTranslate(wordID1, wordID2);
-			if (!rs.next()) {
-				System.out.println("Updating tranlslate");
-				HSQLDB.getInstance()
-						.update("UPDATE Translate " + "SET WordID1 =" + wordID1 + ", WordID2 = " + wordID2 + " "
-								+ " WHERE (WordID1 = " + wordID1old + "" + " AND WordID2 =" + wordID2old + ")"
-								+ " OR (WordID1 =" + wordID2old + "" + " AND WordID2 =" + wordID1old + ")");
-				// Insert the new value + wordID in the Observable List (update tableView)
-				table.getSelectionModel().getSelectedItem().setSideA(word1New);
-				table.getSelectionModel().getSelectedItem().setIdSideA(wordID1);
-				table.getSelectionModel().getSelectedItem().setSideB(word2New);
-				table.getSelectionModel().getSelectedItem().setIdSideB(wordID2);
-				deleteWords(wordID1old);
-				deleteWords(wordID2old);
-			} else {
-				System.out.println("DeleteRow");
-				deleteCurrentEntry();
-			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return rs;
-	}
-
-	public ResultSet insertTranslate(String word1, String word2, String language1, String language2, int userID) {
-		ResultSet rs = null;
-		int wordID1;
-		int wordID2;
-		try {
-			rs = isDuplicateWord(word1, language1, userID);
-			if (!rs.next()) {
-				rs = insertWord(word1, language1, userID);
-				rs.next();
-			}
-			wordID1 = rs.getInt(1);
-			rs = isDuplicateWord(word2, language2, userID);
-			if (!rs.next()) {
-				rs = insertWord(word2, language2, userID);
-				rs.next();
-			}
-			wordID2 = rs.getInt(1);
-			rs = isDuplicateTranslate(wordID1, wordID2);
-			if (!rs.next()) {
-				System.out.println("InsertTranslate");
-				HSQLDB.getInstance()
-						.update("INSERT INTO Translate (wordid1, wordid2)" + "values(" + wordID1 + "," + wordID2 + ")");
-				data.add(new FileCardsDB(wordID1, wordID2, word1, word2));
-			} else {
-				System.out.println("Already existing translate");
-			}
-			rs = HSQLDB.getInstance()
-					.query("SELECT * " + "FROM Translate " + "WHERE (WordID1 ='" + wordID1 + "' " + "AND WordID2 ='"
-							+ wordID2 + "') " + "OR (WordID1 ='" + wordID2 + "' " + "AND WordID2 ='" + wordID1 + "')");
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -205,6 +241,16 @@ public class EditFileCards {
 
 	}
 
+	/**
+	 * This method checks if an entry of the DB Definition Table already exists. If
+	 * the return ResultSet is empty the entry does not already exist.
+	 * 
+	 * @param wordID1,
+	 *            the wordID of the word of the definition entry to be checked
+	 * @param definition,
+	 *            the definition of the definition entry to be checked
+	 * @return the Resultset, empty if no duplicate
+	 */
 	public ResultSet isDuplicateDefinition(int wordID1, String definition) {
 		ResultSet rs = null;
 		try {
@@ -217,29 +263,91 @@ public class EditFileCards {
 		return rs;
 	}
 
-	public ResultSet insertDefinition(String word1, String word2, String language1, String language2, int userID) {
+	/**
+	 * This method updates the DB defintion or translate table entity and checks if
+	 * the new entity and the new words already exist and returns the new ResultSet.
+	 * If the entity already exists, it deletes the current entity
+	 * 
+	 * @param word1New,
+	 *            the new word of the first column
+	 * @param word2New,
+	 *            the new word of the secon column
+	 * @param wordID1old,
+	 *            the wordID of the first old entry
+	 * @param wordID2old,
+	 *            the wordID of the second old entry
+	 * @param language1,
+	 *            the language of the first entry
+	 * @param language2,
+	 *            the language of the second entry
+	 * @param userID,
+	 *            the UserID of the User
+	 * @return the ResultSet of the new entry
+	 */
+	public ResultSet updateEntry(String word1New, String word2New, int wordID1old, int wordID2old, String language1,
+			String language2, int userID) {
 		ResultSet rs = null;
 		int wordID1;
 		int wordID2;
 		try {
-			rs = isDuplicateWord(word1, language1, userID);
-			if (!rs.next()) {
-				rs = insertWord(word1, language1, userID);
-				rs.next();
-			}
-			wordID1 = rs.getInt(1);
-			rs = isDuplicateDefinition(wordID1, word2);
-			if (!rs.next()) {
-				System.out.println("InsertDefinition");
-				HSQLDB.getInstance().update(
-						"INSERT INTO Definition (wordid, definition)" + "values(" + wordID1 + ",'" + word2 + "')");
-				rs = HSQLDB.getInstance().query("SELECT definitionid FROM Definition where wordid = " + wordID1
-						+ " AND definition ='" + word2 + "'");
-				rs.next();
+			if (filterCategory.getValue().equals("Translation")) {
+				rs = isDuplicateWord(word1New, language1, userID);
+				if (!rs.next()) {
+					System.out.println("WordDup1");
+					rs = insertWord(word1New, language1, userID);
+					rs.next();
+				}
+				wordID1 = rs.getInt(1);
+				rs = isDuplicateWord(word2New, language2, userID);
+				if (!rs.next()) {
+					System.out.println("WordDup2");
+					rs = insertWord(word2New, language2, userID);
+					rs.next();
+				}
 				wordID2 = rs.getInt(1);
-				data.add(new FileCardsDB(wordID1, wordID2, word1, word2));
-			} else {
-				System.out.println("Already existing definition");
+
+				rs = isDuplicateTranslate(wordID1, wordID2);
+				if (!rs.next()) {
+					System.out.println("Updating tranlslate");
+					HSQLDB.getInstance()
+							.update("UPDATE Translate " + "SET WordID1 =" + wordID1 + ", WordID2 = " + wordID2 + " "
+									+ " WHERE (WordID1 = " + wordID1old + "" + " AND WordID2 =" + wordID2old + ")"
+									+ " OR (WordID1 =" + wordID2old + "" + " AND WordID2 =" + wordID1old + ")");
+					// Insert the new value + wordID in the Observable List (update tableView)
+					table.getSelectionModel().getSelectedItem().setSideA(word1New);
+					table.getSelectionModel().getSelectedItem().setIdSideA(wordID1);
+					table.getSelectionModel().getSelectedItem().setSideB(word2New);
+					table.getSelectionModel().getSelectedItem().setIdSideB(wordID2);
+					deleteWords(wordID1old);
+					deleteWords(wordID2old);
+				} else {
+					System.out.println("DeleteRow");
+					deleteCurrentEntry();
+				}
+			} else if (filterCategory.getValue().equals("Definition")) {
+				rs = isDuplicateWord(word1New, language1, userID);
+				if (!rs.next()) {
+					System.out.println("WordDup1");
+					rs = insertWord(word1New, language1, userID);
+					rs.next();
+				}
+				wordID1 = rs.getInt(1);
+
+				rs = isDuplicateDefinition(wordID1, word2New);
+				if (!rs.next()) {
+					System.out.println("Updating Definition");
+					HSQLDB.getInstance().update("UPDATE Definition " + "SET WordID =" + wordID1 + ", definition = '"
+							+ word2New + "' " + " WHERE definitionID = " + wordID2old + "");
+					// Insert the new value + wordID in the Observable List (update tableView)
+					table.getSelectionModel().getSelectedItem().setSideA(word1New);
+					table.getSelectionModel().getSelectedItem().setIdSideA(wordID1);
+					table.getSelectionModel().getSelectedItem().setSideB(word2New);
+					table.getSelectionModel().getSelectedItem().setIdSideB(wordID2old);
+					deleteWords(wordID1old);
+				} else {
+					System.out.println("DeleteRow");
+					deleteCurrentEntry();
+				}
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -248,42 +356,13 @@ public class EditFileCards {
 		return rs;
 	}
 
-	public ResultSet updateDefinition(String word1New, String word2New, int wordID1old, int wordID2old,
-			String language1, String language2, int userID) {
-		ResultSet rs = null;
-		int wordID1;
-		int wordID2;
-		try {
-			rs = isDuplicateWord(word1New, language1, userID);
-			if (!rs.next()) {
-				System.out.println("WordDup1");
-				rs = insertWord(word1New, language1, userID);
-				rs.next();
-			}
-			wordID1 = rs.getInt(1);
-
-			rs = isDuplicateDefinition(wordID1, word2New);
-			if (!rs.next()) {
-				System.out.println("Updating Definition");
-				HSQLDB.getInstance().update("UPDATE Definition " + "SET WordID =" + wordID1 + ", definition = '"
-						+ word2New + "' " + " WHERE definitionID = " + wordID2old + "");
-				// Insert the new value + wordID in the Observable List (update tableView)
-				table.getSelectionModel().getSelectedItem().setSideA(word1New);
-				table.getSelectionModel().getSelectedItem().setIdSideA(wordID1);
-				table.getSelectionModel().getSelectedItem().setSideB(word2New);
-				table.getSelectionModel().getSelectedItem().setIdSideB(wordID2old);
-				deleteWords(wordID1old);
-			} else {
-				System.out.println("DeleteRow");
-				deleteCurrentEntry();
-			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return rs;
-	}
-
+	/**
+	 * This method deletes the highlighted row in the tableview. It distinguishes
+	 * between the categories translation and definition and also deletes the words
+	 * from the DB words table if the words don`t point on ther entries to keep
+	 * entries clean.
+	 * 
+	 */
 	public void deleteCurrentEntry() {
 
 		if (table.getSelectionModel().getSelectedItem() != null
@@ -315,6 +394,16 @@ public class EditFileCards {
 		}
 	}
 
+	/**
+	 * Deletes an entry identified by two words and the chosen category translation
+	 * or definition. It also deletes the words when they are not pointing on other
+	 * entries.
+	 * 
+	 * @param word1,
+	 *            the word of the first column
+	 * @param word2,
+	 *            the word of the secon column
+	 */
 	public void deleteCurrentEntry(String word1, String word2) {
 
 		int wordID1 = -1;
@@ -350,6 +439,13 @@ public class EditFileCards {
 		}
 	}
 
+	/**
+	 * This method deletes a given word, identified by the wordID, if it does not
+	 * point on a translate or definition entry.
+	 * 
+	 * @param wordID
+	 *            of the word to be deleted
+	 */
 	public void deleteWords(int wordID) {
 		try {
 			HSQLDB.getInstance()
@@ -361,6 +457,11 @@ public class EditFileCards {
 		}
 	}
 
+	/**
+	 * This method specifies which data should be loaded from the database. It does
+	 * it by listening to 3 comboboxes and the chosen categories.
+	 * 
+	 */
 	public void addFilterListener() {
 		// Filter Functionality for database
 
@@ -459,6 +560,14 @@ public class EditFileCards {
 		});
 	}
 
+	/**
+	 * This method specifies what should happen when special keys are pressed. The
+	 * ENTER Key in the second textfield makes the addButton to fire action, if the
+	 * textfields are filled. If focused on the tableview the EventHandler to delete
+	 * selected row with delete and Back_Space Key when editing mode of cell is not
+	 * entered (table.editingCellProperty().get() == null)
+	 * 
+	 */
 	public void addKeyListener() {
 
 		// ActionListener for key pressed (Enter) when adding entry and focusing on
@@ -470,10 +579,6 @@ public class EditFileCards {
 			}
 		});
 
-		/*
-		 * EventHandler to delete selected row with delete Button when editing mode of
-		 * cell is not entered (table.editingCellProperty().get() == null)
-		 */
 		table.addEventHandler(KeyEvent.KEY_RELEASED, new EventHandler<KeyEvent>() {
 			@Override
 			public void handle(KeyEvent e) {
@@ -485,6 +590,11 @@ public class EditFileCards {
 		});
 	}
 
+	/**
+	 * This method arranges the different elements in the Scene, how they should
+	 * grow and the size of the boxes.
+	 * 
+	 */
 	public void arrangeElements() {
 		// Let elements grow equally in horizontal direction
 		HBox.setHgrow(addButton, Priority.ALWAYS);
@@ -527,6 +637,10 @@ public class EditFileCards {
 		editStage.show();
 	}
 
+	/**
+	 * This method sets the different (MinMaxPref) sizes of the specific elements
+	 * 
+	 */
 	public void setElements() {
 		// Fill Comboboxes with options
 		filterCategory = new ComboBox<String>(optionsCategory);
@@ -577,6 +691,11 @@ public class EditFileCards {
 
 	}
 
+	/**
+	 * This method characterizes the different columns and how they should behave
+	 * while editing
+	 * 
+	 */
 	public void setColumns() {
 		/*
 		 * Set the cells of the column to the propertytype string from the object
@@ -594,49 +713,15 @@ public class EditFileCards {
 		sideA.setOnEditCommit(new EventHandler<CellEditEvent<FileCardsDB, String>>() {
 			@Override
 			public void handle(CellEditEvent<FileCardsDB, String> edit) {
-
 				// Get the new value of the cell after editing
 				String wordNew = edit.getNewValue();
-				/*
-				 * Because the different categories are characterized by different primary
-				 * keys("Definition" has one ID as primary key, "Translation has a combination
-				 * of two different IDs as primary key) we have to handle the different
-				 * categroies in a different way
-				 */
-
-				// Case we are in the category "Translation"
-				if (filterCategory.getValue().equals("Translation")) {
-
-					try {
-						// Update Translate
-						updateTranslate(wordNew, edit.getRowValue().getSideB(), edit.getRowValue().getIdSideA(),
-								edit.getRowValue().getIdSideB(), filterSubCategoryA.getValue(),
-								filterSubCategoryB.getValue(), Login.userID);
-						// Refresh tableview
-						edit.getTableView().getColumns().get(0).setVisible(false);
-						edit.getTableView().getColumns().get(0).setVisible(true);
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					// Case we are in the category "Definition"
-				} else if (filterCategory.getValue().equals("Definition")) {
-
-					try {
-						// Update Definition
-						updateDefinition(wordNew, edit.getRowValue().getSideB(), edit.getRowValue().getIdSideA(),
-								edit.getRowValue().getIdSideB(), filterSubCategoryA.getValue(),
-								filterSubCategoryB.getValue(), Login.userID);
-						// Refresh Tableview
-						edit.getTableView().getColumns().get(0).setVisible(false);
-						edit.getTableView().getColumns().get(0).setVisible(true);
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-
-				}
-
+				// Update Translate
+				updateEntry(wordNew, edit.getRowValue().getSideB(), edit.getRowValue().getIdSideA(),
+						edit.getRowValue().getIdSideB(), filterSubCategoryA.getValue(), filterSubCategoryB.getValue(),
+						Login.userID);
+				// Refresh tableview
+				edit.getTableView().getColumns().get(0).setVisible(false);
+				edit.getTableView().getColumns().get(0).setVisible(true);
 			}
 		});
 
@@ -650,40 +735,15 @@ public class EditFileCards {
 			// Add necessary mehtod
 			@Override
 			public void handle(CellEditEvent<FileCardsDB, String> edit) {
-
 				// Get the new value of the cell after editing
 				String wordNew = edit.getNewValue();
-
-				// Case of "Translation"
-				if (filterCategory.getValue().equals("Translation")) {
-					try {
-						// Update Translate
-						updateTranslate(edit.getRowValue().getSideA(), wordNew, edit.getRowValue().getIdSideA(),
-								edit.getRowValue().getIdSideB(), filterSubCategoryA.getValue(),
-								filterSubCategoryB.getValue(), Login.userID);
-						// Refresh tableview
-						edit.getTableView().getColumns().get(0).setVisible(false);
-						edit.getTableView().getColumns().get(0).setVisible(true);
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					// Case "Definition"
-				} else if (filterCategory.getValue().equals("Definition")) {
-
-					try {
-						// Refresh Definition
-						updateDefinition(edit.getRowValue().getSideA(), wordNew, edit.getRowValue().getIdSideA(),
-								edit.getRowValue().getIdSideB(), filterSubCategoryA.getValue(),
-								filterSubCategoryB.getValue(), Login.userID);
-						// Refresh TableView
-						edit.getTableView().getColumns().get(0).setVisible(false);
-						edit.getTableView().getColumns().get(0).setVisible(true);
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
+				// Update
+				updateEntry(edit.getRowValue().getSideA(), wordNew, edit.getRowValue().getIdSideA(),
+						edit.getRowValue().getIdSideB(), filterSubCategoryA.getValue(), filterSubCategoryB.getValue(),
+						Login.userID);
+				// Refresh tableview
+				edit.getTableView().getColumns().get(0).setVisible(false);
+				edit.getTableView().getColumns().get(0).setVisible(true);
 			}
 		});
 
@@ -693,6 +753,13 @@ public class EditFileCards {
 		table.getColumns().addAll(sideA, sideB);
 	}
 
+	/**
+	 * This method specifies the different ActionListener on the Buttons. If the
+	 * deleteButton is clicked, the the corresponding entry the the text in the two
+	 * testfields will be deleted. If the addButton is clicked, the he corresponding
+	 * entry the the text in the two testfields will be added.
+	 * 
+	 */
 	public void setActionListener() {
 		// Actionlistener for removing an entry
 		deleteButton.setOnAction(edit -> {
@@ -709,29 +776,30 @@ public class EditFileCards {
 		// Actionlistener for Button to add new entries
 		addButton.setOnAction(e -> {
 
-			try {
-				if ((filterCategory.getValue() != null) && (filterSubCategoryA.getValue() != null)
-						&& (filterSubCategoryB.getValue() != null)) {
+			if ((filterCategory.getValue() != null) && (filterSubCategoryA.getValue() != null)
+					&& (filterSubCategoryB.getValue() != null)) {
 
-					if (filterCategory.getValue().equals("Translation")) {
-						rs = insertTranslate(addSideA.getText(), addSideB.getText(), filterSubCategoryA.getValue(),
-								filterSubCategoryB.getValue(), Login.userID);
+				if (filterCategory.getValue().equals("Translation")) {
+					rs = insertEntry(addSideA.getText(), addSideB.getText(), filterSubCategoryA.getValue(),
+							filterSubCategoryB.getValue(), Login.userID);
 
-					} else if (filterCategory.getValue().equals("Definition")) {
-						rs = insertDefinition(addSideA.getText(), addSideB.getText(), filterSubCategoryA.getValue(),
-								filterSubCategoryB.getValue(), Login.userID);
-					}
+				} else if (filterCategory.getValue().equals("Definition")) {
+					rs = insertEntry(addSideA.getText(), addSideB.getText(), filterSubCategoryA.getValue(),
+							filterSubCategoryB.getValue(), Login.userID);
 				}
-			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
 			}
+
 			// Set textfields to placeholder
 			addSideA.clear();
 			addSideB.clear();
 		});
 	}
 
+	/**
+	 * This method speciefies the observable List of the Tableview at start of the
+	 * class
+	 * 
+	 */
 	public void initialValues() {
 		// Read entries from database for Start
 		try {
