@@ -34,8 +34,8 @@ import javafx.scene.control.TextField;
 				         		+ "Language VARCHAR(80) NOT NULL, "
 				         		+ "UserID INTEGER not null,"
 				         		+ "FOREIGN KEY (UserID) REFERENCES User (UserID) "
-				           		+ "ON DELETE CASCADE "
-				         		+ "ON UPDATE CASCADE)"
+				           		+ "ON DELETE RESTRICT "
+				         		+ "ON UPDATE RESTRICT)"
 				         		);
 			         update("CREATE TABLE IF NOT EXISTS Definition ("
 				         		+ "DefinitionID INTEGER IDENTITY PRIMARY KEY NOT NULL, "
@@ -45,8 +45,8 @@ import javafx.scene.control.TextField;
 				         		+ "Totalcount INTEGER, "
 				         		+ "Success INTEGER, "
 				         		+ "FOREIGN KEY (WordID) REFERENCES Words (WordID) "
-				         		+ "ON DELETE CASCADE "
-				         		+ "ON UPDATE CASCADE, "
+				         		+ "ON DELETE RESTRICT "
+				         		+ "ON UPDATE RESTRICT, "
 				         		+ "UNIQUE (Definition, WordID))"
 				         		);
 			         update("CREATE TABLE IF NOT EXISTS Translate ("
@@ -57,11 +57,11 @@ import javafx.scene.control.TextField;
 				         		+ "Success INTEGER, "
 				         		+ "PRIMARY KEY(WordID1, WORDID2), "
 				         		+ "FOREIGN KEY (WordID1) REFERENCES Words (WordID) "
-				         		+ "ON DELETE CASCADE "
-				         		+ "ON UPDATE CASCADE, "
+				         		+ "ON DELETE RESTRICT "
+				         		+ "ON UPDATE RESTRICT, "
 				         		+ "FOREIGN KEY (WordID2) REFERENCES Words (WordID) "
-				         		+ "ON DELETE CASCADE "
-				         		+ "ON UPDATE CASCADE) "
+				         		+ "ON DELETE RESTRICT "
+				         		+ "ON UPDATE RESTRICT) "
 				         		);
 				  
 		         // Check if Connection was successfull
