@@ -475,12 +475,18 @@ public class EditFileCards {
 		}
 	}
 	
+	/**
+	 * This method disables all buttons in the view
+	 */
 	public void disableButtons(){
 		addButton.setDisable(true);
 		deleteButton.setDisable(true);
 		importButton.setDisable(true);
 		exportButton.setDisable(true);
 	}
+	/**
+	 * This method enables all buttons in the view
+	 */
 	public void enableButtons(){
 		addButton.setDisable(false);
 		deleteButton.setDisable(false);
@@ -795,12 +801,21 @@ public class EditFileCards {
 	}
 
 	/**
-	 * This method specifies the different ActionListener on the Buttons. If the
-	 * deleteButton is clicked, the the corresponding entry the the text in the two
-	 * testfields will be deleted. If the addButton is clicked, the he corresponding
+	 * This method specifies the different ActionListener on the Buttons. 
+	 * 
+	 * If the deleteButton is clicked, the the corresponding entry the the text in the two
+	 * testfields will be deleted. 
+	 * 
+	 * If the addButton is clicked, the he corresponding
 	 * entry the the text in the two testfields will be added.
 	 * 
+	 * If the importButton is clicked, the user can choose with the FileChooser 
+	 * a file to be imported, which has to be an Arraylist of FileCardsDB-Objects. 
+	 * The Category and SubCategories have to match the chosen ones 
+	 * when the importButton is clicked.
 	 * 
+	 * If the exportButton is clicked, the current viewed data can be saved as FileCardsDBObjects.
+	 * Therefore, a filechooser is opened and the user can specify a name.
 	 * 
 	 */
 	public void setActionListener() {
@@ -864,10 +879,11 @@ public class EditFileCards {
 						dataNew = (ArrayList<FileCardsDB>) ois.readObject();
 						ois.close();
 
-						if (filterCategory.getValue().equals(dataNew.get(0).getCat())
-								&& filterSubCategoryA.getValue().equals(dataNew.get(0).getSubCatA())
-								&& filterSubCategoryB.getValue().equals(dataNew.get(0).getSubCatB())) {
+						
 							for (int i = 0; i < dataNew.size(); i++) {
+								if (filterCategory.getValue().equals(dataNew.get(i).getCat())
+										&& filterSubCategoryA.getValue().equals(dataNew.get(i).getSubCatA())
+										&& filterSubCategoryB.getValue().equals(dataNew.get(i).getSubCatB())) {
 								insertEntry(dataNew.get(i).sideA, dataNew.get(i).sideB, filterSubCategoryA.getValue(),
 										filterSubCategoryB.getValue(), Login.userID);
 							}
