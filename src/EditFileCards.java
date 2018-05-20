@@ -2,7 +2,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -31,8 +30,8 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 /**
- * This class is used to represent data in a tableiew and give the user the
- * ability to filter for specific categories and to manipulate(adding, deleting)
+ * This class is used to represent data in a tableview and give the user the
+ * ability to filter for specific categories and to manipulate(adding, deleting, importing, exporting)
  * data
  * 
  * 
