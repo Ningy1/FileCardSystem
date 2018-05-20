@@ -1,19 +1,28 @@
+import java.io.Serializable;
+
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 
-public class FileCardsDB {
+public class FileCardsDB implements Serializable{
 	Integer idSideA;
 	Integer idSideB;
 	String sideA;
 	String sideB;
+	String cat;
+	String subCatA;
+	String subCatB;
 	
 	
-	public FileCardsDB(Integer idSideA, Integer idSideB, String sideA, String sideB)
+	public FileCardsDB(Integer idSideA, Integer idSideB, String sideA, String sideB, 
+			String cat, String subCatA, String subCatB)
 	{
 		this.idSideA = idSideA;
 		this.idSideB = idSideB;
 		this.sideA = sideA;
 		this.sideB = sideB;
+		this.cat = cat;
+		this.subCatA = subCatA;
+		this.subCatB = subCatB;
 	}
 	public Integer getIdSideA()
     {
@@ -47,5 +56,29 @@ public class FileCardsDB {
     public void setSideB(String sideB)
     {
     	this.sideB = sideB;
+    }
+    public String getCat()
+    {
+    	return cat;
+    }
+    public void setCat(String cat)
+    {
+    	this.cat = cat;
+    }
+    public String getSubCatA()
+    {
+    	return subCatA;
+    }
+    public void setSubCatA(String subCatA)
+    {
+    	this.subCatA = subCatA;
+    }
+    public String getSubCatB()
+    {
+    	return subCatB;
+    }
+    public void setSubCatB(String subCatB)
+    {
+    	this.subCatB = subCatB;
     }
 }

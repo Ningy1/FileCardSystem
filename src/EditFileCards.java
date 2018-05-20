@@ -1,4 +1,14 @@
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.sql.ResultSet;
+import java.util.ArrayList;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -17,6 +27,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 /**
@@ -42,6 +53,7 @@ public class EditFileCards {
 	private HBox hboxButtons = new HBox();
 	private HBox hboxTitle = new HBox();
 	private HBox hboxSubcategory = new HBox();
+	private HBox hboxImportExportButtons = new HBox();
 	// Result of a sql query
 	private ResultSet rs = null;
 	// Layout
@@ -52,10 +64,16 @@ public class EditFileCards {
 	private ComboBox<String> filterCategory; // Filter Category tableview
 	private ComboBox<String> filterSubCategoryA; // Filter SubCategory tableview
 	private ComboBox<String> filterSubCategoryB; // Filter SubCategory tableview
-
+	private Button exportButton = new Button("Export");
+	private Button importButton = new Button("Import");
 	// Set up the column sideA of the tableView
 	TableColumn<FileCardsDB, String> sideA = new TableColumn<FileCardsDB, String>("SideA");
 	TableColumn<FileCardsDB, String> sideB = new TableColumn<FileCardsDB, String>("SideB");
+
+	// ArrayList for importing new data
+	ArrayList<FileCardsDB> dataNew = new ArrayList<>();
+	// FileChooser
+	FileChooser filechooser = new FileChooser();
 
 	// Lists for combobox to filter for Category
 	ObservableList<String> optionsCategory = FXCollections.observableArrayList("Translation", "Definition");
@@ -162,8 +180,8 @@ public class EditFileCards {
 	}
 
 	/**
-	 * This method inserts a new DB Translate or Definition Table entry if it does not already
-	 * exists and returns the ResultSet of the new entry or null.
+	 * This method inserts a new DB Translate or Definition Table entry if it does
+	 * not already exists and returns the ResultSet of the new entry or null.
 	 * 
 	 * @param word1,
 	 *            the word of the first column to be insert
@@ -200,14 +218,14 @@ public class EditFileCards {
 					System.out.println("InsertTranslate");
 					HSQLDB.getInstance().update(
 							"INSERT INTO Translate (wordid1, wordid2)" + "values(" + wordID1 + "," + wordID2 + ")");
-					data.add(new FileCardsDB(wordID1, wordID2, word1, word2));
+					data.add(new FileCardsDB(wordID1, wordID2, word1, word2, filterCategory.getValue(), language1,
+							language2));
 				} else {
 					System.out.println("Already existing translate");
 				}
 				rs = HSQLDB.getInstance()
 						.query("SELECT * " + "FROM Translate " + "WHERE (WordID1 =" + wordID1 + " " + "AND WordID2 ="
-								+ wordID2 + ") " + "OR (WordID1 =" + wordID2 + " " + "AND WordID2 =" + wordID1
-								+ ")");
+								+ wordID2 + ") " + "OR (WordID1 =" + wordID2 + " " + "AND WordID2 =" + wordID1 + ")");
 			} else if (filterCategory.getValue().equals("Definition")) {
 				rs = isDuplicateWord(word1, language1, userID);
 				if (!rs.next()) {
@@ -224,13 +242,13 @@ public class EditFileCards {
 							+ " AND definition ='" + word2 + "'");
 					rs.next();
 					wordID2 = rs.getInt(1);
-					data.add(new FileCardsDB(wordID1, wordID2, word1, word2));
+					data.add(new FileCardsDB(wordID1, wordID2, word1, word2, filterCategory.getValue(), language1,
+							language2));
 				} else {
 					System.out.println("Already existing definition");
 				}
-				rs = HSQLDB.getInstance()
-						.query("SELECT * " + "FROM Definition " + "WHERE WordID ='" + wordID1 + "' " + "AND definition ='"
-								+ word2 + "')");
+				rs = HSQLDB.getInstance().query("SELECT * " + "FROM Definition " + "WHERE WordID =" + wordID1 + " "
+						+ "AND definition ='" + word2 + "'");
 			}
 
 		} catch (Exception e) {
@@ -456,7 +474,19 @@ public class EditFileCards {
 			e.printStackTrace();
 		}
 	}
-
+	
+	public void disableButtons(){
+		addButton.setDisable(true);
+		deleteButton.setDisable(true);
+		importButton.setDisable(true);
+		exportButton.setDisable(true);
+	}
+	public void enableButtons(){
+		addButton.setDisable(false);
+		deleteButton.setDisable(false);
+		importButton.setDisable(false);
+		exportButton.setDisable(false);
+	}
 	/**
 	 * This method specifies which data should be loaded from the database. It does
 	 * it by listening to 3 comboboxes and the chosen categories.
@@ -480,15 +510,14 @@ public class EditFileCards {
 				sideB.setText(filterSubCategoryB.getValue().toString());
 				filterSubCategoryA.setItems(optionsSubCategoryLanguage);
 				filterSubCategoryA.setDisable(false);
-				addButton.setDisable(true);
-				deleteButton.setDisable(true);
+				disableButtons();
+				
 			} else if (filterCategory.getValue().equals("Translation")) {
 				filterSubCategoryA.setItems(optionsSubCategoryLanguage);
 				filterSubCategoryA.setDisable(false);
 				filterSubCategoryB.setItems(optionsSubCategoryLanguage);
 				filterSubCategoryB.setDisable(false);
-				addButton.setDisable(true);
-				deleteButton.setDisable(true);
+				disableButtons();
 			}
 
 			data.clear();
@@ -508,20 +537,19 @@ public class EditFileCards {
 									+ "and (w1.language = '" + filterSubCategoryA.getValue() + "'  and w2.language='"
 									+ filterSubCategoryB.getValue() + "') " + "and w1.userid = " + Login.userID + " ");
 
-					addButton.setDisable(false);
-					deleteButton.setDisable(false);
+					enableButtons();
 				} else if (filterCategory.getValue().equals("Definition") && (filterSubCategoryA.getValue() != null)) {
 					rs = HSQLDB.getInstance()
 							.query("SELECT w.wordID, d.definitionID, w.word, d.Definition  "
 									+ "FROM Words w NATURAL JOIN Definition d " + "WHERE w.UserID = " + Login.userID
 									+ "AND w.Language = '" + filterSubCategoryA.getValue() + "' ");
 					sideB.setText(filterSubCategoryB.getValue());
-					addButton.setDisable(false);
-					deleteButton.setDisable(false);
+					enableButtons();
 				}
 				data.clear();
 				while (rs.next()) {
-					data.add(new FileCardsDB(rs.getInt(1), rs.getInt(2), rs.getString(3), rs.getString(4)));
+					data.add(new FileCardsDB(rs.getInt(1), rs.getInt(2), rs.getString(3), rs.getString(4),
+							filterCategory.getValue(), filterSubCategoryA.getValue(), filterSubCategoryB.getValue()));
 				}
 
 			} catch (Exception e1) {
@@ -545,13 +573,13 @@ public class EditFileCards {
 									+ "and (w1.language = '" + filterSubCategoryA.getValue() + "'  and w2.language='"
 									+ filterSubCategoryB.getValue() + "') " + "and w1.userid = " + Login.userID + " ");
 
-					addButton.setDisable(false);
-					deleteButton.setDisable(false);
+					enableButtons();
 
 				}
 				data.clear();
 				while (rs.next()) {
-					data.add(new FileCardsDB(rs.getInt(1), rs.getInt(2), rs.getString(3), rs.getString(4)));
+					data.add(new FileCardsDB(rs.getInt(1), rs.getInt(2), rs.getString(3), rs.getString(4),
+							filterCategory.getValue(), filterSubCategoryA.getValue(), filterSubCategoryB.getValue()));
 				}
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
@@ -604,13 +632,18 @@ public class EditFileCards {
 		HBox.setHgrow(filterSubCategoryA, Priority.ALWAYS);
 		HBox.setHgrow(filterSubCategoryB, Priority.ALWAYS);
 		HBox.setHgrow(filterCategory, Priority.ALWAYS);
+		HBox.setHgrow(importButton, Priority.ALWAYS);
+		HBox.setHgrow(exportButton, Priority.ALWAYS);
+
 		// Arrange different elements in boxes and bind them together in grid
 		hboxTextFields.getChildren().addAll(addSideA, addSideB);
 		hboxButtons.getChildren().addAll(addButton, deleteButton);
 		hboxSubcategory.getChildren().addAll(filterSubCategoryA, filterSubCategoryB);
 		hboxTitle.getChildren().addAll(filterCategory);
+		hboxImportExportButtons.getChildren().addAll(importButton, exportButton);
 
-		root.getChildren().addAll(hboxTitle, hboxSubcategory, table, hboxTextFields, hboxButtons);
+		root.getChildren().addAll(hboxTitle, hboxSubcategory, table, hboxTextFields, hboxButtons,
+				hboxImportExportButtons);
 
 		// Set location of different boxes
 		GridPane.setConstraints(hboxTitle, 0, 0);
@@ -618,6 +651,7 @@ public class EditFileCards {
 		GridPane.setConstraints(table, 0, 2);
 		GridPane.setConstraints(hboxTextFields, 0, 3);
 		GridPane.setConstraints(hboxButtons, 0, 4);
+		GridPane.setConstraints(hboxImportExportButtons, 0, 5);
 
 		// Set size properties of the stage
 		editStage.setWidth(400);
@@ -688,7 +722,14 @@ public class EditFileCards {
 		filterCategory.setMaxWidth(sideA.getMaxWidth());
 		filterCategory.setMinWidth(sideA.getMinWidth());
 		filterCategory.setPrefWidth(sideA.getPrefWidth());
-
+		importButton.setMaxWidth(sideA.getMaxWidth());
+		importButton.setMinWidth(sideA.getMinWidth());
+		importButton.setPrefWidth(sideA.getPrefWidth());
+		importButton.setDisable(true);
+		exportButton.setMaxWidth(sideB.getMaxWidth());
+		exportButton.setMinWidth(sideB.getMinWidth());
+		exportButton.setPrefWidth(sideB.getPrefWidth());
+		exportButton.setDisable(true);
 	}
 
 	/**
@@ -759,6 +800,8 @@ public class EditFileCards {
 	 * testfields will be deleted. If the addButton is clicked, the he corresponding
 	 * entry the the text in the two testfields will be added.
 	 * 
+	 * 
+	 * 
 	 */
 	public void setActionListener() {
 		// Actionlistener for removing an entry
@@ -778,21 +821,69 @@ public class EditFileCards {
 
 			if ((filterCategory.getValue() != null) && (filterSubCategoryA.getValue() != null)
 					&& (filterSubCategoryB.getValue() != null)) {
-
-				if (filterCategory.getValue().equals("Translation")) {
-					rs = insertEntry(addSideA.getText(), addSideB.getText(), filterSubCategoryA.getValue(),
-							filterSubCategoryB.getValue(), Login.userID);
-
-				} else if (filterCategory.getValue().equals("Definition")) {
-					rs = insertEntry(addSideA.getText(), addSideB.getText(), filterSubCategoryA.getValue(),
-							filterSubCategoryB.getValue(), Login.userID);
-				}
+				rs = insertEntry(addSideA.getText(), addSideB.getText(), filterSubCategoryA.getValue(),
+						filterSubCategoryB.getValue(), Login.userID);
 			}
 
 			// Set textfields to placeholder
 			addSideA.clear();
 			addSideB.clear();
 		});
+		// Export data
+		exportButton.setOnAction(edit -> {
+			if ((filterCategory.getValue() != null) && (filterSubCategoryA.getValue() != null)
+					&& (filterSubCategoryB.getValue() != null)) {
+				try {
+					ArrayList<FileCardsDB> dataWrite = new ArrayList<>();
+
+					for (int i = 0; i < data.size(); i++) {
+						dataWrite.add(data.get(i));
+					}
+					File f = filechooser.showSaveDialog(editStage);
+					if (f != null) {
+						ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(f));
+						oos.writeObject(dataWrite);
+						oos.close();
+					}
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		// Import data
+		importButton.setOnAction(edit -> {
+			if ((filterCategory.getValue() != null) && (filterSubCategoryA.getValue() != null)
+					&& (filterSubCategoryB.getValue() != null)) {
+				try {
+
+					File f = filechooser.showOpenDialog(editStage);
+					if (f != null) {
+						ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
+						dataNew = (ArrayList<FileCardsDB>) ois.readObject();
+						ois.close();
+
+						if (filterCategory.getValue().equals(dataNew.get(0).getCat())
+								&& filterSubCategoryA.getValue().equals(dataNew.get(0).getSubCatA())
+								&& filterSubCategoryB.getValue().equals(dataNew.get(0).getSubCatB())) {
+							for (int i = 0; i < dataNew.size(); i++) {
+								insertEntry(dataNew.get(i).sideA, dataNew.get(i).sideB, filterSubCategoryA.getValue(),
+										filterSubCategoryB.getValue(), Login.userID);
+							}
+						}
+					}
+				} catch (FileNotFoundException e) {
+					System.out.println("File not found");
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (ClassNotFoundException e) {
+					e.printStackTrace();
+				}
+
+			}
+		});
+
 	}
 
 	/**
@@ -808,7 +899,8 @@ public class EditFileCards {
 					+ "join Translate t on t.wordID1=w1.wordID and t.wordID2=w2.wordID " + "where w1.userid = -1");
 			// Iterate through the ResultSet and add each row to the Observable List
 			while (rs.next()) {
-				data.add(new FileCardsDB(rs.getInt(1), rs.getInt(2), rs.getString(3), rs.getString(4)));
+				data.add(new FileCardsDB(rs.getInt(1), rs.getInt(2), rs.getString(3), rs.getString(4),
+						filterCategory.getValue(), filterSubCategoryA.getValue(), filterSubCategoryB.getValue()));
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
