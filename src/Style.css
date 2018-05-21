@@ -1,5 +1,5 @@
 #header{
-	-fx-font-size: 18pt;
+	-fx-font-size: 20pt;
 }
 
 #pane{
@@ -8,7 +8,12 @@
     -fx-background-repeat: no-repeat;   
     -fx-background-size: 400 400;
     -fx-background-position: 12.5% 50%;
-    -fx-alignment: center center;
+    -fx-alignment: center;
+}
+
+#pane2{
+    -fx-background-color: derive(#FFA70D,0%);
+    -fx-alignment: center;
 }
 
 #button{

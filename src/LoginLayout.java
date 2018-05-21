@@ -33,6 +33,7 @@ public class LoginLayout extends GridPane{
 		Button loginButton = new Button("Log in");
 		Button registerButton = new Button("Register");
 		TextField usernameField = new TextField();											// here we could implement that the last used username will be shown by passing it into the constructor
+		usernameField.setPromptText("Enter a username");
 		PasswordField passwordField = new PasswordField();
 		passwordField.setPromptText("Enter a password");
 		loginButton.setId("button");

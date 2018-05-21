@@ -7,6 +7,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -20,6 +21,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 public class Login extends Application  {
@@ -78,6 +80,10 @@ public class Login extends Application  {
 		cssStyle.getStylesheets().addAll(this.getClass().getResource("Style.css").toExternalForm());
 		loginWindow.setScene(cssStyle);
 		loginWindow.show();
+		
+		Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();
+		loginWindow.setX((primScreenBounds.getWidth() - loginWindow.getWidth()) / 2);
+		loginWindow.setY((primScreenBounds.getHeight() - loginWindow.getHeight()) / 2);
 	}
 	
 

@@ -47,7 +47,12 @@ public class Register extends GridPane {
 	registerButton.setId("button");
 	cancelButton.setId("button");
 	
-	registerButton.setOnAction(e-> this.LoginViewControl.dbRegisterQuery(firstNameField, lastNameField, passwordField1, passwordField2));
+	registerButton.setOnAction(e-> {
+		this.LoginViewControl.dbRegisterQuery(firstNameField, lastNameField, passwordField1, passwordField2);
+		Scene cssStyle = new Scene(new LoginLayout(create,this.LoginViewControl),1000,600);
+		cssStyle.getStylesheets().addAll(this.getClass().getResource("Style.css").toExternalForm());
+		create.setScene(cssStyle);
+	});
 	cancelButton.setOnAction(e -> {
 		Scene cssStyle = new Scene(new LoginLayout(create,this.LoginViewControl),1000,600);
 		cssStyle.getStylesheets().addAll(this.getClass().getResource("Style.css").toExternalForm());

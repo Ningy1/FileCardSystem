@@ -6,6 +6,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.geometry.VPos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -15,6 +16,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.scene.layout.*;
 
@@ -133,6 +135,10 @@ public class UserInterface {
 		uiStage.setScene(cssStyle);
 		uiStage.show();
 		
+		Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();
+		uiStage.setX((primScreenBounds.getWidth() - uiStage.getWidth()) / 2);
+		uiStage.setY((primScreenBounds.getHeight() - uiStage.getHeight()) / 2);	
+		
 		
 		//gridPane.setGridLinesVisible(true); //Debugging
 		
@@ -144,7 +150,7 @@ public class UserInterface {
 		});
 		
 		btnTest.setOnAction(e -> {
-			//Some Code
+			new TestFileCards(uiStage);
 		});
 		
 		btnResults.setOnAction(e -> {
