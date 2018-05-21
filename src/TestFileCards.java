@@ -64,6 +64,12 @@ public class TestFileCards {
 		levelBox.setItems(optionsLevel);
 		levelBox.setValue("1");
 		
+		startButton.disableProperty().bind(
+				categoryBox.valueProperty().isNull()
+				.or(sideABox.valueProperty().isNull() )
+				.or(sideBBox.valueProperty().isNull() ) );
+		
+		
 		GridPane.setHalignment(filecardLabel, HPos.CENTER);
 		GridPane.setHalignment(categoryLabel, HPos.RIGHT);
 		GridPane.setHalignment(sideLabel, HPos.RIGHT);
@@ -106,6 +112,7 @@ public class TestFileCards {
 			testStage.close();
 			new UserInterface(ui.getLoginStage(), ui.getName(), ui.getLoginScene());
 		});
+		
 		
 		
 		//grid.setGridLinesVisible(true);
