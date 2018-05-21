@@ -1,5 +1,7 @@
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -58,6 +60,9 @@ public class EditFileCardsLayout {
 			"French", "Spanish");
 	private ObservableList<String> optionsSubCategoryDefintion = FXCollections.observableArrayList("Defintion");
 
+	
+	
+	
 	public EditFileCardsLayout(EditFileCards control) {
 		this.control = control;
 		// Name the new stage (window)
@@ -66,7 +71,6 @@ public class EditFileCardsLayout {
 		setElements();
 		// Arrange Elements in the window
 		arrangeElements();
-
 	}
 
 	/**
@@ -126,11 +130,11 @@ public class EditFileCardsLayout {
 		setFilterSubCategoryB(new ComboBox<String>());
 
 		// Set default text of Comboboxes
-		getFilterCategory().setPromptText("Please Choose");
-		getFilterSubCategoryA().setPromptText("Please Choose");
-		getFilterSubCategoryA().setDisable(true);
-		getFilterSubCategoryB().setPromptText("Please Choose");
-		getFilterSubCategoryB().setDisable(true);
+		filterCategory.setPromptText("Please Choose");
+		filterSubCategoryA.setPromptText("Please Choose");
+		filterSubCategoryA.setDisable(true);
+		filterSubCategoryB.setPromptText("Please Choose");
+		filterSubCategoryB.setDisable(true);
 		// Set size of the columns
 		sideA.setPrefWidth(150);
 		sideA.setMaxWidth(700);
@@ -139,7 +143,7 @@ public class EditFileCardsLayout {
 		sideB.setMaxWidth(700);
 		sideB.setMinWidth(50);
 		// Set columns to grow equally in width
-		getTable().setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+		table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
 		// Set size constraints of the textfields, buttons and label
 		addSideA.setMaxWidth(sideA.getMaxWidth());
@@ -157,15 +161,15 @@ public class EditFileCardsLayout {
 		deleteButton.setMinWidth(sideB.getMinWidth());
 		deleteButton.setPrefWidth(sideB.getPrefWidth());
 		deleteButton.setDisable(true);
-		getFilterSubCategoryA().setMaxWidth(sideA.getMaxWidth());
-		getFilterSubCategoryA().setMinWidth(sideA.getMinWidth());
-		getFilterSubCategoryA().setPrefWidth(sideA.getPrefWidth());
-		getFilterSubCategoryB().setMaxWidth(sideB.getMaxWidth());
-		getFilterSubCategoryB().setMinWidth(sideB.getMinWidth());
-		getFilterSubCategoryB().setPrefWidth(sideB.getPrefWidth());
-		getFilterCategory().setMaxWidth(sideA.getMaxWidth());
-		getFilterCategory().setMinWidth(sideA.getMinWidth());
-		getFilterCategory().setPrefWidth(sideA.getPrefWidth());
+		filterSubCategoryA.setMaxWidth(sideA.getMaxWidth());
+		filterSubCategoryA.setMinWidth(sideA.getMinWidth());
+		filterSubCategoryA.setPrefWidth(sideA.getPrefWidth());
+		filterSubCategoryB.setMaxWidth(sideB.getMaxWidth());
+		filterSubCategoryB.setMinWidth(sideB.getMinWidth());
+		filterSubCategoryB.setPrefWidth(sideB.getPrefWidth());
+		filterCategory.setMaxWidth(sideA.getMaxWidth());
+		filterCategory.setMinWidth(sideA.getMinWidth());
+		filterCategory.setPrefWidth(sideA.getPrefWidth());
 		importButton.setMaxWidth(sideA.getMaxWidth());
 		importButton.setMinWidth(sideA.getMinWidth());
 		importButton.setPrefWidth(sideA.getPrefWidth());
@@ -189,9 +193,9 @@ public class EditFileCardsLayout {
 		HBox.setHgrow(deleteButton, Priority.ALWAYS);
 		HBox.setHgrow(addSideA, Priority.ALWAYS);
 		HBox.setHgrow(addSideB, Priority.ALWAYS);
-		HBox.setHgrow(getFilterSubCategoryA(), Priority.ALWAYS);
-		HBox.setHgrow(getFilterSubCategoryB(), Priority.ALWAYS);
-		HBox.setHgrow(getFilterCategory(), Priority.ALWAYS);
+		HBox.setHgrow(filterSubCategoryA, Priority.ALWAYS);
+		HBox.setHgrow(filterSubCategoryB, Priority.ALWAYS);
+		HBox.setHgrow(filterCategory, Priority.ALWAYS);
 		HBox.setHgrow(importButton, Priority.ALWAYS);
 		HBox.setHgrow(exportButton, Priority.ALWAYS);
 
@@ -291,6 +295,10 @@ public class EditFileCardsLayout {
 		// Add columns to the tableView
 		table.getColumns().addAll(sideA, sideB);
 	}
+	
+	
+	
+	
 
 	/**
 	 * This method specifies the different ActionListener on the Buttons.
