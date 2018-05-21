@@ -7,32 +7,22 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.sql.ResultSet;
 import java.util.ArrayList;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
-import javafx.geometry.Insets;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 /**
- * This class is used to represent data in a tableview and give the user the
- * ability to filter for specific categories and to manipulate(adding, deleting, importing, exporting)
- * data
+ * This class is used to control and process data in a tableview and give the
+ * user the ability to filter for specific categories and to manipulate(adding,
+ * deleting, importing, exporting) data
  * 
  * 
  * @author Erik
@@ -40,64 +30,32 @@ import javafx.stage.Stage;
  */
 public class EditFileCards {
 
-	// Tableview - visualizes the data
-	private TableView<FileCardsDB> table = new TableView<FileCardsDB>();
 	// Observable List to feed tableview with data with the object type FileCardsDB
 	private final ObservableList<FileCardsDB> data = FXCollections.observableArrayList();
-	// Layout stage
-	private Stage editStage = new Stage();
-	// Arangement of Objects in the stage
-	private GridPane root = new GridPane();
-	private HBox hboxTextFields = new HBox();
-	private HBox hboxButtons = new HBox();
-	private HBox hboxTitle = new HBox();
-	private HBox hboxSubcategory = new HBox();
-	private HBox hboxImportExportButtons = new HBox();
 	// Result of a sql query
 	private ResultSet rs = null;
-	// Layout
-	private TextField addSideA = new TextField(); // col1
-	private TextField addSideB = new TextField(); // col2
-	private Button addButton = new Button("Add"); // addEntry
-	private Button deleteButton = new Button("Delete"); // delete focused entry
-	private ComboBox<String> filterCategory; // Filter Category tableview
-	private ComboBox<String> filterSubCategoryA; // Filter SubCategory tableview
-	private ComboBox<String> filterSubCategoryB; // Filter SubCategory tableview
-	private Button exportButton = new Button("Export");
-	private Button importButton = new Button("Import");
-	// Set up the column sideA of the tableView
-	TableColumn<FileCardsDB, String> sideA = new TableColumn<FileCardsDB, String>("SideA");
-	TableColumn<FileCardsDB, String> sideB = new TableColumn<FileCardsDB, String>("SideB");
-
 	// ArrayList for importing new data
 	ArrayList<FileCardsDB> dataNew = new ArrayList<>();
 	// FileChooser
 	FileChooser filechooser = new FileChooser();
-
-	// Lists for combobox to filter for Category
-	ObservableList<String> optionsCategory = FXCollections.observableArrayList("Translation", "Definition");
-	// Lists for combobox to filter for SubCategory when Category is Definition
-	ObservableList<String> optionsSubCategoryLanguage = FXCollections.observableArrayList("English", "German", "French",
-			"Spanish");
-	ObservableList<String> optionsSubCategoryDefintion = FXCollections.observableArrayList("Defintion");
+	// The instance of the view class
+	EditFileCardsLayout view;
 
 	public EditFileCards() {
-		// Name the new stage (window)
-		editStage.setTitle("MyFileCards");
+
+		// Construct the View
+		view = new EditFileCardsLayout(this);
 		// Prepare the columns of the TableView
-		setColumns();
+		view.setColumns();
 		// Feed the tableview with initial data
-		initialValues();
-		// Set MinMax of the buttons, textfields ect.
-		setElements();
+		initialValues(view.getFilterCategory().getValue(), view.getFilterSubCategoryA().getValue(),
+				view.getFilterSubCategoryB().getValue(), view.getTable());
 		// add ActionListener to buttons ect.
-		setActionListener();
+		view.setActionListener();
 		// add Key Listener to different Elements
-		addKeyListener();
+		view.setKeyListener();
 		// addFilterListener to refresh tableview depending on chosen categories
-		addFilterListener();
-		// Arrange Elements in the window
-		arrangeElements();
+		view.setFilterListener();
 	}
 
 	/**
@@ -187,19 +145,22 @@ public class EditFileCards {
 	 * @param word2,
 	 *            the word of the second column to be insert
 	 * @param language1,
-	 *            the language of the first word to be insert
+	 *            the language(SubCategory) of the first word to be insert
 	 * @param language2,
-	 *            the language of the second word to be insert
+	 *            the language(SubCategory) of the second word to be insert
 	 * @param userID,
 	 *            the userID of the User
+	 * @param category,
+	 *            the category of the Entry
 	 * @return the ResultSet of the new inserted Translate entry
 	 */
-	public ResultSet insertEntry(String word1, String word2, String language1, String language2, int userID) {
+	public ResultSet insertEntry(String word1, String word2, String language1, String language2, String category,
+			int userID) {
 		ResultSet rs = null;
 		int wordID1;
 		int wordID2;
 		try {
-			if (filterCategory.getValue().equals("Translation")) {
+			if (category.equals("Translation")) {
 				rs = isDuplicateWord(word1, language1, userID);
 				if (!rs.next()) {
 					rs = insertWord(word1, language1, userID);
@@ -217,15 +178,14 @@ public class EditFileCards {
 					System.out.println("InsertTranslate");
 					HSQLDB.getInstance().update(
 							"INSERT INTO Translate (wordid1, wordid2)" + "values(" + wordID1 + "," + wordID2 + ")");
-					data.add(new FileCardsDB(wordID1, wordID2, word1, word2, filterCategory.getValue(), language1,
-							language2));
+					data.add(new FileCardsDB(wordID1, wordID2, word1, word2, category, language1, language2));
 				} else {
 					System.out.println("Already existing translate");
 				}
 				rs = HSQLDB.getInstance()
 						.query("SELECT * " + "FROM Translate " + "WHERE (WordID1 =" + wordID1 + " " + "AND WordID2 ="
 								+ wordID2 + ") " + "OR (WordID1 =" + wordID2 + " " + "AND WordID2 =" + wordID1 + ")");
-			} else if (filterCategory.getValue().equals("Definition")) {
+			} else if (category.equals("Definition")) {
 				rs = isDuplicateWord(word1, language1, userID);
 				if (!rs.next()) {
 					rs = insertWord(word1, language1, userID);
@@ -241,8 +201,7 @@ public class EditFileCards {
 							+ " AND definition ='" + word2 + "'");
 					rs.next();
 					wordID2 = rs.getInt(1);
-					data.add(new FileCardsDB(wordID1, wordID2, word1, word2, filterCategory.getValue(), language1,
-							language2));
+					data.add(new FileCardsDB(wordID1, wordID2, word1, word2, category, language1, language2));
 				} else {
 					System.out.println("Already existing definition");
 				}
@@ -294,20 +253,24 @@ public class EditFileCards {
 	 * @param wordID2old,
 	 *            the wordID of the second old entry
 	 * @param language1,
-	 *            the language of the first entry
+	 *            the language(SubCategory) of the first entry
 	 * @param language2,
-	 *            the language of the second entry
+	 *            the language(SubCategory) of the second entry
+	 * @param category,
+	 *            the category of the entry
+	 * @param table,
+	 *            the instance of the table representing the data
 	 * @param userID,
 	 *            the UserID of the User
 	 * @return the ResultSet of the new entry
 	 */
 	public ResultSet updateEntry(String word1New, String word2New, int wordID1old, int wordID2old, String language1,
-			String language2, int userID) {
+			String language2, String category, TableView<FileCardsDB> table, int userID) {
 		ResultSet rs = null;
 		int wordID1;
 		int wordID2;
 		try {
-			if (filterCategory.getValue().equals("Translation")) {
+			if (category.equals("Translation")) {
 				rs = isDuplicateWord(word1New, language1, userID);
 				if (!rs.next()) {
 					System.out.println("WordDup1");
@@ -335,13 +298,14 @@ public class EditFileCards {
 					table.getSelectionModel().getSelectedItem().setIdSideA(wordID1);
 					table.getSelectionModel().getSelectedItem().setSideB(word2New);
 					table.getSelectionModel().getSelectedItem().setIdSideB(wordID2);
+
 					deleteWords(wordID1old);
 					deleteWords(wordID2old);
 				} else {
 					System.out.println("DeleteRow");
-					deleteCurrentEntry();
+					deleteCurrentEntry(view.getFilterCategory().getValue(), view.getTable());
 				}
-			} else if (filterCategory.getValue().equals("Definition")) {
+			} else if (category.equals("Definition")) {
 				rs = isDuplicateWord(word1New, language1, userID);
 				if (!rs.next()) {
 					System.out.println("WordDup1");
@@ -363,7 +327,7 @@ public class EditFileCards {
 					deleteWords(wordID1old);
 				} else {
 					System.out.println("DeleteRow");
-					deleteCurrentEntry();
+					deleteCurrentEntry(view.getFilterCategory().getValue(), view.getTable());
 				}
 			}
 		} catch (Exception e) {
@@ -379,8 +343,12 @@ public class EditFileCards {
 	 * from the DB words table if the words don`t point on ther entries to keep
 	 * entries clean.
 	 * 
+	 * @param category,
+	 *            the category of the entry to be deleted
+	 * @param table,
+	 *            the instance of the table representing the data
 	 */
-	public void deleteCurrentEntry() {
+	public void deleteCurrentEntry(String category, TableView<FileCardsDB> table) {
 
 		if (table.getSelectionModel().getSelectedItem() != null
 				&& table.getSelectionModel().getSelectedItem() != null) {
@@ -390,7 +358,7 @@ public class EditFileCards {
 			data.remove(table.getSelectionModel().getSelectedItem());
 			// Remove the current entry (with the old values) from the database
 			try {
-				if (filterCategory.getValue().equals("Translation")) {
+				if (category.equals("Translation")) {
 					HSQLDB.getInstance()
 							.update("DELETE FROM Translate " + "where (WordID1 = " + wordID1 + " " + " AND WordID2 = "
 									+ wordID2 + ") " + " OR (WordID1 = " + wordID2 + " " + " AND WordID2 = " + wordID1
@@ -398,7 +366,7 @@ public class EditFileCards {
 					deleteWords(wordID1);
 					deleteWords(wordID2);
 
-				} else if (filterCategory.getValue().equals("Definition")) {
+				} else if (category.equals("Definition")) {
 					System.out.println("WordID2: " + wordID2);
 					HSQLDB.getInstance().update("DELETE FROM Definition where DefinitionID = " + wordID2 + "");
 					deleteWords(wordID1);
@@ -420,8 +388,10 @@ public class EditFileCards {
 	 *            the word of the first column
 	 * @param word2,
 	 *            the word of the secon column
+	 * @param category,
+	 *            the category of the entry to be deleted
 	 */
-	public void deleteCurrentEntry(String word1, String word2) {
+	public void deleteCurrentEntry(String word1, String word2, String category) {
 
 		int wordID1 = -1;
 		int wordID2 = -1;
@@ -435,7 +405,7 @@ public class EditFileCards {
 
 			// Remove the current entry (with the old values) from the database
 			try {
-				if (filterCategory.getValue().equals("Translation")) {
+				if (category.equals("Translation")) {
 					HSQLDB.getInstance()
 							.update("DELETE FROM Translate " + "where (WordID1 = " + wordID1 + " " + " AND WordID2 = "
 									+ wordID2 + ") " + " OR (WordID1 = " + wordID2 + " " + " AND WordID2 = " + wordID1
@@ -443,7 +413,7 @@ public class EditFileCards {
 					deleteWords(wordID1);
 					deleteWords(wordID2);
 
-				} else if (filterCategory.getValue().equals("Definition")) {
+				} else if (category.equals("Definition")) {
 					System.out.println("WordID2: " + wordID2);
 					HSQLDB.getInstance().update("DELETE FROM Definition where DefinitionID = " + wordID2 + "");
 					deleteWords(wordID1);
@@ -473,440 +443,115 @@ public class EditFileCards {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * This method disables all buttons in the view
 	 */
-	public void disableButtons(){
-		addButton.setDisable(true);
-		deleteButton.setDisable(true);
-		importButton.setDisable(true);
-		exportButton.setDisable(true);
+	public void disableButtons() {
+		view.disableButtons();
 	}
+
 	/**
 	 * This method enables all buttons in the view
 	 */
-	public void enableButtons(){
-		addButton.setDisable(false);
-		deleteButton.setDisable(false);
-		importButton.setDisable(false);
-		exportButton.setDisable(false);
+	public void enableButtons() {
+		view.enableButtons();
 	}
+
 	/**
-	 * This method specifies which data should be loaded from the database. It does
-	 * it by listening to 3 comboboxes and the chosen categories.
+	 * This method writes all entries of the current view to an object file which
+	 * the user can choose with a filechooser
 	 * 
+	 * @param category
+	 *            is the category of the entries to be written
+	 * @param subCategoryA
+	 *            is the subCategory of the first column
+	 * @param subCategoryB
+	 *            is the subCategory of the second column
+	 * @param editStage
+	 *            is the current Stage
 	 */
-	public void addFilterListener() {
-		// Filter Functionality for database
-
-		// Add ChangeListener to the Combobox Category
-		filterCategory.valueProperty().addListener((obs, oldValue, newValue) -> {
-			filterSubCategoryA.setValue(null);
-			filterSubCategoryB.setValue(null);
-			sideA.setText("SideA");
-			sideB.setText("SideB");
-			filterSubCategoryA.setPromptText("Please Choose");
-			filterSubCategoryB.setPromptText("Please Choose");
-			if (filterCategory.getValue().equals("Definition")) {
-				filterSubCategoryB.setItems(optionsSubCategoryDefintion);
-				filterSubCategoryB.setValue("Definition");
-				filterSubCategoryB.setDisable(true);
-				sideB.setText(filterSubCategoryB.getValue().toString());
-				filterSubCategoryA.setItems(optionsSubCategoryLanguage);
-				filterSubCategoryA.setDisable(false);
-				disableButtons();
-				
-			} else if (filterCategory.getValue().equals("Translation")) {
-				filterSubCategoryA.setItems(optionsSubCategoryLanguage);
-				filterSubCategoryA.setDisable(false);
-				filterSubCategoryB.setItems(optionsSubCategoryLanguage);
-				filterSubCategoryB.setDisable(false);
-				disableButtons();
-			}
-
-			data.clear();
-		});
-		// Add ChangeListener to the Combobox SubCategoryA
-		filterSubCategoryA.valueProperty().addListener((obs, oldValue, newValue) -> {
-			sideA.setText(filterSubCategoryA.getValue());
+	public void exportData(String category, String subCategoryA, String subCategoryB, Stage editStage) {
+		if ((category != null) && (subCategoryA != null) && (subCategoryA != null)) {
 			try {
-				if (filterCategory.getValue().equals("Translation") && (filterSubCategoryA.getValue() != null)
-						&& (filterSubCategoryB.getValue() != null)) {
+				ArrayList<FileCardsDB> dataWrite = new ArrayList<>();
 
-					rs = HSQLDB.getInstance()
-							.query("select w1.wordid, w2.wordid, w1.word, w2.word "
-									+ "from words w1 join words w2 on w1.userid= w1.userid "
-									+ "where  ((w1.wordid, w2.wordid) in (select wordid1, wordid2 from translate) "
-									+ "or (w1.wordid, w2.wordid) in (select wordid2, wordid1 from translate)) "
-									+ "and (w1.language = '" + filterSubCategoryA.getValue() + "'  and w2.language='"
-									+ filterSubCategoryB.getValue() + "') " + "and w1.userid = " + Login.userID + " ");
-
-					enableButtons();
-				} else if (filterCategory.getValue().equals("Definition") && (filterSubCategoryA.getValue() != null)) {
-					rs = HSQLDB.getInstance()
-							.query("SELECT w.wordID, d.definitionID, w.word, d.Definition  "
-									+ "FROM Words w NATURAL JOIN Definition d " + "WHERE w.UserID = " + Login.userID
-									+ "AND w.Language = '" + filterSubCategoryA.getValue() + "' ");
-					sideB.setText(filterSubCategoryB.getValue());
-					enableButtons();
+				for (int i = 0; i < data.size(); i++) {
+					dataWrite.add(data.get(i));
 				}
-				data.clear();
-				while (rs.next()) {
-					data.add(new FileCardsDB(rs.getInt(1), rs.getInt(2), rs.getString(3), rs.getString(4),
-							filterCategory.getValue(), filterSubCategoryA.getValue(), filterSubCategoryB.getValue()));
+				File f = filechooser.showSaveDialog(editStage);
+				if (f != null) {
+					ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(f));
+					oos.writeObject(dataWrite);
+					oos.close();
 				}
-
-			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-		});
+		}
 
-		// Add ChangeListener to the Combobox SubCategoryB
-		filterSubCategoryB.valueProperty().addListener((obs, oldValue, newValue) -> {
-			sideB.setText(filterSubCategoryB.getValue());
+	}
+
+	/**
+	 * This method imports a object file when the arrangement of chosen category,
+	 * subCategoryA and subCategoryB matches. When successfully imported it saves
+	 * the data in the DB.
+	 * 
+	 * @param category
+	 *            is the category of the entries to be read have to have
+	 * @param subCategoryA
+	 *            is the subCategory of the first column to be read has to have
+	 * @param subCategoryB
+	 *            is the subCategory of the second column to be read has to have
+	 * @param editStage
+	 *            is the current Stage
+	 */
+	public void importData(String category, String subCategoryA, String subCategoryB, Stage editStage) {
+		if ((category != null) && (subCategoryA != null) && (subCategoryB != null)) {
 			try {
-				if (filterCategory.getValue().equals("Translation") && (filterSubCategoryA.getValue() != null)
-						&& (filterSubCategoryB.getValue() != null)) {
 
-					rs = HSQLDB.getInstance()
-							.query("select w1.wordid, w2.wordid, w1.word, w2.word "
-									+ "from words w1 join words w2 on w1.userid= w1.userid "
-									+ "where  ((w1.wordid, w2.wordid) in (select wordid1, wordid2 from translate) "
-									+ "or (w1.wordid, w2.wordid) in (select wordid2, wordid1 from translate)) "
-									+ "and (w1.language = '" + filterSubCategoryA.getValue() + "'  and w2.language='"
-									+ filterSubCategoryB.getValue() + "') " + "and w1.userid = " + Login.userID + " ");
+				File f = filechooser.showOpenDialog(editStage);
+				if (f != null) {
+					ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
+					dataNew = (ArrayList<FileCardsDB>) ois.readObject();
+					ois.close();
 
-					enableButtons();
-
-				}
-				data.clear();
-				while (rs.next()) {
-					data.add(new FileCardsDB(rs.getInt(1), rs.getInt(2), rs.getString(3), rs.getString(4),
-							filterCategory.getValue(), filterSubCategoryA.getValue(), filterSubCategoryB.getValue()));
-				}
-			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-		});
-	}
-
-	/**
-	 * This method specifies what should happen when special keys are pressed. The
-	 * ENTER Key in the second textfield makes the addButton to fire action, if the
-	 * textfields are filled. If focused on the tableview the EventHandler to delete
-	 * selected row with delete and Back_Space Key when editing mode of cell is not
-	 * entered (table.editingCellProperty().get() == null)
-	 * 
-	 */
-	public void addKeyListener() {
-
-		// ActionListener for key pressed (Enter) when adding entry and focusing on
-		// textfieldSideA again
-		addSideB.setOnKeyReleased(e -> {
-			if (!(addSideA.getText().isEmpty()) && e.getCode().equals(KeyCode.ENTER)) {
-				addButton.fire();
-				addSideA.requestFocus();
-			}
-		});
-
-		table.addEventHandler(KeyEvent.KEY_RELEASED, new EventHandler<KeyEvent>() {
-			@Override
-			public void handle(KeyEvent e) {
-				if ((table.editingCellProperty().getValue() == null)
-						&& (e.getCode().equals(KeyCode.DELETE) || e.getCode().equals(KeyCode.BACK_SPACE))) {
-					deleteCurrentEntry();
-				}
-			}
-		});
-	}
-
-	/**
-	 * This method arranges the different elements in the Scene, how they should
-	 * grow and the size of the boxes.
-	 * 
-	 */
-	public void arrangeElements() {
-		// Let elements grow equally in horizontal direction
-		HBox.setHgrow(addButton, Priority.ALWAYS);
-		HBox.setHgrow(deleteButton, Priority.ALWAYS);
-		HBox.setHgrow(addSideA, Priority.ALWAYS);
-		HBox.setHgrow(addSideB, Priority.ALWAYS);
-		HBox.setHgrow(filterSubCategoryA, Priority.ALWAYS);
-		HBox.setHgrow(filterSubCategoryB, Priority.ALWAYS);
-		HBox.setHgrow(filterCategory, Priority.ALWAYS);
-		HBox.setHgrow(importButton, Priority.ALWAYS);
-		HBox.setHgrow(exportButton, Priority.ALWAYS);
-
-		// Arrange different elements in boxes and bind them together in grid
-		hboxTextFields.getChildren().addAll(addSideA, addSideB);
-		hboxButtons.getChildren().addAll(addButton, deleteButton);
-		hboxSubcategory.getChildren().addAll(filterSubCategoryA, filterSubCategoryB);
-		hboxTitle.getChildren().addAll(filterCategory);
-		hboxImportExportButtons.getChildren().addAll(importButton, exportButton);
-
-		root.getChildren().addAll(hboxTitle, hboxSubcategory, table, hboxTextFields, hboxButtons,
-				hboxImportExportButtons);
-
-		// Set location of different boxes
-		GridPane.setConstraints(hboxTitle, 0, 0);
-		GridPane.setConstraints(hboxSubcategory, 0, 1);
-		GridPane.setConstraints(table, 0, 2);
-		GridPane.setConstraints(hboxTextFields, 0, 3);
-		GridPane.setConstraints(hboxButtons, 0, 4);
-		GridPane.setConstraints(hboxImportExportButtons, 0, 5);
-
-		// Set size properties of the stage
-		editStage.setWidth(400);
-		editStage.setHeight(450);
-		editStage.setMaxWidth(addSideA.getMaxWidth() + addSideB.getMaxWidth());
-
-		// Bin the width of the table(and following also the other elements) to the
-		// width of the stage
-		table.prefWidthProperty().bind(editStage.widthProperty());
-
-		// The scene is characterized by the gridlayout
-		Scene scene = new Scene(root);
-		root.setPadding(new Insets(10, 10, 10, 10));
-		root.setPrefSize(editStage.getWidth(), editStage.getHeight());
-		root.setMinSize(editStage.getWidth(), editStage.getHeight());
-		editStage.setScene(scene);
-		editStage.show();
-	}
-
-	/**
-	 * This method sets the different (MinMaxPref) sizes of the specific elements
-	 * 
-	 */
-	public void setElements() {
-		// Fill Comboboxes with options
-		filterCategory = new ComboBox<String>(optionsCategory);
-		filterSubCategoryA = new ComboBox<String>();
-		filterSubCategoryB = new ComboBox<String>();
-
-		// Set default text of Comboboxes
-		filterCategory.setPromptText("Please Choose");
-		filterSubCategoryA.setPromptText("Please Choose");
-		filterSubCategoryA.setDisable(true);
-		filterSubCategoryB.setPromptText("Please Choose");
-		filterSubCategoryB.setDisable(true);
-		// Set size of the columns
-		sideA.setPrefWidth(150);
-		sideA.setMaxWidth(700);
-		sideA.setMinWidth(50);
-		sideB.setPrefWidth(150);
-		sideB.setMaxWidth(700);
-		sideB.setMinWidth(50);
-		// Set columns to grow equally in width
-		table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-
-		// Set size constraints of the textfields, buttons and label
-		addSideA.setMaxWidth(sideA.getMaxWidth());
-		addSideA.setPrefWidth(sideA.getPrefWidth());
-		addSideA.setMinWidth(sideA.getMinWidth());
-		addSideA.setPromptText("SideA");
-		addSideB.setMaxWidth(sideB.getMaxWidth());
-		addSideB.setPrefWidth(sideB.getPrefWidth());
-		addSideB.setPromptText("SideB");
-		addButton.setMaxWidth(sideA.getMaxWidth());
-		addButton.setMinWidth(sideA.getMinWidth());
-		addButton.setPrefWidth(sideA.getPrefWidth());
-		addButton.setDisable(true);
-		deleteButton.setMaxWidth(sideB.getMaxWidth());
-		deleteButton.setMinWidth(sideB.getMinWidth());
-		deleteButton.setPrefWidth(sideB.getPrefWidth());
-		deleteButton.setDisable(true);
-		filterSubCategoryA.setMaxWidth(sideA.getMaxWidth());
-		filterSubCategoryA.setMinWidth(sideA.getMinWidth());
-		filterSubCategoryA.setPrefWidth(sideA.getPrefWidth());
-		filterSubCategoryB.setMaxWidth(sideB.getMaxWidth());
-		filterSubCategoryB.setMinWidth(sideB.getMinWidth());
-		filterSubCategoryB.setPrefWidth(sideB.getPrefWidth());
-		filterCategory.setMaxWidth(sideA.getMaxWidth());
-		filterCategory.setMinWidth(sideA.getMinWidth());
-		filterCategory.setPrefWidth(sideA.getPrefWidth());
-		importButton.setMaxWidth(sideA.getMaxWidth());
-		importButton.setMinWidth(sideA.getMinWidth());
-		importButton.setPrefWidth(sideA.getPrefWidth());
-		importButton.setDisable(true);
-		exportButton.setMaxWidth(sideB.getMaxWidth());
-		exportButton.setMinWidth(sideB.getMinWidth());
-		exportButton.setPrefWidth(sideB.getPrefWidth());
-		exportButton.setDisable(true);
-	}
-
-	/**
-	 * This method characterizes the different columns and how they should behave
-	 * while editing
-	 * 
-	 */
-	public void setColumns() {
-		/*
-		 * Set the cells of the column to the propertytype string from the object
-		 * fileCardsDB(attribute sideA) // By being a property, the table gets informed
-		 * if a value changes and updates automatically Defines how to display data on
-		 * the cell
-		 */
-		sideA.setCellValueFactory(new PropertyValueFactory<FileCardsDB, String>("sideA"));
-
-		// Set the cell to a textfield when editing
-		sideA.setCellFactory(TextFieldTableCell.forTableColumn());
-
-		// Tell what should happen when editing
-		// Implement anonymous class (Eventhandler)
-		sideA.setOnEditCommit(new EventHandler<CellEditEvent<FileCardsDB, String>>() {
-			@Override
-			public void handle(CellEditEvent<FileCardsDB, String> edit) {
-				// Get the new value of the cell after editing
-				String wordNew = edit.getNewValue();
-				// Update Translate
-				updateEntry(wordNew, edit.getRowValue().getSideB(), edit.getRowValue().getIdSideA(),
-						edit.getRowValue().getIdSideB(), filterSubCategoryA.getValue(), filterSubCategoryB.getValue(),
-						Login.userID);
-				// Refresh tableview
-				edit.getTableView().getColumns().get(0).setVisible(false);
-				edit.getTableView().getColumns().get(0).setVisible(true);
-			}
-		});
-
-		sideB.setCellValueFactory(new PropertyValueFactory<FileCardsDB, String>("sideB"));
-		// Set the cell to a textfield when editing
-		sideB.setCellFactory(TextFieldTableCell.forTableColumn());
-
-		// Tell what should happen when editing
-		// Implement anonymous class
-		sideB.setOnEditCommit(new EventHandler<CellEditEvent<FileCardsDB, String>>() {
-			// Add necessary mehtod
-			@Override
-			public void handle(CellEditEvent<FileCardsDB, String> edit) {
-				// Get the new value of the cell after editing
-				String wordNew = edit.getNewValue();
-				// Update
-				updateEntry(edit.getRowValue().getSideA(), wordNew, edit.getRowValue().getIdSideA(),
-						edit.getRowValue().getIdSideB(), filterSubCategoryA.getValue(), filterSubCategoryB.getValue(),
-						Login.userID);
-				// Refresh tableview
-				edit.getTableView().getColumns().get(0).setVisible(false);
-				edit.getTableView().getColumns().get(0).setVisible(true);
-			}
-		});
-
-		// Set the tableView editable
-		table.setEditable(true);
-		// Add columns to the tableView
-		table.getColumns().addAll(sideA, sideB);
-	}
-
-	/**
-	 * This method specifies the different ActionListener on the Buttons. 
-	 * 
-	 * If the deleteButton is clicked, the the corresponding entry the the text in the two
-	 * testfields will be deleted. 
-	 * 
-	 * If the addButton is clicked, the he corresponding
-	 * entry the the text in the two testfields will be added.
-	 * 
-	 * If the importButton is clicked, the user can choose with the FileChooser 
-	 * a file to be imported, which has to be an Arraylist of FileCardsDB-Objects. 
-	 * The Category and SubCategories have to match the chosen ones 
-	 * when the importButton is clicked.
-	 * 
-	 * If the exportButton is clicked, the current viewed data can be saved as FileCardsDBObjects.
-	 * Therefore, a filechooser is opened and the user can specify a name.
-	 * 
-	 */
-	public void setActionListener() {
-		// Actionlistener for removing an entry
-		deleteButton.setOnAction(edit -> {
-			if ((filterCategory.getValue() != null) && (filterSubCategoryA.getValue() != null)
-					&& (filterSubCategoryB.getValue() != null)) {
-				deleteCurrentEntry(addSideA.getText(), addSideB.getText());
-			}
-			addSideA.clear();
-			addSideB.clear();
-			addSideA.requestFocus();
-
-		});
-
-		// Actionlistener for Button to add new entries
-		addButton.setOnAction(e -> {
-
-			if ((filterCategory.getValue() != null) && (filterSubCategoryA.getValue() != null)
-					&& (filterSubCategoryB.getValue() != null)) {
-				rs = insertEntry(addSideA.getText(), addSideB.getText(), filterSubCategoryA.getValue(),
-						filterSubCategoryB.getValue(), Login.userID);
-			}
-
-			// Set textfields to placeholder
-			addSideA.clear();
-			addSideB.clear();
-		});
-		// Export data
-		exportButton.setOnAction(edit -> {
-			if ((filterCategory.getValue() != null) && (filterSubCategoryA.getValue() != null)
-					&& (filterSubCategoryB.getValue() != null)) {
-				try {
-					ArrayList<FileCardsDB> dataWrite = new ArrayList<>();
-
-					for (int i = 0; i < data.size(); i++) {
-						dataWrite.add(data.get(i));
-					}
-					File f = filechooser.showSaveDialog(editStage);
-					if (f != null) {
-						ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(f));
-						oos.writeObject(dataWrite);
-						oos.close();
-					}
-				} catch (FileNotFoundException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		});
-		// Import data
-		importButton.setOnAction(edit -> {
-			if ((filterCategory.getValue() != null) && (filterSubCategoryA.getValue() != null)
-					&& (filterSubCategoryB.getValue() != null)) {
-				try {
-
-					File f = filechooser.showOpenDialog(editStage);
-					if (f != null) {
-						ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
-						dataNew = (ArrayList<FileCardsDB>) ois.readObject();
-						ois.close();
-
-						
-							for (int i = 0; i < dataNew.size(); i++) {
-								if (filterCategory.getValue().equals(dataNew.get(i).getCat())
-										&& filterSubCategoryA.getValue().equals(dataNew.get(i).getSubCatA())
-										&& filterSubCategoryB.getValue().equals(dataNew.get(i).getSubCatB())) {
-								insertEntry(dataNew.get(i).sideA, dataNew.get(i).sideB, filterSubCategoryA.getValue(),
-										filterSubCategoryB.getValue(), Login.userID);
-							}
+					for (int i = 0; i < dataNew.size(); i++) {
+						if (category.equals(dataNew.get(i).getCat()) && subCategoryA.equals(dataNew.get(i).getSubCatA())
+								&& subCategoryB.equals(dataNew.get(i).getSubCatB())) {
+							insertEntry(dataNew.get(i).sideA, dataNew.get(i).sideB, subCategoryA, subCategoryB,
+									category, Login.userID);
 						}
 					}
-				} catch (FileNotFoundException e) {
-					System.out.println("File not found");
-				} catch (IOException e) {
-					e.printStackTrace();
-				} catch (ClassNotFoundException e) {
-					e.printStackTrace();
 				}
-
+			} catch (FileNotFoundException e) {
+				System.out.println("File not found");
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
 			}
-		});
 
+		}
 	}
 
 	/**
-	 * This method speciefies the observable List of the Tableview at start of the
-	 * class
+	 * This method speciefies the observable List of the Tableview when the editin
+	 * mode is started.
 	 * 
+	 * 
+	 * @param category
+	 *            is the category of the entries
+	 * @param subCategoryA
+	 *            is the subCategory of the first column
+	 * @param subCategoryB
+	 *            is the subCategory of the second column
+	 * @param table
+	 *            is the instance of the tableView representing the data
 	 */
-	public void initialValues() {
+	public void initialValues(String category, String subCategoryA, String subCategoryB, TableView<FileCardsDB> table) {
 		// Read entries from database for Start
 		try {
 			rs = HSQLDB.getInstance().query("SELECT w1.wordID, w2.wordID, w1.word, w2.word  "
@@ -914,8 +559,8 @@ public class EditFileCards {
 					+ "join Translate t on t.wordID1=w1.wordID and t.wordID2=w2.wordID " + "where w1.userid = -1");
 			// Iterate through the ResultSet and add each row to the Observable List
 			while (rs.next()) {
-				data.add(new FileCardsDB(rs.getInt(1), rs.getInt(2), rs.getString(3), rs.getString(4),
-						filterCategory.getValue(), filterSubCategoryA.getValue(), filterSubCategoryB.getValue()));
+				data.add(new FileCardsDB(rs.getInt(1), rs.getInt(2), rs.getString(3), rs.getString(4), category,
+						subCategoryA, subCategoryB));
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -926,4 +571,218 @@ public class EditFileCards {
 		table.setItems(data);
 	}
 
+	// Filter Functionality for database
+
+	// Add ChangeListener to the Combobox Category
+	/**
+	 * This method listens to the choice of the category of the user. It disables
+	 * the different Buttons in the view and enables the user to choose the possible
+	 * subcategories after the user chose the category.
+	 * 
+	 * @param category
+	 *            is the category of the entries
+	 * @param subCategoryA
+	 *            is the subCategory of the first column
+	 * @param subCategoryB
+	 *            is the subCategory of the second column
+	 * @param sideA
+	 *            is the first column
+	 * @param sideB
+	 *            is the second column
+	 * @param optionsCategory
+	 *            is the ObservableList of possible Categories
+	 * @param optionsSubCategoryDefintion
+	 *            is the ObservableList of possible DefinitionLanguages
+	 * @param optionsSubCategoryLanguage
+	 *            is the ObservableList of possible Languages
+	 */
+	public void addFilterCategoryListener(ComboBox<String> category, ComboBox<String> subCategoryA,
+			ComboBox<String> subCategoryB, TableColumn<FileCardsDB, String> sideA,
+			TableColumn<FileCardsDB, String> sideB, ObservableList<String> optionsCategory,
+			ObservableList<String> optionsSubCategoryDefintion, ObservableList<String> optionsSubCategoryLanguage) {
+		subCategoryA.setValue(null);
+		subCategoryB.setValue(null);
+		sideA.setText("SideA");
+		sideB.setText("SideB");
+		subCategoryA.setPromptText("Please Choose");
+		subCategoryB.setPromptText("Please Choose");
+		if (category.getValue().equals("Definition")) {
+			subCategoryB.setItems(optionsSubCategoryDefintion);
+			subCategoryB.setValue("Definition");
+			subCategoryB.setDisable(true);
+			sideB.setText(subCategoryB.getValue().toString());
+			subCategoryA.setItems(optionsSubCategoryLanguage);
+			subCategoryA.setDisable(false);
+			disableButtons();
+
+		} else if (category.getValue().equals("Translation")) {
+			subCategoryA.setItems(optionsSubCategoryLanguage);
+			subCategoryA.setDisable(false);
+			subCategoryB.setItems(optionsSubCategoryLanguage);
+			subCategoryB.setDisable(false);
+			disableButtons();
+		}
+
+		data.clear();
+	}
+
+	// Add ChangeListener to the Combobox SubCategoryA
+	/**
+	 * This method listens to changes in the choice of the subcategory of the first
+	 * row. It distincts in its behaviour between the categories translate and
+	 * definition. It chechks the values in the category list and subCategory of the
+	 * second row.
+	 * 
+	 * @param category
+	 *            is the category of the entries
+	 * @param subCategoryA
+	 *            is the subCategory of the first column
+	 * @param subCategoryB
+	 *            is the subCategory of the second column
+	 * @param sideA
+	 *            is the first column
+	 * @param sideB
+	 *            is the second column
+	 * @param optionsCategory
+	 *            is the ObservableList of possible Categories
+	 * @param optionsSubCategoryDefintion
+	 *            is the ObservableList of possible DefinitionLanguages
+	 * @param optionsSubCategoryLanguage
+	 *            is the ObservableList of possible Languages
+	 */
+	public void addFilterSubCategoryAListener(ComboBox<String> category, ComboBox<String> subCategoryA,
+			ComboBox<String> subCategoryB, TableColumn<FileCardsDB, String> sideA,
+			TableColumn<FileCardsDB, String> sideB, ObservableList<String> optionsCategory,
+			ObservableList<String> optionsSubCategoryDefintion, ObservableList<String> optionsSubCategoryLanguage) {
+		sideA.setText(subCategoryA.getValue());
+		try {
+			if (category.getValue().equals("Translation") && (subCategoryA.getValue() != null)
+					&& (subCategoryB.getValue() != null)) {
+
+				rs = HSQLDB.getInstance()
+						.query("select w1.wordid, w2.wordid, w1.word, w2.word "
+								+ "from words w1 join words w2 on w1.userid= w1.userid "
+								+ "where  ((w1.wordid, w2.wordid) in (select wordid1, wordid2 from translate) "
+								+ "or (w1.wordid, w2.wordid) in (select wordid2, wordid1 from translate)) "
+								+ "and (w1.language = '" + subCategoryA.getValue() + "'  and w2.language='"
+								+ subCategoryB.getValue() + "') " + "and w1.userid = " + Login.userID + " ");
+
+				enableButtons();
+			} else if (category.getValue().equals("Definition") && (subCategoryA.getValue() != null)) {
+				rs = HSQLDB.getInstance()
+						.query("SELECT w.wordID, d.definitionID, w.word, d.Definition  "
+								+ "FROM Words w NATURAL JOIN Definition d " + "WHERE w.UserID = " + Login.userID
+								+ "AND w.Language = '" + subCategoryA.getValue() + "' ");
+				sideB.setText(subCategoryB.getValue());
+				enableButtons();
+			}
+			data.clear();
+			while (rs.next()) {
+				data.add(new FileCardsDB(rs.getInt(1), rs.getInt(2), rs.getString(3), rs.getString(4),
+						category.getValue(), subCategoryA.getValue(), subCategoryB.getValue()));
+			}
+
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+	}
+
+	// Add ChangeListener to the Combobox SubCategoryB
+	/**
+	 * This method listens to changes in the choice of the subcategory of the second
+	 * row. It distincts in its behaviour between the categories translate and
+	 * definition. It checks the values in the category list and subCategory of the
+	 * first row.
+	 * 
+	 * @param category
+	 *            is the category of the entries
+	 * @param subCategoryA
+	 *            is the subCategory of the first column
+	 * @param subCategoryB
+	 *            is the subCategory of the second column
+	 * @param sideA
+	 *            is the first column
+	 * @param sideB
+	 *            is the second column
+	 * @param optionsCategory
+	 *            is the ObservableList of possible Categories
+	 * @param optionsSubCategoryDefintion
+	 *            is the ObservableList of possible DefinitionLanguages
+	 * @param optionsSubCategoryLanguage
+	 *            is the ObservableList of possible Languages
+	 */
+	public void addFilterSubCategoryBListener(ComboBox<String> category, ComboBox<String> subCategoryA,
+			ComboBox<String> subCategoryB, TableColumn<FileCardsDB, String> sideA,
+			TableColumn<FileCardsDB, String> sideB, ObservableList<String> optionsCategory,
+			ObservableList<String> optionsSubCategoryDefintion, ObservableList<String> optionsSubCategoryLanguage) {
+
+		sideB.setText(subCategoryB.getValue());
+		try {
+			if (category.getValue().equals("Translation") && (subCategoryA.getValue() != null)
+					&& (subCategoryB.getValue() != null)) {
+
+				rs = HSQLDB.getInstance()
+						.query("select w1.wordid, w2.wordid, w1.word, w2.word "
+								+ "from words w1 join words w2 on w1.userid= w1.userid "
+								+ "where  ((w1.wordid, w2.wordid) in (select wordid1, wordid2 from translate) "
+								+ "or (w1.wordid, w2.wordid) in (select wordid2, wordid1 from translate)) "
+								+ "and (w1.language = '" + subCategoryA.getValue() + "'  and w2.language='"
+								+ subCategoryB.getValue() + "') " + "and w1.userid = " + Login.userID + " ");
+
+				enableButtons();
+
+			}
+			data.clear();
+			while (rs.next()) {
+				data.add(new FileCardsDB(rs.getInt(1), rs.getInt(2), rs.getString(3), rs.getString(4),
+						category.getValue(), subCategoryA.getValue(), subCategoryB.getValue()));
+			}
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+	}
+
+	/**
+	 * This method specifies what should happen when the ENTER Key is pressed. It
+	 * makes the addButton to fire action when the focus is in the second textfield
+	 * and if the textfields are filled.
+	 * 
+	 * @param addSideA
+	 *            the TextFielf of the Textfield of the first row
+	 * @param addButton
+	 *            the addButton to add an Entry
+	 * @param e
+	 *            the KeyEvent
+	 */
+	public void addKeyListener(TextField addSideA, Button addButton, KeyEvent e) {
+
+		// ActionListener for key pressed (Enter) when adding entry and focusing on
+		// textfieldSideA again
+
+		if (!(addSideA.getText().isEmpty()) && e.getCode().equals(KeyCode.ENTER)) {
+			addButton.fire();
+			addSideA.requestFocus();
+		}
+	}
+
+	/**
+	 * This method is called when focused on the tableview, the EventHandler to
+	 * delete the selected row with delete and Back_Space Key when editing mode of
+	 * cell is not entered (table.editingCellProperty().get() == null)
+	 * 
+	 * @param table
+	 *            is the instance of the tableview representing the data
+	 * @param e
+	 *            the KeyEvent
+	 */
+	public void deleteKeyListener(TableView<FileCardsDB> table, KeyEvent e) {
+
+		if ((table.editingCellProperty().getValue() == null)
+				&& (e.getCode().equals(KeyCode.DELETE) || e.getCode().equals(KeyCode.BACK_SPACE))) {
+			deleteCurrentEntry(view.getFilterCategory().getValue(), view.getTable());
+		}
+
+	}
 }
