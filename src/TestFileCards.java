@@ -13,6 +13,8 @@ import javafx.stage.Stage;
 public class TestFileCards {
 
 	private Stage testStage;
+	private UserInterface ui;
+	private String name;
 	private Label filecardLabel = new Label("Filecard");
 	private Label categoryLabel = new Label("Category:");
 	private Label sideLabel = new Label("Side:");
@@ -26,8 +28,9 @@ public class TestFileCards {
 	private ComboBox<String> sideABox = new ComboBox();
 	private ComboBox<String> sideBBox = new ComboBox();
 	
-	public TestFileCards(Stage loginStage)
+	public TestFileCards(Stage loginStage, UserInterface ui)
 	{
+		this.ui = ui;
 		testStage = loginStage;
 		createTestWindowScene();
 	}
@@ -44,9 +47,9 @@ public class TestFileCards {
 		cancelButton.setId("button");
 		
 		GridPane.setHalignment(filecardLabel, HPos.CENTER);
-		GridPane.setHalignment(categoryLabel, HPos.CENTER);
-		GridPane.setHalignment(sideLabel, HPos.CENTER);
-		GridPane.setHalignment(levelLabel, HPos.CENTER);
+		GridPane.setHalignment(categoryLabel, HPos.RIGHT);
+		GridPane.setHalignment(sideLabel, HPos.RIGHT);
+		GridPane.setHalignment(levelLabel, HPos.RIGHT);
 		GridPane.setHalignment(sideALabel, HPos.CENTER);
 		GridPane.setHalignment(sideBLabel, HPos.CENTER);
 		GridPane.setHalignment(categoryBox, HPos.CENTER);
@@ -63,7 +66,7 @@ public class TestFileCards {
 		grid.setHgap(10);
 		grid.setVgap(10);
 		grid.setId("pane2");
-		grid.setPadding(new Insets(50, 10, 50, 10));
+		grid.setPadding(new Insets(40, 10, 50, 10));
 		grid.add(filecardLabel, 0, 0, 3, 1);
 		grid.add(categoryLabel, 0, 2);
 		grid.add(categoryBox, 1, 2, 2, 1);
@@ -74,10 +77,20 @@ public class TestFileCards {
 		grid.add(sideBBox, 2, 6);
 		grid.add(levelLabel, 0, 8);
 		grid.add(levelBox, 1, 8);
-		grid.add(startButton, 0, 12);
+		grid.add(startButton, 1, 12);
 		grid.add(cancelButton, 2, 12);
 		
-		//grid.setGridLinesVisible(true);
+		startButton.setOnAction(e -> {
+			
+		});
+		
+		cancelButton.setOnAction(e -> {
+			testStage.close();
+			new UserInterface(ui.getLoginStage(), ui.getName(), ui.getLoginScene());
+		});
+		
+		
+		grid.setGridLinesVisible(true);
 		
 		Scene testWindowScene = new Scene(grid, 500, 600);
 		testWindowScene.getStylesheets().addAll(this.getClass().getResource("Style.css").toExternalForm());

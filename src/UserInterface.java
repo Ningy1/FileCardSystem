@@ -23,6 +23,9 @@ import javafx.scene.layout.*;
 
 public class UserInterface {
 	
+	private Stage loginStage;
+	private String name;
+	private Scene loginScene;
 	private Label header;
 	private Label filler1,filler2; //filler for the second and 
 	private Button btnEdit;
@@ -37,6 +40,9 @@ public class UserInterface {
 	public UserInterface(Stage loginStage, String name, Scene loginScene) {
 		
 		Stage uiStage = new Stage();
+		this.loginStage = loginStage;
+		this.name = name;
+		this.loginScene = loginScene;
 		
 		uiStage.setTitle("File Card System");
 		
@@ -150,7 +156,7 @@ public class UserInterface {
 		});
 		
 		btnTest.setOnAction(e -> {
-			new TestFileCards(uiStage);
+			new TestFileCards(uiStage, this);
 		});
 		
 		btnResults.setOnAction(e -> {
@@ -168,5 +174,20 @@ public class UserInterface {
 				loginStage.show();
 			}
 			});
+	}
+	
+	public Stage getLoginStage()
+	{
+		return loginStage;
+	}
+	
+	public String getName()
+	{
+		return name;
+	}
+	
+	public Scene getLoginScene()
+	{
+		return loginScene;
 	}
 }
