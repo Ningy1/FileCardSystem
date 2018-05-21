@@ -17,15 +17,19 @@
 }
 
 #button{
-	-fx-background-color: #fa4518;
+	-fx-background-color: #4dc3ff;		/* #fa4518 orange */ /*#00cc44 green */
 	-fx-border: none;
 	-fx-color: white;
 	-fx-padding: 15px 32px;
 	-fx-text-align: center;
 	-fx-text-decoration: none;
-	-fx-opacity: 0.6;
+	-fx-opacity: 0.7;
 	-fx-transition: 0.3s;
 	-fx-font-size: 16px;
+}
+
+#button:disabled{
+	-fx-background-color: #666666
 }
 
 #button:hover{
