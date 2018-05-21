@@ -65,8 +65,8 @@ public class LoginLayout extends GridPane{
 		
 		getChildren().addAll(title, username,
 				usernameField, password, passwordField, loginButton, registerButton);
-		//loginWindowLayout.setGridLinesVisible(true); 				// for debugging of the GridPane
-		
+
+		//setGridLinesVisible(true);
 		//Scene loginScene = new Scene(loginWindowLayout, 1000, 600);
 		//test.getStylesheets().addAll(this.getClass().getResource("Style.css").toExternalForm());
 	}

@@ -1,3 +1,5 @@
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -27,6 +29,9 @@ public class TestFileCards {
 	private ComboBox<String> levelBox = new ComboBox();
 	private ComboBox<String> sideABox = new ComboBox();
 	private ComboBox<String> sideBBox = new ComboBox();
+	private ObservableList<String> optionsCategory = FXCollections.observableArrayList("Translation", "Definition");
+	private ObservableList<String> optionsSides = FXCollections.observableArrayList("English", "German", "French", "Spanish");
+	private ObservableList<String> optionsLevel = FXCollections.observableArrayList("1", "2", "3", "4");
 	
 	public TestFileCards(Stage loginStage, UserInterface ui)
 	{
@@ -45,6 +50,19 @@ public class TestFileCards {
 		levelLabel.setId("label");
 		startButton.setId("button");
 		cancelButton.setId("button");
+		categoryBox.setId("select");
+		levelBox.setId("select");
+		sideABox.setId("select");
+		sideBBox.setId("select");
+		
+		categoryBox.setItems(optionsCategory);
+		categoryBox.setPromptText("Please choose a category");
+		sideABox.setItems(optionsSides);
+		sideABox.setPromptText("From");
+		sideBBox.setItems(optionsSides);
+		sideBBox.setPromptText("To");
+		levelBox.setItems(optionsLevel);
+		levelBox.setValue("1");
 		
 		GridPane.setHalignment(filecardLabel, HPos.CENTER);
 		GridPane.setHalignment(categoryLabel, HPos.RIGHT);
@@ -53,32 +71,32 @@ public class TestFileCards {
 		GridPane.setHalignment(sideALabel, HPos.CENTER);
 		GridPane.setHalignment(sideBLabel, HPos.CENTER);
 		GridPane.setHalignment(categoryBox, HPos.CENTER);
-		GridPane.setHalignment(levelBox, HPos.CENTER);
+		GridPane.setHalignment(levelBox, HPos.LEFT);
 		GridPane.setHalignment(sideABox, HPos.CENTER);
 		GridPane.setHalignment(sideBBox, HPos.CENTER);
-		categoryBox.setPrefWidth(200);
+		categoryBox.setPrefWidth(225);
 		levelBox.setPrefWidth(50);
-		sideABox.setPrefWidth(75);
-		sideBBox.setPrefWidth(75);
+		sideABox.setPrefWidth(100);
+		sideBBox.setPrefWidth(100);
 		
 		GridPane grid = new GridPane();
 		
 		grid.setHgap(10);
 		grid.setVgap(10);
 		grid.setId("pane2");
-		grid.setPadding(new Insets(40, 10, 50, 10));
+		grid.setPadding(new Insets(30, 10, 50, 10));
 		grid.add(filecardLabel, 0, 0, 3, 1);
-		grid.add(categoryLabel, 0, 2);
-		grid.add(categoryBox, 1, 2, 2, 1);
-		grid.add(sideALabel, 1, 5);
-		grid.add(sideBLabel, 2, 5);
-		grid.add(sideLabel, 0, 6);
-		grid.add(sideABox, 1, 6);
-		grid.add(sideBBox, 2, 6);
-		grid.add(levelLabel, 0, 8);
-		grid.add(levelBox, 1, 8);
-		grid.add(startButton, 1, 12);
-		grid.add(cancelButton, 2, 12);
+		grid.add(categoryLabel, 0, 3);
+		grid.add(categoryBox, 1, 3, 2, 1);
+		grid.add(sideALabel, 1, 6);
+		grid.add(sideBLabel, 2, 6);
+		grid.add(sideLabel, 0, 7);
+		grid.add(sideABox, 1, 7);
+		grid.add(sideBBox, 2, 7);
+		grid.add(levelLabel, 0, 10);
+		grid.add(levelBox, 1, 10);
+		grid.add(startButton, 1, 14);
+		grid.add(cancelButton, 2, 14);
 		
 		startButton.setOnAction(e -> {
 			
@@ -90,15 +108,16 @@ public class TestFileCards {
 		});
 		
 		
-		grid.setGridLinesVisible(true);
+		//grid.setGridLinesVisible(true);
 		
 		Scene testWindowScene = new Scene(grid, 500, 600);
 		testWindowScene.getStylesheets().addAll(this.getClass().getResource("Style.css").toExternalForm());
 		
-		testStage.setScene(testWindowScene);
-		
 		Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();
+		
+		testStage.setScene(testWindowScene);	
 		testStage.setX((primScreenBounds.getWidth() - testStage.getWidth()) / 2);
-		testStage.setY((primScreenBounds.getHeight() - testStage.getHeight()) / 2);	
+		testStage.setY((primScreenBounds.getHeight() - testStage.getHeight()) / 2);
+		
 	}
 }
