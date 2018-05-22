@@ -1,6 +1,9 @@
 import java.sql.ResultSet;
 import javafx.scene.control.Tab;
 import java.sql.SQLException;
+
+import com.sun.javafx.charts.Legend;
+
 import javafx.scene.control.TabPane;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -23,29 +26,30 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.scene.layout.*;
 import javafx.scene.chart.*;
-
+import javafx.scene.chart.XYChart.Data;
 
 
 public class ResultsWindow {
 	
 	private Button btnBack;
-	private Tab tabOverview;
-	private Tab tabSuccess;
-	
-	private BarChart<String,Number> barchart;
+
 	private GridPane gridPane;
 	private TabPane tabPane;
+	private Tab tabVocabulary;
+	private Tab tabDefinition;
+	private Tab tabLvlDef;
+	private Tab tabLvlVoc;
 	
-	private CategoryAxis xAxis;
-	private NumberAxis yAxis;
-	
-	private String box1 = "Box 1";
-	private String box2 = "Box 2";
-	private String box3 = "Box 3";
-	private String box4 = "Box 4";
-	private String box5 = "Box 5";
-	private String box6 = "Box 6";
-	private ResultSet rs = null;
+	private CategoryAxis xAxisVoc;
+	private NumberAxis yAxisVoc;
+	private CategoryAxis xAxisDef;
+	private NumberAxis yAxisDef;
+	private CategoryAxis xAxislvlDef;
+	private NumberAxis yAxislvlDef;
+	private CategoryAxis xAxislvlVoc;
+	private NumberAxis yAxislvlVoc;
+	private String[] diffLanguages = {"German","English","Spanish","French"};
+
 	
 	//need this parameters to come back to the User Interface-Scene
 	ResultsWindow(Stage primaryStage, Scene uiScene) {
@@ -56,81 +60,144 @@ public class ResultsWindow {
 		gridPane.setId("pane");
 		
 		btnBack = new Button("Back");
-		btnBack.setPrefSize(70,50);
+		btnBack.setPrefSize(100,70);
+		btnBack.setId("button");
 		
-		//TabPane and Tab handling
 		tabPane = new TabPane();
-		tabOverview = new Tab("Overview");
-		tabSuccess = new Tab("Success");
-		
-		tabPane.getTabs().addAll(tabOverview,tabSuccess);
-		tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
+		tabVocabulary = new Tab("Vocabulary");
+		tabDefinition = new Tab("Definition");
+		tabLvlVoc = new Tab("Level Vocabulary");
+		tabLvlDef = new Tab("Level Definition");
+		tabPane.setId("pane");
 		
 		//Barchart Handling
-	    xAxis = new CategoryAxis();
-	    yAxis = new NumberAxis();
+	    xAxisVoc = new CategoryAxis();
+	    yAxisVoc = new NumberAxis();
+	    xAxisDef = new CategoryAxis();
+	    yAxisDef = new NumberAxis();
+	    xAxislvlDef = new CategoryAxis();
+	    yAxislvlDef = new NumberAxis();
+	    xAxislvlVoc = new CategoryAxis();
+	    yAxislvlVoc = new NumberAxis();
 	    
-	    barchart = new BarChart<String,Number>(xAxis, yAxis);
-		
-	    barchart.setTitle("Overview");
-	    xAxis.setLabel("Card file boxes");
-	    yAxis.setLabel("Total number of Cards");
+	    BarChart<String,Number> vocabularyChart = new BarChart<String,Number>(xAxisVoc,
+	    																	yAxisVoc);
+	    BarChart<String,Number> definitionChart = new BarChart<String,Number>(xAxisDef,
+	    																	yAxisDef);
+	    BarChart<String,Number> levelVocChart = new BarChart<String,Number>(xAxislvlDef, 
+	    																yAxislvlDef);
+	    BarChart<String,Number> levelDefChart = new BarChart<String,Number>(xAxislvlVoc,
+	    																yAxislvlVoc);
 	    
-	    //add the barchart in the Tab "Overview"
-	    tabOverview.setContent(barchart);
-	   
-	    tabPane.setStyle("-fx-background-color: grey");
 	    
+	    vocabularyChart.setTitle("Overview");
+	    definitionChart.setTitle("Overview");
+	    levelVocChart.setTitle("Your levels in Category Vocabulary");
+	    levelDefChart.setTitle("Your levels in Category Definition");
+	    yAxisVoc.setLabel("Total number of Cards");
+	    yAxisDef.setLabel("Total number of Cards");
+	    xAxislvlVoc.setLabel("Box Levels");
+	    yAxislvlVoc.setLabel("Total number of Cards");
+	    xAxislvlDef.setLabel("Box Levels");
+	    yAxislvlDef.setLabel("Total number of Cards");
 	    
 	    //Create a Serie of bars and add the bars in these Serie
-	    XYChart.Series boxSeries1 = new XYChart.Series(); 
+	    XYChart.Series<String,Number> seriesVocabulary1 = 
+	    											new XYChart.Series<String, Number>();
+	    XYChart.Series<String,Number> seriesDefinition1 =
+	    											new XYChart.Series<String, Number>();
+	    XYChart.Series<String, Number> seriesLvlVocabulary = 
+	    											new XYChart.Series<String,Number>();
+	    XYChart.Series<String, Number> seriesLvlDefinition = 
+	    											new XYChart.Series<String,Number>(); 
+	    
 
+	    //Legend Name
+	    vocabularyChart.setLegendVisible(false);
+	    definitionChart.setLegendVisible(false);
+	    levelVocChart.setLegendVisible(false);
+	    levelDefChart.setLegendVisible(false);	    
 	    
+    	//Different database commands to filter out the categories
 	    
-	    /* Code für später. Ggf. nachschauen um vorher die Zeilen der Tabelle zu bestimmen
-	     * damit bei der while-schleife keine Exception geschmissen wird.n.
-	     * 
-	     * 
-	     * try {
-	     * for(x=1;x<7;x++) {
-	      rs = HSQLDB.getInstance().query("Select count(*) FROM Box wehre ID="+x);
-	     * while(rs.next()) {
-	     * 
-	     * boxSeries1.getData().add(new XYChart.Data<>(rs.getString(1))
-	     * 
-	     * }
-	     * }
-	     * barchart.getData().addAll(boxSeries);
-	     * 
-	     */
-	    
-	   // boxSeries1.setName("box 1");
-	    
+	    ResultSet rs;
+	    ResultSet rsCounter; //Counter variable for the statistic values7
+	    String language;
+	    String nativeLanguge;
 	    
 	    try {
-	    	rs = HSQLDB.getInstance().query("Select count(*) FROM FILECARDS");
-	    	ResultSet result = HSQLDB.getInstance().query("Select count(*) FROM USER");
+	    //For Vocabulary
+	    for(int i=0; i<diffLanguages.length;i++) {
+	    	language = diffLanguages[i];
+	    	rs=HSQLDB.getInstance().query("select w1.wordid, w2.wordid, w1.language, "
+	    			+ "w2.language from words w1 join words w2 on w1.userid= w1.userid " + 
+	    			"where  (w1.wordid, w2.wordid) in (select wordid1, wordid2 "
+	    			+ "from translate)  and (w1.language = '"+language+"' )and " + 
+	    			"w1.userid = "+Login.userID+"");
+	    	//Which native language used the user
 	    	if(rs.next()) {
-	    	int a = rs.getInt(1);
-	    	boxSeries1.getData().add(new XYChart.Data(box1, a));
-	    	
-	    	}
-	    	if(result.next()) {
-	    	int b =result.getInt(1);
-	    	
-	    	 boxSeries1.getData().add(new XYChart.Data(box2, b));
-	    	}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+	    		nativeLanguge=language;
+	    		rs=HSQLDB.getInstance().query("select  w2.language from words w1 join "
+	    				+ "words w2 on w1.userid= w1.userid " 
+	    				+ "where  (w1.wordid, w2.wordid) in (select wordid1, wordid2 from "
+	    				+ "translate) and (w1.language = '"+language+"' )and "
+	    				+ "w1.userid = "+Login.userID+" group by w2.language");
+	    		
+	    		
+	    		while(rs.next()) {
+	    			language=rs.getString(1);
+	    			rsCounter = HSQLDB.getInstance().query("select count(*) from words w1 "
+	    					+ "join words w2 on w1.userid= w1.userid where "
+	    					+ "(w1.wordid, w2.wordid) in (select wordid1, wordid2 from "
+	    					+ "translate)  and (w1.language = '"+nativeLanguge+"' and "
+	    					+ "w2.language='"+language+"')and w1.userid = "+Login.userID+"");
+	    			if(rsCounter.next()) {
+	    				if(rsCounter.getInt(1)!=0) {
+	    			seriesVocabulary1.getData().add(new Data<String, Number>(language, 
+	    					rsCounter.getInt(1)));
+	    				}
+	    				}
+	    		}
+	    	}}
+
+	    	//For the definition
+	    for(int i=0; i<diffLanguages.length;i++) {
+	    	language = diffLanguages[i];
+	    	rsCounter=HSQLDB.getInstance().query("SELECT count(*) FROM Words w NATURAL JOIN "
+	    			+ "Definition d WHERE w.UserID = 1 and w.language='"+language+"'");
+			if(rsCounter.next()) {
+				if(rsCounter.getInt(1)!=0) {
+			seriesDefinition1.getData().add(new Data<String, Number>(language, 
+					rsCounter.getInt(1)));
+					}
+				}
+	    }
+	
+	    }catch (SQLException e) {
 			e.printStackTrace();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	    
-	    barchart.getData().addAll(boxSeries1);
-	   
-			
+	    	
+	    	vocabularyChart.getData().addAll(seriesVocabulary1);
+	    	
+	    	definitionChart.getData().addAll(seriesDefinition1);
+	    	
+	    	levelVocChart.getData().addAll(seriesLvlVocabulary);
+	    	
+	    	levelDefChart.getData().addAll(seriesLvlDefinition);
+	    
+	    //Tab resp. TabPane handling
+	    
+	    
+	    tabPane.getTabs().addAll(tabVocabulary,tabDefinition,tabLvlVoc,tabLvlDef);
+	    tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
+	    tabVocabulary.setContent(vocabularyChart);
+	    tabDefinition.setContent(definitionChart);
+	    tabLvlVoc.setContent(levelVocChart);
+	    tabLvlDef.setContent(levelDefChart);
+	    
 	    //GridPane handling
 
 		gridPane.setHgap(10);
@@ -138,7 +205,8 @@ public class ResultsWindow {
 		
 		GridPane.setConstraints(btnBack,0,0,2,1); //First row
 		GridPane.setHalignment(btnBack, HPos.LEFT);
-		GridPane.setConstraints(tabPane,1,1,1,8);
+		GridPane.setConstraints(tabPane,1,1,1,7);
+
 		
 		
 		gridPane.getChildren().addAll(btnBack,tabPane);
@@ -169,7 +237,6 @@ public class ResultsWindow {
 		RowConstraints row7 = new RowConstraints(10,60,60);
 		RowConstraints row8 = new RowConstraints(30,60,Double.MAX_VALUE);
 		
-		
 		//Every row have the same priority
 		
 		row1.setVgrow(Priority.ALWAYS);
@@ -183,19 +250,21 @@ public class ResultsWindow {
 		
 		gridPane.getRowConstraints().addAll(row1,row2,row3,row4,row5,row6,row7,row8);
 		
-        
+    
     	Scene cssStyle = new Scene(gridPane,1000,600);
-		cssStyle.getStylesheets().addAll(this.getClass().getResource("blank.css").toExternalForm());
+		cssStyle.getStylesheets().addAll(this.getClass().getResource("TabPane.css").toExternalForm());
 		primaryStage.setScene(cssStyle);
 		
-		gridPane.setGridLinesVisible(true); //Debugging
+		//gridPane.setGridLinesVisible(true); //Debugging
 		
 		
-		//Eventhandler	
+		//Eventhandler
 		
 		btnBack.setOnAction(e -> {
 			
 			primaryStage.setScene(uiScene);
 				});
 		}
+	
 	}
+
