@@ -200,7 +200,6 @@ public class ResultsWindow {
 		RowConstraints row7 = new RowConstraints(10,60,60);
 		RowConstraints row8 = new RowConstraints(30,60,Double.MAX_VALUE);
 		
-		
 		//Every row have the same priority
 		
 		row1.setVgrow(Priority.ALWAYS);
@@ -214,7 +213,7 @@ public class ResultsWindow {
 		
 		gridPane.getRowConstraints().addAll(row1,row2,row3,row4,row5,row6,row7,row8);
 		
-        
+    
     	Scene cssStyle = new Scene(gridPane,1000,600);
 		cssStyle.getStylesheets().addAll(this.getClass().getResource("TabPane.css").toExternalForm());
 		primaryStage.setScene(cssStyle);
@@ -222,7 +221,7 @@ public class ResultsWindow {
 		//gridPane.setGridLinesVisible(true); //Debugging
 		
 		
-		//Eventhandler	
+		//Eventhandler
 		
 		btnBack.setOnAction(e -> {
 			
@@ -231,3 +230,4 @@ public class ResultsWindow {
 		}
 	
 	}
+

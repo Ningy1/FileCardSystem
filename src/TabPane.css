@@ -46,6 +46,7 @@
 	-fx-font-size: 16px;
 }
 
+
 #button:disabled{
 	-fx-background-color: #666666
 }
