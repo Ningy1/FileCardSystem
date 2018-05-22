@@ -29,7 +29,6 @@ import javafx.scene.chart.*;
 import javafx.scene.chart.XYChart.Data;
 
 
-
 public class ResultsWindow {
 	
 	private Button btnBack;
@@ -61,7 +60,7 @@ public class ResultsWindow {
 		tabPane = new TabPane();
 		tabVocabulary = new Tab("Vocabulary");
 		tabDefinition = new Tab("Definition");
-		
+		tabPane.setId("pane");
 		
 		//Barchart Handling
 	    xAxisVoc = new CategoryAxis();
@@ -96,7 +95,7 @@ public class ResultsWindow {
 	    String nativeLanguge;
 	    
 	    try {
-	    //For Vocabular
+	    //For Vocabulary
 	    for(int i=0; i<diffLanguages.length;i++) {
 	    	language = diffLanguages[i];
 	    	rs=HSQLDB.getInstance().query("select w1.wordid, w2.wordid, w1.language, "
@@ -142,72 +141,13 @@ public class ResultsWindow {
 					}
 				}
 	    }
-	    	
-	    	
-	    	
+	
 	    }catch (SQLException e) {
 			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	    
-	    	
-	    
-	    
-	    
-	    
-	    
-	    
-	    
-	    
-	    
-	    
-	   /* ResultSet rs;
-	    ResultSet rsCounter; //Get the number of Vocabulary or Definition for the Different languages
-	    String language;
-	    //For Vocabulary
-	    try {
-	    	rs = HSQLDB.getInstance().query("SELECT subcategory "
-					+ "FROM FILECARDS where category='Vocabel' group by subcategory");
-	    	while(rs.next()) {
-	    			language=rs.getString(1);
-	    			if(language=="null") {System.out.print("NULL");}
-	    			else {
-	    			rsCounter = HSQLDB.getInstance().query("SELECT count(*)  "
-							+ "FROM FILECARDS where CATEGORY='Vocabel' and "
-							+ "SUBCATEGORY='"+language+"'");
-	    			if(rsCounter.next()) {
-	    			seriesVocabulary1.getData().add(new Data<String, Number>(language, 
-	    					rsCounter.getInt(1)));
-	    				}
-	    			}
-	    		
-	    	}
-	    	
-	    	//For the definition
-	    	rs = HSQLDB.getInstance().query("SELECT subcategory "
-					+ "FROM FILECARDS where category='Definition' group by subcategory");
-	    	while(rs.next()) {
-	    		if(rs==null) { System.out.println("NULL"); }
-	    		else {
-	    			language=rs.getString(1);
-	    			rsCounter = HSQLDB.getInstance().query("SELECT count(*)  "
-							+ "FROM FILECARDS where CATEGORY='Definition' and "
-							+ "SUBCATEGORY='"+language+"'");
-	    			if(rsCounter.next()) {
-	    			seriesDefinition1.getData().add(new Data<String, Number>(language, 
-	    					rsCounter.getInt(1)));
-	    			}
-	    		}
-	    		
-	    	}
-	    	
-	    } catch (SQLException e) {
-			e.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	    */
 	    	
 	    	vocabularyChart.getData().addAll(seriesVocabulary1);
 	    	
@@ -276,10 +216,10 @@ public class ResultsWindow {
 		
         
     	Scene cssStyle = new Scene(gridPane,1000,600);
-		cssStyle.getStylesheets().addAll(this.getClass().getResource("blank.css").toExternalForm());
+		cssStyle.getStylesheets().addAll(this.getClass().getResource("TabPane.css").toExternalForm());
 		primaryStage.setScene(cssStyle);
 		
-		gridPane.setGridLinesVisible(true); //Debugging
+		//gridPane.setGridLinesVisible(true); //Debugging
 		
 		
 		//Eventhandler	
