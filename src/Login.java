@@ -75,7 +75,6 @@ public class Login extends Application  {
 			closeProgram(loginWindow);
 		});
 
-		
 		Scene cssStyle = new Scene(new LoginLayout(loginWindow,this),1000,600);
 		cssStyle.getStylesheets().addAll(this.getClass().getResource("Style.css").toExternalForm());
 		loginWindow.setScene(cssStyle);

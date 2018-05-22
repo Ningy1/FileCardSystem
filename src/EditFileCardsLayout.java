@@ -144,7 +144,14 @@ public class EditFileCardsLayout {
 		sideB.setMinWidth(50);
 		// Set columns to grow equally in width
 		table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-
+		
+		// Set IDs for css style
+		
+		exportButton.setId("buttonEditFileCards");
+		importButton.setId("buttonEditFileCards");
+		addButton.setId("buttonEditFileCards");
+		deleteButton.setId("buttonEditFileCards");
+		
 		// Set size constraints of the textfields, buttons and label
 		addSideA.setMaxWidth(sideA.getMaxWidth());
 		addSideA.setPrefWidth(sideA.getPrefWidth());
@@ -215,7 +222,7 @@ public class EditFileCardsLayout {
 		GridPane.setConstraints(hboxTextFields, 0, 3);
 		GridPane.setConstraints(hboxButtons, 0, 4);
 		GridPane.setConstraints(hboxImportExportButtons, 0, 5);
-	
+		
 		// Set size properties of the stage
 		editStage.setWidth(400);
 		editStage.setHeight(450);
@@ -226,7 +233,9 @@ public class EditFileCardsLayout {
 		table.prefWidthProperty().bind(editStage.widthProperty());
 
 		// The scene is characterized by the gridlayout
+		root.setId("pane2");
 		Scene scene = new Scene(root);
+		scene.getStylesheets().addAll(this.getClass().getResource("Style.css").toExternalForm());
 		root.setPadding(new Insets(10, 10, 10, 10));
 		root.setPrefSize(editStage.getWidth(), editStage.getHeight());
 		root.setMinSize(editStage.getWidth(), editStage.getHeight());

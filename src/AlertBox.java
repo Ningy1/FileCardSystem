@@ -12,23 +12,30 @@ public class AlertBox {
 	{
 		Stage alertboxWindow = new Stage();
 		alertboxWindow.setTitle(title);
-		alertboxWindow.setMinWidth(250);
+		alertboxWindow.setWidth(400);
+		alertboxWindow.setHeight(150);
 		alertboxWindow.initModality(Modality.APPLICATION_MODAL);
+		alertboxWindow.setResizable(false);
 		
 		Label alertLabel = new Label(message);
 		
 		Button confirmButton = new Button("OK");
 		confirmButton.setOnAction(e -> alertboxWindow.close());
 		
-		VBox alertboxLayout = new VBox(10);
+		confirmButton.setPrefWidth(75);
+		confirmButton.setPrefHeight(25);
+		
+		VBox alertboxLayout = new VBox(20);
 		alertboxLayout.getChildren().addAll(alertLabel, confirmButton);
 		alertboxLayout.setAlignment(Pos.CENTER);
 		
-		Scene alertboxScene = new Scene(alertboxLayout);
+		alertboxLayout.setId("pane2");
+		confirmButton.setId("buttonEditFileCards");
 		
+		Scene alertboxScene = new Scene(alertboxLayout);
+		alertboxScene.getStylesheets().addAll(AlertBox.class.getResource("Style.css").toExternalForm());
 		alertboxWindow.setScene(alertboxScene);
 		alertboxWindow.showAndWait();
-		
 	}
 	
 }
