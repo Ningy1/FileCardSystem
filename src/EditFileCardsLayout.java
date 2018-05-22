@@ -227,6 +227,7 @@ public class EditFileCardsLayout {
 
 		// The scene is characterized by the gridlayout
 		Scene scene = new Scene(root);
+
 		root.setPadding(new Insets(10, 10, 10, 10));
 		root.setPrefSize(editStage.getWidth(), editStage.getHeight());
 		root.setMinSize(editStage.getWidth(), editStage.getHeight());
