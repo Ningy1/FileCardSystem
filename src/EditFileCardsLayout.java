@@ -235,7 +235,11 @@ public class EditFileCardsLayout {
 		// The scene is characterized by the gridlayout
 		root.setId("pane2");
 		Scene scene = new Scene(root);
+<<<<<<< HEAD
 		scene.getStylesheets().addAll(this.getClass().getResource("Style.css").toExternalForm());
+=======
+
+>>>>>>> branch 'master' of https://github.com/Ningy1/FileCardSystem.git
 		root.setPadding(new Insets(10, 10, 10, 10));
 		root.setPrefSize(editStage.getWidth(), editStage.getHeight());
 		root.setMinSize(editStage.getWidth(), editStage.getHeight());
