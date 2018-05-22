@@ -37,11 +37,17 @@ public class ResultsWindow {
 	private TabPane tabPane;
 	private Tab tabVocabulary;
 	private Tab tabDefinition;
+	private Tab tabLvlDef;
+	private Tab tabLvlVoc;
 	
 	private CategoryAxis xAxisVoc;
 	private NumberAxis yAxisVoc;
 	private CategoryAxis xAxisDef;
 	private NumberAxis yAxisDef;
+	private CategoryAxis xAxislvlDef;
+	private NumberAxis yAxislvlDef;
+	private CategoryAxis xAxislvlVoc;
+	private NumberAxis yAxislvlVoc;
 	private String[] diffLanguages = {"German","English","Spanish","French"};
 
 	
@@ -60,6 +66,8 @@ public class ResultsWindow {
 		tabPane = new TabPane();
 		tabVocabulary = new Tab("Vocabulary");
 		tabDefinition = new Tab("Definition");
+		tabLvlVoc = new Tab("Level Vocabulary");
+		tabLvlDef = new Tab("Level Definition");
 		tabPane.setId("pane");
 		
 		//Barchart Handling
@@ -67,25 +75,48 @@ public class ResultsWindow {
 	    yAxisVoc = new NumberAxis();
 	    xAxisDef = new CategoryAxis();
 	    yAxisDef = new NumberAxis();
+	    xAxislvlDef = new CategoryAxis();
+	    yAxislvlDef = new NumberAxis();
+	    xAxislvlVoc = new CategoryAxis();
+	    yAxislvlVoc = new NumberAxis();
 	    
-	    BarChart<String,Number> vocabularyChart = new BarChart<String,Number>(xAxisVoc, yAxisVoc);
-	    BarChart<String,Number> definitionChart = new BarChart<String,Number>(xAxisDef, yAxisDef);
+	    BarChart<String,Number> vocabularyChart = new BarChart<String,Number>(xAxisVoc,
+	    																	yAxisVoc);
+	    BarChart<String,Number> definitionChart = new BarChart<String,Number>(xAxisDef,
+	    																	yAxisDef);
+	    BarChart<String,Number> levelVocChart = new BarChart<String,Number>(xAxislvlDef, 
+	    																yAxislvlDef);
+	    BarChart<String,Number> levelDefChart = new BarChart<String,Number>(xAxislvlVoc,
+	    																yAxislvlVoc);
 	    
 	    
 	    vocabularyChart.setTitle("Overview");
 	    definitionChart.setTitle("Overview");
+	    levelVocChart.setTitle("Your levels in Category Vocabulary");
+	    levelDefChart.setTitle("Your levels in Category Definition");
 	    yAxisVoc.setLabel("Total number of Cards");
 	    yAxisDef.setLabel("Total number of Cards");
+	    xAxislvlVoc.setLabel("Box Levels");
+	    yAxislvlVoc.setLabel("Total number of Cards");
+	    xAxislvlDef.setLabel("Box Levels");
+	    yAxislvlDef.setLabel("Total number of Cards");
 	    
 	    //Create a Serie of bars and add the bars in these Serie
-	    XYChart.Series<String,Number> seriesVocabulary1 = new XYChart.Series<String, Number>();
-	    XYChart.Series<String,Number> seriesDefinition1 = new XYChart.Series<String, Number>();
+	    XYChart.Series<String,Number> seriesVocabulary1 = 
+	    											new XYChart.Series<String, Number>();
+	    XYChart.Series<String,Number> seriesDefinition1 =
+	    											new XYChart.Series<String, Number>();
+	    XYChart.Series<String, Number> seriesLvlVocabulary = 
+	    											new XYChart.Series<String,Number>();
+	    XYChart.Series<String, Number> seriesLvlDefinition = 
+	    											new XYChart.Series<String,Number>(); 
 	    
 
 	    //Legend Name
 	    vocabularyChart.setLegendVisible(false);
 	    definitionChart.setLegendVisible(false);
-	    
+	    levelVocChart.setLegendVisible(false);
+	    levelDefChart.setLegendVisible(false);	    
 	    
     	//Different database commands to filter out the categories
 	    
@@ -152,14 +183,20 @@ public class ResultsWindow {
 	    	vocabularyChart.getData().addAll(seriesVocabulary1);
 	    	
 	    	definitionChart.getData().addAll(seriesDefinition1);
+	    	
+	    	levelVocChart.getData().addAll(seriesLvlVocabulary);
+	    	
+	    	levelDefChart.getData().addAll(seriesLvlDefinition);
 	    
 	    //Tab resp. TabPane handling
 	    
 	    
-	    tabPane.getTabs().addAll(tabVocabulary,tabDefinition);
+	    tabPane.getTabs().addAll(tabVocabulary,tabDefinition,tabLvlVoc,tabLvlDef);
 	    tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
 	    tabVocabulary.setContent(vocabularyChart);
 	    tabDefinition.setContent(definitionChart);
+	    tabLvlVoc.setContent(levelVocChart);
+	    tabLvlDef.setContent(levelDefChart);
 	    
 	    //GridPane handling
 
