@@ -31,7 +31,9 @@ public class LoginLayout extends GridPane{
 		Label username = new Label("Username:");
 		Label password = new Label("Password:");
 		Button loginButton = new Button("Log in");
+		loginButton.setPrefWidth(150);
 		Button registerButton = new Button("Register");
+		registerButton.setPrefWidth(150);
 		TextField usernameField = new TextField();											// here we could implement that the last used username will be shown by passing it into the constructor
 		usernameField.setPromptText("Enter a username");
 		PasswordField passwordField = new PasswordField();
@@ -58,10 +60,10 @@ public class LoginLayout extends GridPane{
 		setConstraints(password, 48, 7);
 		setHalignment(password, HPos.CENTER);
 		setConstraints(passwordField, 49, 7);
-		setConstraints(loginButton, 48, 15);
+		setConstraints(loginButton, 49, 15);
 		setConstraints(registerButton, 49, 15);
-		setHalignment(loginButton, HPos.CENTER);
-		setHalignment(registerButton, HPos.CENTER);
+		setHalignment(loginButton, HPos.LEFT);
+		setHalignment(registerButton, HPos.RIGHT);
 		
 		getChildren().addAll(title, username,
 				usernameField, password, passwordField, loginButton, registerButton);
