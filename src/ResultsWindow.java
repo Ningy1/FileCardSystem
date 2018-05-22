@@ -1,9 +1,19 @@
 import java.sql.ResultSet;
 import javafx.scene.control.Tab;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 
 import com.sun.javafx.charts.Legend;
+import javafx.scene.Node;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.util.Duration;
 
+import javafx.animation.Animation;
 import javafx.scene.control.TabPane;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -16,6 +26,7 @@ import javafx.geometry.Side;
 import javafx.geometry.VPos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.ProgressBar;
@@ -48,11 +59,22 @@ public class ResultsWindow {
 	private NumberAxis yAxislvlDef;
 	private CategoryAxis xAxislvlVoc;
 	private NumberAxis yAxislvlVoc;
+	
 	private String[] diffLanguages = {"German","English","Spanish","French"};
+	
+	ArrayList<Integer> barflowDefinition;
+	ArrayList<Integer> barflowVocabulary;
+	ArrayList<Integer> barflowLvlDef;
+	ArrayList<Integer> barflowLvlVoc;
 
 	
 	//need this parameters to come back to the User Interface-Scene
 	ResultsWindow(Stage primaryStage, Scene uiScene) {
+		
+		barflowDefinition = new ArrayList<Integer>();
+		barflowVocabulary = new ArrayList<Integer>();
+		barflowLvlDef = new ArrayList<Integer>();
+		barflowLvlVoc = new ArrayList<Integer>();
 		
 		primaryStage.setTitle("Results");
 		
@@ -79,6 +101,9 @@ public class ResultsWindow {
 	    yAxislvlDef = new NumberAxis();
 	    xAxislvlVoc = new CategoryAxis();
 	    yAxislvlVoc = new NumberAxis();
+	    yAxisVoc.setAutoRanging(false);
+	    yAxisDef.setAutoRanging(false);
+	    
 	    
 	    BarChart<String,Number> vocabularyChart = new BarChart<String,Number>(xAxisVoc,
 	    																	yAxisVoc);
@@ -88,8 +113,7 @@ public class ResultsWindow {
 	    																yAxislvlDef);
 	    BarChart<String,Number> levelDefChart = new BarChart<String,Number>(xAxislvlVoc,
 	    																yAxislvlVoc);
-	    
-	    
+	    	    
 	    vocabularyChart.setTitle("Overview");
 	    definitionChart.setTitle("Overview");
 	    levelVocChart.setTitle("Your levels in Category Vocabulary");
@@ -125,6 +149,7 @@ public class ResultsWindow {
 	    String language;
 	    String nativeLanguge;
 	    
+
 	    try {
 	    //For Vocabulary
 	    for(int i=0; i<diffLanguages.length;i++) {
@@ -154,21 +179,26 @@ public class ResultsWindow {
 	    			if(rsCounter.next()) {
 	    				if(rsCounter.getInt(1)!=0) {
 	    			seriesVocabulary1.getData().add(new Data<String, Number>(language, 
-	    					rsCounter.getInt(1)));
+	    					0));
+	    			barflowVocabulary.add(rsCounter.getInt(1));
 	    				}
 	    				}
 	    		}
 	    	}}
 
+	    
 	    	//For the definition
 	    for(int i=0; i<diffLanguages.length;i++) {
 	    	language = diffLanguages[i];
 	    	rsCounter=HSQLDB.getInstance().query("SELECT count(*) FROM Words w NATURAL JOIN "
-	    			+ "Definition d WHERE w.UserID = 1 and w.language='"+language+"'");
+	    			+ "Definition d WHERE w.UserID = "+Login.userID+" and"
+	    			+ " w.language='"+language+"'");
 			if(rsCounter.next()) {
 				if(rsCounter.getInt(1)!=0) {
 			seriesDefinition1.getData().add(new Data<String, Number>(language, 
-					rsCounter.getInt(1)));
+					0));
+			barflowDefinition.add(rsCounter.getInt(1));
+			
 					}
 				}
 	    }
@@ -181,8 +211,10 @@ public class ResultsWindow {
 	    
 	    	
 	    	vocabularyChart.getData().addAll(seriesVocabulary1);
+	    	dynamicChange(tabVocabulary,barflowVocabulary,vocabularyChart,yAxisVoc);
 	    	
 	    	definitionChart.getData().addAll(seriesDefinition1);
+	    	dynamicChange(tabDefinition,barflowDefinition,definitionChart,yAxisDef);
 	    	
 	    	levelVocChart.getData().addAll(seriesLvlVocabulary);
 	    	
@@ -252,7 +284,8 @@ public class ResultsWindow {
 		
     
     	Scene cssStyle = new Scene(gridPane,1000,600);
-		cssStyle.getStylesheets().addAll(this.getClass().getResource("TabPane.css").toExternalForm());
+		cssStyle.getStylesheets().addAll(this.getClass().getResource
+														("TabPane.css").toExternalForm());
 		primaryStage.setScene(cssStyle);
 		
 		//gridPane.setGridLinesVisible(true); //Debugging
@@ -264,7 +297,71 @@ public class ResultsWindow {
 			
 			primaryStage.setScene(uiScene);
 				});
+		
+		
+		tabPane.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>()
+		    {
+		        @Override
+		        public void changed(ObservableValue<? extends Tab> arg0, Tab arg1,
+		        					Tab mostRecentlySelectedTab)
+		        {
+		            if (mostRecentlySelectedTab.equals(tabVocabulary))
+		            {
+		            	
+		 	           for (XYChart.Series<String, Number> series :
+		 	        	   									vocabularyChart.getData()) {
+			               for (XYChart.Data<String, Number> data : series.getData()) {
+			            	   	data.setYValue(0);
+			               }
+			           }
+		 	           dynamicChange(tabVocabulary,barflowVocabulary,vocabularyChart,yAxisVoc);
+		            }
+		            if (mostRecentlySelectedTab.equals(tabDefinition))
+		            {   
+			 	           for (XYChart.Series<String, Number> series : 
+			 	        	   									definitionChart.getData()) {
+				               for (XYChart.Data<String, Number> data : series.getData()) {
+				            	   	data.setYValue(0);
+				               }
+				           }
+		              dynamicChange(tabDefinition,barflowDefinition,definitionChart,yAxisDef);
+		            	
+		            
+		            }
+		        }
+
+
+		    });
+		
 		}
+
+	
+	
+
+	protected void dynamicChange(Tab tabDefinition, ArrayList<Integer> barflow,
+			BarChart<String, Number> definitionChart, NumberAxis yAxis) {
+		yAxis.setUpperBound(Collections.max(barflow)+5);
+		Timeline timeline = new Timeline();
+	    timeline.getKeyFrames().add(new KeyFrame(Duration.millis(50), new EventHandler<ActionEvent>() {
+	       @Override
+	       public void handle(ActionEvent actionEvent) {
+	    	   int number = -1;
+	           for (XYChart.Series<String, Number> series : definitionChart.getData()) {
+	               for (XYChart.Data<String, Number> data : series.getData()) {
+	                   //Number yValue = data.getYValue();
+	            	   number++;
+	            	   double serieValue = barflow.get(number);
+	                   for(double i=0.0; i <= serieValue; i++) {
+	                	   for(double x=0.0; x<=i;x=x+0.5) {
+	                	   data.setYValue(x);
+	                	   }
+	                   }
+	               }
+	           }
+	       }
+	    }));
+	    timeline.setCycleCount(1);
+        timeline.play();
+	}
 	
 	}
-
