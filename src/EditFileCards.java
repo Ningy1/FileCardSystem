@@ -40,9 +40,16 @@ public class EditFileCards {
 	FileChooser filechooser = new FileChooser();
 	// The instance of the view class
 	EditFileCardsLayout view;
-
-	public EditFileCards() {
-
+	//Parent View User Interface
+	UserInterface ui;
+	Stage uiStage;
+	
+	public EditFileCards(Stage uiStage,UserInterface ui) {
+		//Reference of userInterface
+		this.ui = ui;
+		this.uiStage = uiStage;
+		//Hide userInterface
+		uiStage.hide();
 		// Construct the View
 		view = new EditFileCardsLayout(this);
 		// Prepare the columns of the TableView
@@ -56,6 +63,7 @@ public class EditFileCards {
 		view.setKeyListener();
 		// addFilterListener to refresh tableview depending on chosen categories
 		view.setFilterListener();
+		view.setWindowListener();
 	}
 
 	/**
@@ -784,6 +792,11 @@ public class EditFileCards {
 			deleteCurrentEntry(view.getFilterCategory().getValue(), view.getTable());
 		}
 
+	}
+	
+	public void closeEditStage(Stage editStage) {
+		editStage.close();
+		uiStage.show();
 	}
 	
 }

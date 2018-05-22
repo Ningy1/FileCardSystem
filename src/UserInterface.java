@@ -152,7 +152,7 @@ public class UserInterface {
 		//Eventhandler
 		
 		btnEdit.setOnAction(e -> {
-			new EditFileCards();
+			new EditFileCards(uiStage, this);
 		});
 		
 		btnTest.setOnAction(e -> {

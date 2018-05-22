@@ -174,7 +174,7 @@ public class EditFileCardsLayout {
 		filterSubCategoryB.setMaxWidth(sideB.getMaxWidth());
 		filterSubCategoryB.setMinWidth(sideB.getMinWidth());
 		filterSubCategoryB.setPrefWidth(sideB.getPrefWidth());
-		filterCategory.setMaxWidth(sideA.getMaxWidth());
+		filterCategory.setMaxWidth(sideA.getMaxWidth()+sideB.getMaxWidth());
 		filterCategory.setMinWidth(sideA.getMinWidth());
 		filterCategory.setPrefWidth(sideA.getPrefWidth());
 		importButton.setMaxWidth(sideA.getMaxWidth());
@@ -231,7 +231,7 @@ public class EditFileCardsLayout {
 		// Bin the width of the table(and following also the other elements) to the
 		// width of the stage
 		table.prefWidthProperty().bind(editStage.widthProperty());
-
+		
 		// The scene is characterized by the gridlayout
 		root.setId("pane2");
 		Scene scene = new Scene(root);
@@ -241,6 +241,7 @@ public class EditFileCardsLayout {
 		root.setMinSize(editStage.getWidth(), editStage.getHeight());
 		editStage.setScene(scene);
 		editStage.show();
+		
 	}
 
 	/**
@@ -386,7 +387,12 @@ public class EditFileCardsLayout {
 
 		});
 	}
-
+	public void setWindowListener() {
+		editStage.setOnCloseRequest(e ->{
+			control.closeEditStage(editStage);
+		});
+	}
+	
 	/*
 	 * Getter and Setter
 	 */
