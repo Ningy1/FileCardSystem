@@ -146,39 +146,46 @@ public class ResultsWindow {
 	    
 	    ResultSet rs;
 	    ResultSet rsCounter; //Counter variable for the statistic values7
-	    String language;
-	    String nativeLanguge;
+	    String language1; //outer-loop
+	    String language2; //inner-loop
+	  //  String nativeLanguge;
 	    
 
 	    try {
 	    //For Vocabulary
 	    for(int i=0; i<diffLanguages.length;i++) {
-	    	language = diffLanguages[i];
-	    	rs=HSQLDB.getInstance().query("select w1.wordid, w2.wordid, w1.language, "
-	    			+ "w2.language from words w1 join words w2 on w1.userid= w1.userid " + 
-	    			"where  (w1.wordid, w2.wordid) in (select wordid1, wordid2 "
-	    			+ "from translate)  and (w1.language = '"+language+"' )and " + 
-	    			"w1.userid = "+Login.userID+"");
+	    	language1 = diffLanguages[i];
+	    	rs=HSQLDB.getInstance().query("select w1.wordid, w2.wordid, w1.language from "
+	    			+ "words w1 join words w2 on w1.userid= w1.userid where "
+	    			+ "((w1.wordid, w2.wordid) in (select wordid1, wordid2 from translate) " 
+	    			+ "or (w1.wordid, w2.wordid) in (select wordid2, wordid1 from "
+	    			+ "translate)) and (w1.language = '"+language1+"') "
+	    			+ "and w1.userid ="+Login.userID+"");
 	    	//Which native language used the user
 	    	if(rs.next()) {
-	    		nativeLanguge=language;
-	    		rs=HSQLDB.getInstance().query("select  w2.language from words w1 join "
-	    				+ "words w2 on w1.userid= w1.userid " 
-	    				+ "where  (w1.wordid, w2.wordid) in (select wordid1, wordid2 from "
-	    				+ "translate) and (w1.language = '"+language+"' )and "
-	    				+ "w1.userid = "+Login.userID+" group by w2.language");
+	    		language2=language1;
+	    		rs=HSQLDB.getInstance().query("select  w2.language from words w1 join words "
+	    				+ "w2 on w1.userid= w1.userid where  ((w1.wordid, w2.wordid) in "
+	    				+ "(select wordid1, wordid2 from translate) or "
+	    				+ "(w1.wordid, w2.wordid) in (select wordid2, wordid1 "
+	    				+ "from translate)) and (w1.language = '"+language1+"' )and "
+	    				+ "w1.userid ="+Login.userID+" group by w2.language");
 	    		
 	    		
 	    		while(rs.next()) {
-	    			language=rs.getString(1);
+	    			language1=rs.getString(1);
 	    			rsCounter = HSQLDB.getInstance().query("select count(*) from words w1 "
 	    					+ "join words w2 on w1.userid= w1.userid where "
-	    					+ "(w1.wordid, w2.wordid) in (select wordid1, wordid2 from "
-	    					+ "translate)  and (w1.language = '"+nativeLanguge+"' and "
-	    					+ "w2.language='"+language+"')and w1.userid = "+Login.userID+"");
+	    					+ "((w1.wordid, w2.wordid) in (select wordid1, wordid2 from "
+	    					+ "translate) or (w1.wordid, w2.wordid) in "
+	    					+ "(select wordid2, wordid1 from translate)) "
+	    					+ "and (w1.language = '"+language2+"' and "
+	    					+ "w2.language='"+language1+"') and w1.userid ="+Login.userID+"");
 	    			if(rsCounter.next()) {
 	    				if(rsCounter.getInt(1)!=0) {
-	    			seriesVocabulary1.getData().add(new Data<String, Number>(language, 
+	    		 String concatString = new StringBuffer(language2).append(" - ").
+	    				 										append(language1).toString();
+	    			seriesVocabulary1.getData().add(new Data<String, Number>(concatString, 
 	    					0));
 	    			barflowVocabulary.add(rsCounter.getInt(1));
 	    				}
@@ -189,13 +196,13 @@ public class ResultsWindow {
 	    
 	    	//For the definition
 	    for(int i=0; i<diffLanguages.length;i++) {
-	    	language = diffLanguages[i];
+	    	language1 = diffLanguages[i];
 	    	rsCounter=HSQLDB.getInstance().query("SELECT count(*) FROM Words w NATURAL JOIN "
 	    			+ "Definition d WHERE w.UserID = "+Login.userID+" and"
-	    			+ " w.language='"+language+"'");
+	    			+ " w.language='"+language1+"'");
 			if(rsCounter.next()) {
 				if(rsCounter.getInt(1)!=0) {
-			seriesDefinition1.getData().add(new Data<String, Number>(language, 
+			seriesDefinition1.getData().add(new Data<String, Number>(language1, 
 					0));
 			barflowDefinition.add(rsCounter.getInt(1));
 			
@@ -339,14 +346,15 @@ public class ResultsWindow {
 	
 
 	protected void dynamicChange(Tab tabDefinition, ArrayList<Integer> barflow,
-			BarChart<String, Number> definitionChart, NumberAxis yAxis) {
+			BarChart<String, Number> barchart, NumberAxis yAxis) {
+		if(!barflow.isEmpty()) {
 		yAxis.setUpperBound(Collections.max(barflow)+5);
 		Timeline timeline = new Timeline();
 	    timeline.getKeyFrames().add(new KeyFrame(Duration.millis(50), new EventHandler<ActionEvent>() {
 	       @Override
 	       public void handle(ActionEvent actionEvent) {
 	    	   int number = -1;
-	           for (XYChart.Series<String, Number> series : definitionChart.getData()) {
+	           for (XYChart.Series<String, Number> series : barchart.getData()) {
 	               for (XYChart.Data<String, Number> data : series.getData()) {
 	                   //Number yValue = data.getYValue();
 	            	   number++;
@@ -362,6 +370,7 @@ public class ResultsWindow {
 	    }));
 	    timeline.setCycleCount(1);
         timeline.play();
+	}
 	}
 	
 	}
