@@ -525,12 +525,11 @@ public class EditFileCards {
 					ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
 					dataNew = (ArrayList<FileCardsDB>) ois.readObject();
 					ois.close();
-
 					for (int i = 0; i < dataNew.size(); i++) {
 						if (category.equals(dataNew.get(i).getCat()) && subCategoryA.equals(dataNew.get(i).getSubCatA())
 								&& subCategoryB.equals(dataNew.get(i).getSubCatB())) {
-							insertEntry(dataNew.get(i).sideA, dataNew.get(i).sideB, subCategoryA, subCategoryB,
-									category, Login.userID);
+							insertEntry(dataNew.get(i).sideA, dataNew.get(i).sideB, dataNew.get(i).subCatA, dataNew.get(i).subCatB,
+									dataNew.get(i).cat, Login.userID);
 						}
 					}
 				}
