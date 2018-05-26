@@ -1,5 +1,11 @@
 #header{
 	-fx-font-size: 23pt;
+	-fx-font-family: "Segoe UI Semibold";
+}
+
+#headerTesting{
+	-fx-font-size: 18pt;
+	-fx-font-family: "Segoe UI Semibold";
 }
 
 #pane{

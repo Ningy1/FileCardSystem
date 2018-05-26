@@ -44,8 +44,6 @@ public class Login extends Application  {
 	createLoginWindow(primaryStage);
 	}
 	
-	
-	
 	private void closeProgram(Stage loginWindow)
 	{
 		{

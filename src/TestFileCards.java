@@ -2,7 +2,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -14,7 +13,7 @@ import javafx.stage.Stage;
 
 public class TestFileCards {
 
-	private Stage testStage;
+	private Stage testFileCardsStage;
 	private UserInterface ui;
 	private String name;
 	private Label filecardLabel = new Label("Filecard");
@@ -25,10 +24,10 @@ public class TestFileCards {
 	private Label levelLabel = new Label("Level:");
 	private Button startButton = new Button("Start");
 	private Button cancelButton = new Button("Cancel");
-	private ComboBox<String> categoryBox = new ComboBox();
-	private ComboBox<String> levelBox = new ComboBox();
-	private ComboBox<String> sideABox = new ComboBox();
-	private ComboBox<String> sideBBox = new ComboBox();
+	private ComboBox<String> categoryBox = new ComboBox<String>();
+	private ComboBox<String> levelBox = new ComboBox<String>();
+	private ComboBox<String> sideABox = new ComboBox<String>();
+	private ComboBox<String> sideBBox = new ComboBox<String>();
 	private ObservableList<String> optionsCategory = FXCollections.observableArrayList("Translation", "Definition");
 	private ObservableList<String> optionsSides = FXCollections.observableArrayList("English", "German", "French", "Spanish");
 	private ObservableList<String> optionsLevel = FXCollections.observableArrayList("1", "2", "3", "4");
@@ -36,18 +35,13 @@ public class TestFileCards {
 	public TestFileCards(Stage loginStage, UserInterface ui)
 	{
 		this.ui = ui;
-		testStage = loginStage;
-		createTestWindowScene();
+		testFileCardsStage = loginStage;
+		createTestFileCardsWindowScene();
 	}
 	
-	public void createTestWindowScene()
+	public void createTestFileCardsWindowScene()
 	{
 		filecardLabel.setId("header");
-		categoryLabel.setId("label");
-		sideLabel.setId("label");
-		sideALabel.setId("label");
-		sideBLabel.setId("label");
-		levelLabel.setId("label");
 		startButton.setId("button");
 		cancelButton.setId("button");
 		categoryBox.setId("select");
@@ -87,9 +81,9 @@ public class TestFileCards {
 		
 		GridPane grid = new GridPane();
 		
+		grid.setId("pane2");
 		grid.setHgap(10);
 		grid.setVgap(10);
-		grid.setId("pane2");
 		grid.setPadding(new Insets(30, 10, 50, 10));
 		grid.add(filecardLabel, 0, 0, 3, 1);
 		grid.add(categoryLabel, 0, 3);
@@ -105,11 +99,11 @@ public class TestFileCards {
 		grid.add(cancelButton, 2, 14);
 		
 		startButton.setOnAction(e -> {
-			
+			new Testing(testFileCardsStage, ui, levelBox.getValue().toString(), categoryBox.getValue().toString());
 		});
 		
 		cancelButton.setOnAction(e -> {
-			testStage.close();
+			testFileCardsStage.close();
 			new UserInterface(ui.getLoginStage(), ui.getName(), ui.getLoginScene());
 		});
 		
@@ -122,9 +116,9 @@ public class TestFileCards {
 		
 		Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();
 		
-		testStage.setScene(testWindowScene);	
-		testStage.setX((primScreenBounds.getWidth() - testStage.getWidth()) / 2);
-		testStage.setY((primScreenBounds.getHeight() - testStage.getHeight()) / 2);
+		testFileCardsStage.setScene(testWindowScene);	
+		testFileCardsStage.setX((primScreenBounds.getWidth() - testFileCardsStage.getWidth()) / 2);
+		testFileCardsStage.setY((primScreenBounds.getHeight() - testFileCardsStage.getHeight()) / 2);
 		
 	}
 }
