@@ -52,6 +52,8 @@ public class TestFileCards {
 		sideABox.setId("select");
 		sideBBox.setId("select");
 		
+		startButton.setDisable(true);
+		
 		categoryBox.setItems(optionsCategory);
 		categoryBox.setPromptText("Please choose a category");
 		
