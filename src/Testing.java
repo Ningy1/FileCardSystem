@@ -1,3 +1,9 @@
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Iterator;
+
+import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Rectangle2D;
@@ -6,6 +12,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Screen;
@@ -13,10 +21,13 @@ import javafx.stage.Stage;
 
 public class Testing {
 
+	private HSQLDB db;
 	private Stage testingStage;
 	private UserInterface ui;
 	private String category;
 	private String level;
+	private	ArrayList<String> resultSets = new ArrayList<String>();
+	private Iterator<String> iterator; 
 	private String numOfCards;
 	private String from;
 	private Label categoryLabel;
@@ -29,14 +40,20 @@ public class Testing {
 	private Label inLanguageLabel;
 	private TextField answerField = new TextField();
 	private TextArea answerArea = new TextArea();
-	private Label answerFileCard = new Label("blablablub");
-	private Label answerLabel = new Label("Wrong, the answer is: ");
+	private Label answerFileCard;
+	private Label answerLabel;
 	private Button editButton = new Button("Edit Filecard");
 	private Button cancelButton = new Button("Quit learning");
 	private Button nextButton = new Button("Next");
 	
 	public Testing(Stage testFileCardsStage, UserInterface ui, String levelChoice, String categoryChoice, String from, String to)
 	{	
+		try {
+			db = HSQLDB.getInstance();
+			dbQuery(levelChoice, categoryChoice, from, to);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		category = categoryChoice;
 		level = levelChoice;
 		this.from = from;
@@ -49,6 +66,15 @@ public class Testing {
 	private void createTestingWindowScene()
 	{
 		levelLabel = new Label("Level "+level);
+		numOfCards = new Integer(resultSets.size()).toString();
+		outOfLabel = new Label("1/"+numOfCards);
+		
+		String tmp = iterator.next();
+		String[] splittedTmp = tmp.split(" ");
+		
+		fileCard = new Label(splittedTmp[0]);
+		answerFileCard = new Label(splittedTmp[1]);
+		answerLabel = new Label("blablub");
 		
 		cardLabel.setId("headerTesting");
 		outOfLabel.setId("headerTesting");
@@ -61,6 +87,9 @@ public class Testing {
 		fileCard.setUnderline(true);
 		answerField.setPrefSize(fileCard.getWidth(), fileCard.getHeight());
 		
+		answerLabel.setVisible(false);
+		editButton.setVisible(false);
+		answerFileCard.setVisible(false);
 		
 		Pane pane = new Pane();
 		pane.minHeightProperty().bind(whatIsLabel.heightProperty());
@@ -152,12 +181,33 @@ public class Testing {
 			GridPane.setHalignment(cancelButton, HPos.LEFT);
 		}
 		
-		
-		
 		//grid.setGridLinesVisible(true);
-		//answerLabel.setVisible(false);
-		//editButton.setVisible(false);
-		//answerFileCard.setVisible(false);
+		
+		answerField.setOnKeyPressed(new EventHandler<KeyEvent>()
+	    {
+	        @Override
+	        public void handle(KeyEvent key)
+	        {
+	            if (key.getCode().equals(KeyCode.ENTER))
+	            {
+	            	answerField.setDisable(true);
+	            	
+	            	if(answerField.getText().equals(answerFileCard.getText()))
+	            	{
+	            		answerLabel.setText("Correct, well done!");
+	            		answerLabel.setVisible(true);
+		        		editButton.setVisible(true);
+		        		
+	            	}else{
+	            	
+	            		answerLabel.setText("Wrong, the anwer is: ");
+	            		answerLabel.setVisible(true);
+	            		answerFileCard.setVisible(true);
+	            		editButton.setVisible(true);
+	            	}
+	            }
+	        }
+	    });
 		
 		nextButton.setOnAction(e -> {
 			 
@@ -168,12 +218,12 @@ public class Testing {
 		});
 		
 		cancelButton.setOnAction(e -> {
-			quitLearning(testingStage);
+			quitLearning();
 		});
 		
 		testingStage.setOnCloseRequest(e -> {
 			e.consume();
-			quitLearning(testingStage);
+			quitLearning();
 		});
 	
 		Scene testingScene = new Scene(grid, 800, 400);
@@ -187,7 +237,7 @@ public class Testing {
 		
 	}
 	
-	private void quitLearning(Stage stage)
+	private void quitLearning()
 	{
 		boolean answer = ConfirmBox.display("Confirmation", "Are you sure you want to quit?");
 		if(answer)
@@ -197,4 +247,32 @@ public class Testing {
 		}
 	}
 	
+	private void dbQuery(String levelChoice, String categoryChoice, String from, String to)
+	{
+		ResultSet rs;
+		
+		if(categoryChoice.equals("Translation"))
+		{
+			categoryChoice = "Translate";
+			
+			try {
+				rs = db.query("SELECT w1.Word, w2.Word"
+						+ " FROM Words w1 NATURAL JOIN "+categoryChoice+" INNER JOIN Words w2 ON w2.WordID = Translate.WordID2"
+						+ " WHERE UserID = "+Login.userID+" AND Level = "+levelChoice
+						+ " AND w1.WordID = Translate.WordID1 AND w1.Language = '"+from+"' AND w2.Language = '"+to+"'");
+				
+				if(rs.isBeforeFirst())
+				{
+					while(rs.next())
+					{
+						resultSets.add(rs.getString(1) + " " + rs.getString(2));
+					}
+					iterator = resultSets.iterator();
+				}
+			} catch (SQLException e) {
+				System.out.println("Could not get resultset for testing.");
+				e.printStackTrace();
+			}
+		}
+	}
 }

@@ -1,3 +1,6 @@
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
@@ -126,7 +129,15 @@ public class TestFileCards {
 		grid.add(cancelButton, 2, 14);
 		
 		startButton.setOnAction(e -> {
-			new Testing(testFileCardsStage, ui, levelBox.getValue().toString(), categoryBox.getValue().toString(), sideABox.getValue(), sideBBox.getValue());
+			
+			if(checkIfTestingIsPossible(levelBox.getValue(), categoryBox.getValue(), sideABox.getValue(), sideBBox.getValue()))
+			{
+				new Testing(testFileCardsStage, ui, levelBox.getValue().toString(), categoryBox.getValue().toString(), sideABox.getValue(), sideBBox.getValue());
+			}
+			else
+			{
+				AlertBox.display("Error", "Could not find any words to start the testing\nwith your chosen specifications.");
+			}
 		});
 		
 		cancelButton.setOnAction(e -> {
@@ -134,7 +145,10 @@ public class TestFileCards {
 			new UserInterface(ui.getLoginStage(), ui.getName(), ui.getLoginScene());
 		});
 		
-		
+		testFileCardsStage.setOnCloseRequest(e -> {
+			e.consume();
+			quitLearning();
+		});
 		
 		//grid.setGridLinesVisible(true);
 		
@@ -145,7 +159,49 @@ public class TestFileCards {
 		
 		testFileCardsStage.setScene(testWindowScene);	
 		testFileCardsStage.setX((primScreenBounds.getWidth() - testFileCardsStage.getWidth()) / 2);
-		testFileCardsStage.setY((primScreenBounds.getHeight() - testFileCardsStage.getHeight()) / 2);
-		
+		testFileCardsStage.setY((primScreenBounds.getHeight() - testFileCardsStage.getHeight()) / 2);	
+	}
+	
+	private Boolean checkIfTestingIsPossible(String levelChoice, String categoryChoice, String from, String to)
+	{
+		HSQLDB db;
+		try {
+			db = HSQLDB.getInstance();
+			ResultSet rs;
+			
+			if(categoryBox.getValue().equals("Translation"))
+			{
+				categoryChoice = "Translate";
+				
+				try {
+					rs = db.query("SELECT w1.Word, w2.Word"
+							+ " FROM Words w1 NATURAL JOIN "+categoryChoice+" INNER JOIN Words w2 ON w2.WordID = Translate.WordID2"
+							+ " WHERE UserID = "+Login.userID+" AND Level = "+levelChoice
+							+ " AND w1.WordID = Translate.WordID1 AND w1.Language = '"+from+"' AND w2.Language = '"+to+"'");
+					
+					if(rs.isBeforeFirst())
+					{
+						return true;
+					}else return false;
+				} catch (SQLException e) {
+					System.out.println("Could not get resultset for testing.");
+					e.printStackTrace();
+				}
+			}
+		} catch (Exception e1) {
+			System.out.println("Could not get instance of db.");
+			e1.printStackTrace();
+		}
+		return false;
+	}
+	
+	private void quitLearning()
+	{
+		boolean answer = ConfirmBox.display("Confirmation", "Are you sure you want to quit?");
+		if(answer)
+		{
+			testFileCardsStage.close();
+			new UserInterface(testFileCardsStage, ui.getName(), ui.getLoginScene());
+		}
 	}
 }

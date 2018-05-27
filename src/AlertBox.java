@@ -3,6 +3,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -26,8 +27,9 @@ public class AlertBox {
 		confirmButton.setPrefHeight(25);
 		
 		VBox alertboxLayout = new VBox(20);
-		alertboxLayout.getChildren().addAll(alertLabel, confirmButton);
 		alertboxLayout.setAlignment(Pos.CENTER);
+		alertLabel.setTextAlignment(TextAlignment.CENTER);
+		alertboxLayout.getChildren().addAll(alertLabel, confirmButton);
 		
 		alertboxLayout.setId("pane2");
 		confirmButton.setId("buttonEditFileCards");
