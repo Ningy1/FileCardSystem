@@ -4,6 +4,7 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
@@ -17,24 +18,29 @@ public class Testing {
 	private String category;
 	private String level;
 	private String numOfCards;
+	private String from;
+	private Label categoryLabel;
 	private Label cardLabel = new Label("Kartei: ");
 	private Label outOfLabel = new Label("1/"+numOfCards);
 	private Label levelLabel;
-	private String language = "Something";
+	private String language;
 	private Label whatIsLabel = new Label("What is");
 	private Label fileCard = new Label("blablabla");
-	private Label inLanguageLabel = new Label("in "+language+"?");
+	private Label inLanguageLabel;
 	private TextField answerField = new TextField();
+	private TextArea answerArea = new TextArea();
 	private Label answerFileCard = new Label("blablablub");
 	private Label answerLabel = new Label("Wrong, the answer is: ");
 	private Button editButton = new Button("Edit Filecard");
 	private Button cancelButton = new Button("Quit learning");
 	private Button nextButton = new Button("Next");
 	
-	public Testing(Stage testFileCardsStage, UserInterface ui, String levelChoice, String categoryChoice)
+	public Testing(Stage testFileCardsStage, UserInterface ui, String levelChoice, String categoryChoice, String from, String to)
 	{	
 		category = categoryChoice;
 		level = levelChoice;
+		this.from = from;
+		language = to;
 		testingStage = testFileCardsStage;
 		this.ui = ui;
 		createTestingWindowScene();
@@ -72,32 +78,81 @@ public class Testing {
 		
 		grid.setId("pane2");
 		
-		grid.add(cardLabel, 0, 0);
-		GridPane.setHalignment(cardLabel, HPos.CENTER);
-		grid.add(outOfLabel, 1, 0);
-		GridPane.setHalignment(outOfLabel, HPos.LEFT);
-		grid.add(levelLabel, 5, 0);
-		GridPane.setHalignment(levelLabel, HPos.CENTER);
-		grid.add(pane, 0, 1);
-		grid.add(whatIsLabel, 1, 2);
-		GridPane.setHalignment(whatIsLabel, HPos.RIGHT);
-		grid.add(fileCard, 2, 2);
-		GridPane.setHalignment(fileCard, HPos.CENTER);
-		grid.add(inLanguageLabel, 3, 2);
-		GridPane.setHalignment(inLanguageLabel, HPos.LEFT);
-		grid.add(answerField, 2, 3, 2, 1);
-		GridPane.setHalignment(answerField, HPos.CENTER);
-		grid.add(nextButton, 4, 3);
-		GridPane.setHalignment(nextButton, HPos.LEFT);
-		grid.add(pane2, 0, 5);
-		grid.add(answerLabel, 1, 6);
-		GridPane.setHalignment(answerLabel, HPos.RIGHT);
-		grid.add(answerFileCard, 2, 6, 3, 1);
-		GridPane.setHalignment(answerFileCard, HPos.LEFT);
-		grid.add(editButton, 1, 8);
-		GridPane.setHalignment(editButton, HPos.CENTER);
-		grid.add(cancelButton, 4, 8);
-		GridPane.setHalignment(cancelButton, HPos.LEFT);
+		if(category.equals("Translation"))
+		{
+			inLanguageLabel = new Label("in "+language.toLowerCase()+"?");
+			
+			categoryLabel = new Label("Translate the word from "+from.toLowerCase()+" to "+language.toLowerCase()+"!");
+			categoryLabel.setId("headerTesting");
+			
+			grid.add(cardLabel, 0, 0);
+			GridPane.setHalignment(cardLabel, HPos.CENTER);
+			grid.add(outOfLabel, 1, 0);
+			GridPane.setHalignment(outOfLabel, HPos.LEFT);
+			grid.add(categoryLabel, 0, 1, 6, 2);
+			GridPane.setHalignment(categoryLabel, HPos.CENTER);
+			grid.add(levelLabel, 5, 0);
+			GridPane.setHalignment(levelLabel, HPos.CENTER);
+			grid.add(pane, 0, 3);
+			grid.add(whatIsLabel, 1, 4);
+			GridPane.setHalignment(whatIsLabel, HPos.RIGHT);
+			grid.add(fileCard, 2, 4);
+			GridPane.setHalignment(fileCard, HPos.CENTER);
+			grid.add(inLanguageLabel, 3, 4);
+			GridPane.setHalignment(inLanguageLabel, HPos.LEFT);
+			grid.add(answerField, 1, 5, 3, 1);
+			GridPane.setHalignment(answerField, HPos.RIGHT);
+			grid.add(nextButton, 4, 5);
+			GridPane.setHalignment(nextButton, HPos.LEFT);
+			grid.add(pane2, 0, 7);
+			grid.add(answerLabel, 1, 7, 1, 2);
+			GridPane.setHalignment(answerLabel, HPos.RIGHT);
+			grid.add(answerFileCard, 2, 7, 2, 2);
+			GridPane.setHalignment(answerFileCard, HPos.LEFT);
+			grid.add(editButton, 1, 10);
+			GridPane.setHalignment(editButton, HPos.CENTER);
+			grid.add(cancelButton, 4, 10);
+			GridPane.setHalignment(cancelButton, HPos.LEFT);
+		}
+		else
+		{
+			inLanguageLabel = new Label("?");
+			whatIsLabel = new Label("What means");
+			
+			categoryLabel = new Label("Give a definition for the word in "+from.toLowerCase()+"!");
+			categoryLabel.setId("headerTesting");
+			
+			grid.add(cardLabel, 0, 0);
+			GridPane.setHalignment(cardLabel, HPos.CENTER);
+			grid.add(outOfLabel, 1, 0);
+			GridPane.setHalignment(outOfLabel, HPos.LEFT);
+			grid.add(categoryLabel, 0, 1, 6, 2);
+			GridPane.setHalignment(categoryLabel, HPos.CENTER);
+			grid.add(levelLabel, 5, 0);
+			GridPane.setHalignment(levelLabel, HPos.CENTER);
+			grid.add(pane, 0, 3);
+			grid.add(whatIsLabel, 1, 4);
+			GridPane.setHalignment(whatIsLabel, HPos.RIGHT);
+			grid.add(fileCard, 2, 4);
+			GridPane.setHalignment(fileCard, HPos.CENTER);
+			grid.add(inLanguageLabel, 3, 4);
+			GridPane.setHalignment(inLanguageLabel, HPos.LEFT);
+			grid.add(answerArea, 1, 5, 3, 2);
+			GridPane.setHalignment(answerField, HPos.CENTER);
+			grid.add(nextButton, 4, 5, 1, 2);
+			GridPane.setHalignment(nextButton, HPos.LEFT);
+			grid.add(pane2, 0, 7);
+			grid.add(answerLabel, 1, 7, 1, 2);
+			GridPane.setHalignment(answerLabel, HPos.RIGHT);
+			grid.add(answerFileCard, 2, 7, 2, 2);
+			GridPane.setHalignment(answerFileCard, HPos.LEFT);
+			grid.add(editButton, 1, 10);
+			GridPane.setHalignment(editButton, HPos.CENTER);
+			grid.add(cancelButton, 4, 10);
+			GridPane.setHalignment(cancelButton, HPos.LEFT);
+		}
+		
+		
 		
 		//grid.setGridLinesVisible(true);
 		//answerLabel.setVisible(false);

@@ -18,7 +18,7 @@ public class TestFileCards {
 	private String name;
 	private Label filecardLabel = new Label("Filecard");
 	private Label categoryLabel = new Label("Category:");
-	private Label sideLabel = new Label("Side:");
+	private Label sideLabel = new Label("Language:");
 	private Label sideALabel = new Label("Side A");
 	private Label sideBLabel = new Label("Side B");
 	private Label levelLabel = new Label("Level:");
@@ -51,19 +51,46 @@ public class TestFileCards {
 		
 		categoryBox.setItems(optionsCategory);
 		categoryBox.setPromptText("Please choose a category");
-		sideABox.setItems(optionsSides);
-		sideABox.setPromptText("From");
-		sideBBox.setItems(optionsSides);
-		sideBBox.setPromptText("To");
+		
 		levelBox.setItems(optionsLevel);
 		levelBox.setValue("1");
 		
-		startButton.disableProperty().bind(
-				categoryBox.valueProperty().isNull()
-				.or(sideABox.valueProperty().isNull() )
-				.or(sideBBox.valueProperty().isNull() ) );
+		sideABox.setItems(optionsSides);
+		sideBBox.setItems(optionsSides);
+		sideABox.setPromptText("From");	
+		sideBBox.setPromptText("To");
 		
-		
+		categoryBox.setOnAction((event) -> {
+		    String selectedCategory = categoryBox.getSelectionModel().getSelectedItem();
+		   
+		    if(selectedCategory.equals("Translation"))
+		    {
+		    	sideABox.setValue(null);
+		    	sideBBox.setValue(null);
+				sideBBox.setVisible(true);
+		    	sideBLabel.setVisible(true);
+		    	sideALabel.setVisible(true);
+		    	
+		    	startButton.disableProperty().bind(
+						categoryBox.valueProperty().isNull()
+						.or(sideABox.valueProperty().isNull() )
+						.or(sideBBox.valueProperty().isNull() ) );
+		    	
+		    }
+		    else
+		    {
+		    	sideABox.setValue("English");
+		    	sideBBox.setValue(sideABox.getValue());
+		    	sideBBox.setVisible(false);
+		    	sideBLabel.setVisible(false);
+		    	sideALabel.setVisible(false);
+		    	
+		    	startButton.disableProperty().bind(
+						categoryBox.valueProperty().isNull()
+						.or(sideABox.valueProperty().isNull() ) );
+		    }
+		});
+	
 		GridPane.setHalignment(filecardLabel, HPos.CENTER);
 		GridPane.setHalignment(categoryLabel, HPos.RIGHT);
 		GridPane.setHalignment(sideLabel, HPos.RIGHT);
@@ -99,7 +126,7 @@ public class TestFileCards {
 		grid.add(cancelButton, 2, 14);
 		
 		startButton.setOnAction(e -> {
-			new Testing(testFileCardsStage, ui, levelBox.getValue().toString(), categoryBox.getValue().toString());
+			new Testing(testFileCardsStage, ui, levelBox.getValue().toString(), categoryBox.getValue().toString(), sideABox.getValue(), sideBBox.getValue());
 		});
 		
 		cancelButton.setOnAction(e -> {
