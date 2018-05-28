@@ -149,7 +149,11 @@ public class TestFileCards {
 		
 		testFileCardsStage.setOnCloseRequest(e -> {
 			e.consume();
-			quitLearning();
+			boolean answer = ConfirmBox.display("Confirmation", "Are you sure you want to quit?");
+			if(answer)
+			{
+				testFileCardsStage.close();
+			}
 		});
 		
 		//grid.setGridLinesVisible(true);
@@ -176,10 +180,13 @@ public class TestFileCards {
 				categoryChoice = "Translate";
 				
 				try {
-					rs = db.query("SELECT w1.Word, w2.Word"
-							+ " FROM Words w1 NATURAL JOIN "+categoryChoice+" INNER JOIN Words w2 ON w2.WordID = Translate.WordID2"
-							+ " WHERE UserID = "+Login.userID+" AND Level = "+levelChoice
-							+ " AND w1.WordID = Translate.WordID1 AND w1.Language = '"+from+"' AND w2.Language = '"+to+"'");
+				
+					rs = db.query("select w1.wordid, w2.wordid, w1.word, w2.word "
+							+ "from words w1 join words w2 on w1.userid= w1.userid "
+							+ "where  ((w1.wordid, w2.wordid) in (select wordid1, wordid2 from translate where Level = "+levelChoice+") "
+							+ "or (w1.wordid, w2.wordid) in (select wordid2, wordid1 from translate where Level = "+levelChoice+")) "
+							+ "and (w1.language = '" + from + "'  and w2.language='"
+							+ to + "') " + "and w1.userid = " + Login.userID + " ");
 					
 					if(rs.isBeforeFirst())
 					{

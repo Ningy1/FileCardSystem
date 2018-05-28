@@ -42,6 +42,7 @@ public class Testing {
 	private TextArea answerArea = new TextArea();
 	private Label answerFileCard;
 	private Label answerLabel;
+	private Button checkButton = new Button("Check");
 	private Button editButton = new Button("Edit Filecard");
 	private Button cancelButton = new Button("Quit learning");
 	private Button nextButton = new Button("Next");
@@ -72,8 +73,8 @@ public class Testing {
 		String tmp = iterator.next();
 		String[] splittedTmp = tmp.split(" ");
 		
-		fileCard = new Label(splittedTmp[0]);
-		answerFileCard = new Label(splittedTmp[1]);
+		fileCard = new Label(splittedTmp[2]);
+		answerFileCard = new Label(splittedTmp[3]);
 		answerLabel = new Label("blablub");
 		
 		cardLabel.setId("headerTesting");
@@ -82,6 +83,7 @@ public class Testing {
 		nextButton.setId("button");
 		editButton.setId("button");
 		cancelButton.setId("button");
+		checkButton.setId("button");
 		
 		answerField.setPromptText("Enter your answer");
 		fileCard.setUnderline(true);
@@ -131,12 +133,14 @@ public class Testing {
 			GridPane.setHalignment(inLanguageLabel, HPos.LEFT);
 			grid.add(answerField, 1, 5, 3, 1);
 			GridPane.setHalignment(answerField, HPos.RIGHT);
-			grid.add(nextButton, 4, 5);
+			grid.add(checkButton, 4, 5);
+			GridPane.setHalignment(checkButton, HPos.LEFT);
+			grid.add(nextButton, 5, 5);
 			GridPane.setHalignment(nextButton, HPos.LEFT);
 			grid.add(pane2, 0, 7);
 			grid.add(answerLabel, 1, 7, 1, 2);
 			GridPane.setHalignment(answerLabel, HPos.RIGHT);
-			grid.add(answerFileCard, 2, 7, 2, 2);
+			grid.add(answerFileCard, 2, 7, 3, 2);
 			GridPane.setHalignment(answerFileCard, HPos.LEFT);
 			grid.add(editButton, 1, 10);
 			GridPane.setHalignment(editButton, HPos.CENTER);
@@ -168,7 +172,9 @@ public class Testing {
 			GridPane.setHalignment(inLanguageLabel, HPos.LEFT);
 			grid.add(answerArea, 1, 5, 3, 2);
 			GridPane.setHalignment(answerField, HPos.CENTER);
-			grid.add(nextButton, 4, 5, 1, 2);
+			grid.add(checkButton, 4, 5);
+			GridPane.setHalignment(checkButton, HPos.LEFT);
+			grid.add(nextButton, 5, 5, 1, 2);
 			GridPane.setHalignment(nextButton, HPos.LEFT);
 			grid.add(pane2, 0, 7);
 			grid.add(answerLabel, 1, 7, 1, 2);
@@ -190,16 +196,24 @@ public class Testing {
 	        {
 	            if (key.getCode().equals(KeyCode.ENTER))
 	            {
-	            	answerField.setDisable(true);
-	            	
 	            	if(answerField.getText().equals(answerFileCard.getText()))
 	            	{
+	            		answerField.setDisable(true);
+	            		
 	            		answerLabel.setText("Correct, well done!");
 	            		answerLabel.setVisible(true);
 		        		editButton.setVisible(true);
-		        		
-	            	}else{
+	            	}
 	            	
+	            	if(answerField.getText().trim().length() == 0)
+	    			{
+	    				answerLabel.setText("You didn't type anything!");
+	    				answerLabel.setVisible(true);
+	    				
+	    			}else{
+	            	
+	            		answerField.setDisable(true);
+	            		
 	            		answerLabel.setText("Wrong, the anwer is: ");
 	            		answerLabel.setVisible(true);
 	            		answerFileCard.setVisible(true);
@@ -208,6 +222,33 @@ public class Testing {
 	            }
 	        }
 	    });
+		
+		checkButton.setOnAction(e -> {
+		
+			if(answerField.getText().equals(answerFileCard.getText()))
+        	{
+        		answerField.setDisable(true);
+        		
+        		answerLabel.setText("Correct, well done!");
+        		answerLabel.setVisible(true);
+        		editButton.setVisible(true);
+        	}
+        	
+        	if(answerField.getText().trim().length() == 0)
+			{
+				answerLabel.setText("You didn't type anything!");
+				answerLabel.setVisible(true);
+				
+			}else{
+        	
+        		answerField.setDisable(true);
+        		
+        		answerLabel.setText("Wrong, the anwer is: ");
+        		answerLabel.setVisible(true);
+        		answerFileCard.setVisible(true);
+        		editButton.setVisible(true);
+        	}	
+		});
 		
 		nextButton.setOnAction(e -> {
 			 
@@ -218,12 +259,24 @@ public class Testing {
 		});
 		
 		cancelButton.setOnAction(e -> {
-			quitLearning();
+			
+			boolean answer = ConfirmBox.display("Confirmation", "Do you want to stop learning?");
+			if(answer)
+			{
+				new UserInterface(testingStage, ui.getName(), ui.getLoginScene());
+				testingStage.close();
+			}
 		});
 		
 		testingStage.setOnCloseRequest(e -> {
 			e.consume();
-			quitLearning();
+			
+			boolean answer = ConfirmBox.display("Confirmation", "Are you sure you want to quit?");
+			if(answer)
+			{
+				testingStage.close();
+				
+			}
 		});
 	
 		Scene testingScene = new Scene(grid, 800, 400);
@@ -237,16 +290,6 @@ public class Testing {
 		
 	}
 	
-	private void quitLearning()
-	{
-		boolean answer = ConfirmBox.display("Confirmation", "Are you sure you want to quit?");
-		if(answer)
-		{
-			testingStage.close();
-			new UserInterface(testingStage, ui.getName(), ui.getLoginScene());
-		}
-	}
-	
 	private void dbQuery(String levelChoice, String categoryChoice, String from, String to)
 	{
 		ResultSet rs;
@@ -256,16 +299,19 @@ public class Testing {
 			categoryChoice = "Translate";
 			
 			try {
-				rs = db.query("SELECT w1.Word, w2.Word"
-						+ " FROM Words w1 NATURAL JOIN "+categoryChoice+" INNER JOIN Words w2 ON w2.WordID = Translate.WordID2"
-						+ " WHERE UserID = "+Login.userID+" AND Level = "+levelChoice
-						+ " AND w1.WordID = Translate.WordID1 AND w1.Language = '"+from+"' AND w2.Language = '"+to+"'");
+			
+				rs = db.query("select w1.wordid, w2.wordid, w1.word, w2.word "
+						+ "from words w1 join words w2 on w1.userid= w1.userid "
+						+ "where  ((w1.wordid, w2.wordid) in (select wordid1, wordid2 from translate where Level = "+levelChoice+") "
+						+ "or (w1.wordid, w2.wordid) in (select wordid2, wordid1 from translate where Level = "+levelChoice+")) "
+						+ "and (w1.language = '" + from + "'  and w2.language='"
+						+ to + "') " + "and w1.userid = " + Login.userID + " ");
 				
 				if(rs.isBeforeFirst())
 				{
 					while(rs.next())
 					{
-						resultSets.add(rs.getString(1) + " " + rs.getString(2));
+						resultSets.add(rs.getString(1) + " " + rs.getString(2) + " " + rs.getString(3) + " " + rs.getString(4));
 					}
 					iterator = resultSets.iterator();
 				}

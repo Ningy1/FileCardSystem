@@ -27,6 +27,7 @@ public class AlertBox {
 		confirmButton.setPrefHeight(25);
 		
 		VBox alertboxLayout = new VBox(20);
+		confirmButton.setAlignment(Pos.CENTER);
 		alertboxLayout.setAlignment(Pos.CENTER);
 		alertLabel.setTextAlignment(TextAlignment.CENTER);
 		alertboxLayout.getChildren().addAll(alertLabel, confirmButton);
