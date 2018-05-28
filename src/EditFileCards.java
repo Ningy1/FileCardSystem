@@ -793,9 +793,38 @@ public class EditFileCards {
 
 	}
 	
+	/**
+	 * This method closes the editStage and shows again the UserInterface
+	 * 
+	 * @param editStage
+	 */
 	public void closeEditStage(Stage editStage) {
 		editStage.close();
 		uiStage.show();
+	}
+	/**
+	 * This method asks the User with a dialog box if the user really wants to close the program
+	 * If the answer is true, the program is closed
+	 * 
+	 * @param editStage
+	 */
+	public void closeProgram(Stage editStage) {
+		editStage.setOnCloseRequest(e ->{
+			e.consume();
+			boolean answer = ConfirmBox.display("Confirmation", "Are you sure you want to quit?");
+			if(answer){
+				editStage.close();
+				System.out.println("Close Connection");
+				try {
+					HSQLDB.getInstance().close();
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+			}
+			
+		});
 	}
 	
 }
