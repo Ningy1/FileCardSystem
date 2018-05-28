@@ -38,6 +38,7 @@ public class EditFileCardsLayout {
 	private TableView<FileCardsDB> table = new TableView<FileCardsDB>();
 	// Layout stage
 	private Stage editStage = new Stage();
+	private Stage uiStage;
 	// Arangement of Objects in the stage
 	private GridPane root = new GridPane();
 	private HBox hboxTextFields = new HBox();
@@ -68,15 +69,15 @@ public class EditFileCardsLayout {
 	
 	
 	
-	public EditFileCardsLayout(EditFileCards control) {
+	public EditFileCardsLayout(EditFileCards control, Stage uiStage) {
 		this.control = control;
+		this.uiStage = uiStage;
 		// Name the new stage (window)
 		editStage.setTitle("MyFileCards");
 		// Set MinMax of the buttons, textfields ect.
 		setElements();
 		// Arrange Elements in the window
-		arrangeElements();
-		
+		arrangeElements();		
 	}
 
 	/**
@@ -244,10 +245,13 @@ public class EditFileCardsLayout {
 		GridPane.setConstraints(closeButton, 0, 6);
 		
 		// Set size properties of the stage
-		editStage.setWidth(400);
-		editStage.setHeight(450);
 		editStage.setMaxWidth(addSideA.getMaxWidth() + addSideB.getMaxWidth());
-
+		// Open Stage on same size and extend as previous Stage
+		editStage.setWidth(uiStage.getWidth());
+		editStage.setHeight(uiStage.getHeight());
+		editStage.setX(uiStage.getX());
+		editStage.setY(uiStage.getY());		
+		
 		// Bin the width of the table(and following also the other elements) to the
 		// width of the stage
 		table.prefWidthProperty().bind(editStage.widthProperty());

@@ -51,7 +51,7 @@ public class EditFileCards {
 		//Hide userInterface
 		uiStage.hide();
 		// Construct the View
-		view = new EditFileCardsLayout(this);
+		view = new EditFileCardsLayout(this, uiStage);
 		// Prepare the columns of the TableView
 		view.setColumns();
 		// Feed the tableview with initial data
@@ -801,6 +801,10 @@ public class EditFileCards {
 	public void closeEditStage(Stage editStage) {
 		editStage.close();
 		uiStage.show();
+		uiStage.setX(editStage.getX());
+		uiStage.setY(editStage.getY());
+		uiStage.setWidth(editStage.getWidth());
+		uiStage.setHeight(editStage.getHeight());
 	}
 	/**
 	 * This method asks the User with a dialog box if the user really wants to close the program
