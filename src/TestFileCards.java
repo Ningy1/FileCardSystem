@@ -196,6 +196,18 @@ public class TestFileCards {
 					System.out.println("Could not get resultset for testing.");
 					e.printStackTrace();
 				}
+			}else
+			{
+				categoryChoice = "Definition";
+				
+				rs = db.query("SELECT w.wordID, d.definitionID, w.word, d.Definition  "
+						+ "FROM Words w NATURAL JOIN Definition d " + "WHERE w.UserID = " + Login.userID
+						+ "AND w.Language = '" + from + "' ");
+				
+				if(rs.isBeforeFirst())
+				{
+					return true;
+				}else return false;
 			}
 		} catch (Exception e1) {
 			System.out.println("Could not get instance of db.");

@@ -71,7 +71,7 @@ public class Testing {
 		outOfLabel = new Label("1/"+numOfCards);
 		
 		String tmp = iterator.next();
-		String[] splittedTmp = tmp.split(" ");
+		String[] splittedTmp = tmp.split("-_-");
 		
 		fileCard = new Label(splittedTmp[2]);
 		answerFileCard = new Label(splittedTmp[3]);
@@ -172,7 +172,7 @@ public class Testing {
 			GridPane.setHalignment(inLanguageLabel, HPos.LEFT);
 			grid.add(answerArea, 1, 5, 3, 2);
 			GridPane.setHalignment(answerField, HPos.CENTER);
-			grid.add(checkButton, 4, 5);
+			grid.add(checkButton, 4, 5, 1, 2);
 			GridPane.setHalignment(checkButton, HPos.LEFT);
 			grid.add(nextButton, 5, 5, 1, 2);
 			GridPane.setHalignment(nextButton, HPos.LEFT);
@@ -196,16 +196,18 @@ public class Testing {
 	        {
 	            if (key.getCode().equals(KeyCode.ENTER))
 	            {
-	            	if(answerField.getText().equals(answerFileCard.getText()))
+	            	if((answerField.getText().equals(answerFileCard.getText()) && category.equals("Translation")) ||
+	            			((answerArea.getText().equals(answerFileCard.getText()) && category.equals("Definition"))))
 	            	{
+	    				System.out.println("test");
 	            		answerField.setDisable(true);
+	            		answerArea.setDisable(true);
 	            		
 	            		answerLabel.setText("Correct, well done!");
 	            		answerLabel.setVisible(true);
-		        		editButton.setVisible(true);
-	            	}
-	            	
-	            	if(answerField.getText().trim().length() == 0)
+	            		editButton.setVisible(true);
+	            	}else if((answerField.getText().trim().length() == 0 && category.equals("Translation")) || 
+	            			((answerArea.getText().trim().length() == 0 && category.equals("Definition"))))
 	    			{
 	    				answerLabel.setText("You didn't type anything!");
 	    				answerLabel.setVisible(true);
@@ -213,6 +215,7 @@ public class Testing {
 	    			}else{
 	            	
 	            		answerField.setDisable(true);
+	            		answerArea.setDisable(true);
 	            		
 	            		answerLabel.setText("Wrong, the anwer is: ");
 	            		answerLabel.setVisible(true);
@@ -224,17 +227,19 @@ public class Testing {
 	    });
 		
 		checkButton.setOnAction(e -> {
-		
-			if(answerField.getText().equals(answerFileCard.getText()))
+			
+			if((answerField.getText().equals(answerFileCard.getText()) && category.equals("Translation")) ||
+        			((answerArea.getText().equals(answerFileCard.getText()) && category.equals("Definition"))))
         	{
+				System.out.println("test");
         		answerField.setDisable(true);
+        		answerArea.setDisable(true);
         		
         		answerLabel.setText("Correct, well done!");
         		answerLabel.setVisible(true);
         		editButton.setVisible(true);
-        	}
-        	
-        	if(answerField.getText().trim().length() == 0)
+        	}else if((answerField.getText().trim().length() == 0 && category.equals("Translation")) || 
+        			((answerArea.getText().trim().length() == 0 && category.equals("Definition"))))
 			{
 				answerLabel.setText("You didn't type anything!");
 				answerLabel.setVisible(true);
@@ -242,12 +247,13 @@ public class Testing {
 			}else{
         	
         		answerField.setDisable(true);
+        		answerArea.setDisable(true);
         		
         		answerLabel.setText("Wrong, the anwer is: ");
         		answerLabel.setVisible(true);
         		answerFileCard.setVisible(true);
         		editButton.setVisible(true);
-        	}	
+        	}
 		});
 		
 		nextButton.setOnAction(e -> {
@@ -311,7 +317,27 @@ public class Testing {
 				{
 					while(rs.next())
 					{
-						resultSets.add(rs.getString(1) + " " + rs.getString(2) + " " + rs.getString(3) + " " + rs.getString(4));
+						resultSets.add(rs.getString(1) + "-_-" + rs.getString(2) + "-_-" + rs.getString(3) + "-_-" + rs.getString(4));
+					}
+					iterator = resultSets.iterator();
+				}
+			} catch (SQLException e) {
+				System.out.println("Could not get resultset for testing.");
+				e.printStackTrace();
+			}
+		}else{
+			categoryChoice = "Definition";
+			
+			try {
+				rs = db.query("SELECT w.wordID, d.definitionID, w.word, d.Definition  "
+						+ "FROM Words w NATURAL JOIN Definition d " + "WHERE w.UserID = " + Login.userID
+						+ "AND w.Language = '" + from + "' ");
+				
+				if(rs.isBeforeFirst())
+				{
+					while(rs.next())
+					{
+						resultSets.add(rs.getString(1) + "-_-" + rs.getString(2) + "-_-" + rs.getString(3) + "-_-" + rs.getString(4));
 					}
 					iterator = resultSets.iterator();
 				}
