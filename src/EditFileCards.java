@@ -801,10 +801,10 @@ public class EditFileCards {
 	public void closeEditStage(Stage editStage) {
 		editStage.close();
 		uiStage.show();
-		uiStage.setX(editStage.getX());
-		uiStage.setY(editStage.getY());
-		uiStage.setWidth(editStage.getWidth());
-		uiStage.setHeight(editStage.getHeight());
+		uiStage.setWidth(1000);
+		uiStage.setHeight(600);
+		uiStage.setX((editStage.getX()+editStage.getWidth()/2)-uiStage.getWidth()/2);
+		uiStage.setY(editStage.getY()+editStage.getHeight()/2-uiStage.getHeight()/2);		
 	}
 	/**
 	 * This method asks the User with a dialog box if the user really wants to close the program

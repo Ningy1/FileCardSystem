@@ -247,11 +247,10 @@ public class EditFileCardsLayout {
 		// Set size properties of the stage
 		editStage.setMaxWidth(addSideA.getMaxWidth() + addSideB.getMaxWidth());
 		// Open Stage on same size and extend as previous Stage
-		editStage.setWidth(uiStage.getWidth());
-		editStage.setHeight(uiStage.getHeight());
-		editStage.setX(uiStage.getX());
-		editStage.setY(uiStage.getY());		
-		
+		editStage.setWidth(700);
+		editStage.setHeight(400);
+		editStage.setX((uiStage.getX()+uiStage.getWidth()/2)-editStage.getWidth()/2);
+		editStage.setY(uiStage.getY()+uiStage.getHeight()/2-editStage.getHeight()/2);		
 		// Bin the width of the table(and following also the other elements) to the
 		// width of the stage
 		table.prefWidthProperty().bind(editStage.widthProperty());
