@@ -105,8 +105,22 @@ public class ResultsWindow {
 	    yAxislvlDef = new NumberAxis();
 	    xAxislvlVoc = new CategoryAxis();
 	    yAxislvlVoc = new NumberAxis();
+	    
 	    yAxisVoc.setAutoRanging(false);
+	    yAxisVoc.setTickUnit(1);
+	    yAxisVoc.setMinorTickVisible(true);
+	    
 	    yAxisDef.setAutoRanging(false);
+	    yAxisDef.setTickUnit(1);
+	    yAxisDef.setMinorTickVisible(true);
+	    
+	    yAxislvlDef.setAutoRanging(false);
+	    yAxislvlDef.setTickUnit(1);
+	    yAxislvlDef.setMinorTickVisible(true);
+	    
+	    yAxislvlVoc.setAutoRanging(false);
+	    yAxislvlVoc.setTickUnit(1);
+	    yAxislvlVoc.setMinorTickVisible(true);
 	    
 	    
 	    BarChart<String,Number> vocabularyChart = new BarChart<String,Number>(xAxisVoc,
@@ -188,12 +202,6 @@ public class ResultsWindow {
 	    							
 	    				doublerCheck(language1, language2,seriesVocabulary1,
 	    								 barflowVocabulary,doublerCheck,rsCounter);
-	    				/*		
-	    		 String concatString = new StringBuffer(language1).append(" - ").
-	    				 										append(language2).toString();
-	    			seriesVocabulary1.getData().add(new Data<String, Number>(concatString, 
-	    					0));
-	    			barflowVocabulary.add(rsCounter.getInt(1));*/
 	    				}
 	    				}
 	    		}
@@ -224,6 +232,8 @@ public class ResultsWindow {
 	    
 	    	
 	    	vocabularyChart.getData().addAll(seriesVocabulary1);
+	    	//Call the function directly to avoid that the default boundary 
+	    	//will be depicteted
 	    	dynamicChange(tabVocabulary,barflowVocabulary,vocabularyChart,yAxisVoc);
 	    	
 	    	definitionChart.getData().addAll(seriesDefinition1);
@@ -386,6 +396,7 @@ public class ResultsWindow {
 	private void dynamicChange(Tab tabDefinition, ArrayList<Integer> barflow,
 			BarChart<String, Number> barchart, NumberAxis yAxis) {
 		if(!barflow.isEmpty()) {
+		//To avoid the default empty BarChart Y-Axis boundary
 		yAxis.setUpperBound(Collections.max(barflow)+5);
 		Timeline timeline = new Timeline();
 	    timeline.getKeyFrames().add(new KeyFrame(Duration.millis(50), new EventHandler<ActionEvent>() {
@@ -394,9 +405,9 @@ public class ResultsWindow {
 	    	   int number = -1;
 	           for (XYChart.Series<String, Number> series : barchart.getData()) {
 	               for (XYChart.Data<String, Number> data : series.getData()) {
-	                   //Number yValue = data.getYValue();
 	            	   number++;
 	            	   double serieValue = barflow.get(number);
+	            	   //for a steady and smoothly increase
 	                   for(double i=0.0; i <= serieValue; i++) {
 	                	   for(double x=0.0; x<=i;x=x+0.5) {
 	                	   data.setYValue(x);
