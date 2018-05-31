@@ -202,7 +202,7 @@ public class TestFileCards {
 				
 				rs = db.query("SELECT w.wordID, d.definitionID, w.word, d.Definition  "
 						+ "FROM Words w NATURAL JOIN Definition d " + "WHERE w.UserID = " + Login.userID
-						+ "AND w.Language = '" + from + "' ");
+						+ "AND w.Language = '" + from + "' and d.Level= "+levelChoice+"");
 				
 				if(rs.isBeforeFirst())
 				{

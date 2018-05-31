@@ -200,7 +200,6 @@ public class Testing {
 	            	if((answerField.getText().equals(answerFileCard.getText()) && category.equals("Translation")) ||
 	            			((answerArea.getText().equals(answerFileCard.getText()) && category.equals("Definition"))))
 	            	{
-	    				System.out.println("test");
 	            		answerField.setDisable(true);
 	            		answerArea.setDisable(true);
 	            		
@@ -366,7 +365,7 @@ public class Testing {
 			try {
 				rs = db.query("SELECT w.wordID, d.definitionID, w.word, d.Definition  "
 						+ "FROM Words w NATURAL JOIN Definition d " + "WHERE w.UserID = " + Login.userID
-						+ "AND w.Language = '" + from + "' ");
+						+ "AND w.Language = '" + from + "' AND d.Level = "+levelChoice+"");
 				
 				if(rs.isBeforeFirst())
 				{
