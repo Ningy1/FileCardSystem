@@ -17,6 +17,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.FileChooser;
+import javafx.stage.Popup;
 import javafx.stage.Stage;
 
 /**
@@ -189,6 +190,9 @@ public class EditFileCards {
 					data.add(new FileCardsDB(wordID1, wordID2, word1, word2, category, language1, language2));
 				} else {
 					System.out.println("Already existing translate");
+					if(!InfoPopup.active) {
+						new InfoPopup("Entry already existing", 3, view.getEditStage());
+					}
 				}
 				rs = HSQLDB.getInstance()
 						.query("SELECT * " + "FROM Translate " + "WHERE (WordID1 =" + wordID1 + " " + "AND WordID2 ="
@@ -212,6 +216,9 @@ public class EditFileCards {
 					data.add(new FileCardsDB(wordID1, wordID2, word1, word2, category, language1, language2));
 				} else {
 					System.out.println("Already existing definition");
+					if(!InfoPopup.active) {
+						new InfoPopup("Entry already existing", 3, view.getEditStage());
+					}
 				}
 				rs = HSQLDB.getInstance().query("SELECT * " + "FROM Definition " + "WHERE WordID =" + wordID1 + " "
 						+ "AND definition ='" + word2 + "'");
@@ -312,6 +319,9 @@ public class EditFileCards {
 				} else {
 					System.out.println("DeleteRow");
 					deleteCurrentEntry(view.getFilterCategory().getValue(), view.getTable());
+					if(!InfoPopup.active) {
+						new InfoPopup("Entry already existing", 3, view.getEditStage());
+					}
 				}
 			} else if (category.equals("Definition")) {
 				rs = isDuplicateWord(word1New, language1, userID);
@@ -336,6 +346,9 @@ public class EditFileCards {
 				} else {
 					System.out.println("DeleteRow");
 					deleteCurrentEntry(view.getFilterCategory().getValue(), view.getTable());
+					if(!InfoPopup.active) {
+						new InfoPopup("Entry already existing", 3, view.getEditStage());
+					}
 				}
 			}
 		} catch (Exception e) {
