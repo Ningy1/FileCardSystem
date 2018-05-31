@@ -459,4 +459,8 @@ public class EditFileCardsLayout {
 		this.filterCategory = filterCategory;
 	}
 
+	public Stage getEditStage() {
+		return editStage;
+	}
+
 }
