@@ -413,7 +413,7 @@ public class Testing {
 		if(categoryChoice.equals("Translation"))
 		{
 			try {
-				HSQLDB.getInstance().update("UPDATE Translate " + "SET Level =" + levelUp + " " + " WHERE (WordID1 = " + wordID1 + ")");
+				HSQLDB.getInstance().update("UPDATE Translate " + "SET Level =" + levelUp + " " + " WHERE (WordID1 = " + wordID1 + " AND WordID2 = " + wordID2 + ")");
 			} catch (SQLException e) {
 				System.out.println("Could not update level of Translate table.");
 				e.printStackTrace();

@@ -215,14 +215,4 @@ public class TestFileCards {
 		}
 		return false;
 	}
-	
-	private void quitLearning()
-	{
-		boolean answer = ConfirmBox.display("Confirmation", "Are you sure you want to quit?");
-		if(answer)
-		{
-			testFileCardsStage.close();
-			new UserInterface(testFileCardsStage, ui.getName(), ui.getLoginScene());
-		}
-	}
 }
