@@ -73,7 +73,6 @@ public class ResultsWindow {
 	
 	//need this parameters to come back to the User Interface-Scene
 	ResultsWindow(Stage primaryStage, Scene uiScene) {
-		Login.userID=0;
 		
 		barflowDefinition = new ArrayList<Integer>();
 		barflowVocabulary = new ArrayList<Integer>();
