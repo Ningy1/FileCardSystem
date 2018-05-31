@@ -235,13 +235,7 @@ public class Testing {
 	            		answerFileCard.setVisible(true);
 	            		editButton.setVisible(true);
 	            		
-	            		if(!(level.equals("1")))
-	            		{
-	            			levelUp = -1;
-	            		}else
-	            			levelUp = 0;
-	            		
-	            		dbUpdateQuery(Integer.parseInt(level)+levelUp, splittedTmp[0], splittedTmp[1], category);
+	            		dbUpdateQuery(1, splittedTmp[0], splittedTmp[1], category);
 	            	}
 	            }
 	        }
@@ -259,12 +253,13 @@ public class Testing {
         		answerLabel.setVisible(true);
         		editButton.setVisible(true);
         		
+        		
         		if(!(level.equals("4")))
         		{
         			levelUp = 1;
         		}else
         			levelUp = 0;
-        
+        		
         		dbUpdateQuery(Integer.parseInt(level)+levelUp, splittedTmp[0], splittedTmp[1], category);
         		
         	}else if((answerField.getText().trim().length() == 0 && category.equals("Translation")) || 
@@ -283,14 +278,8 @@ public class Testing {
         		answerFileCard.setVisible(true);
         		editButton.setVisible(true);
         		
-        		if(!(level.equals("1")))
-        		{
-        			levelUp = -1;
-        		}else
-        			levelUp = 0;
-        		
-        		dbUpdateQuery(Integer.parseInt(level)+levelUp, splittedTmp[0], splittedTmp[1], category);
-			}
+        		dbUpdateQuery(1, splittedTmp[0], splittedTmp[1], category);
+        	}
 		});
 		
 		nextButton.setOnAction(e -> {
@@ -375,9 +364,7 @@ public class Testing {
 		ResultSet rs;
 		
 		if(categoryChoice.equals("Translation"))
-		{
-			categoryChoice = "Translate";
-			
+		{	
 			try {
 			
 				rs = db.query("select w1.wordid, w2.wordid, w1.word, w2.word "
@@ -400,7 +387,6 @@ public class Testing {
 				e.printStackTrace();
 			}
 		}else{
-			categoryChoice = "Definition";
 			
 			try {
 				rs = db.query("SELECT w.wordID, d.definitionID, w.word, d.Definition  "
@@ -424,8 +410,6 @@ public class Testing {
 	
 	private void dbUpdateQuery(Integer levelUp, String wordID1, String wordID2, String categoryChoice) 
 	{	
-		System.out.println(levelUp + "    " + wordID1 + "   " + wordID2 + "   " + categoryChoice);
-		
 		if(categoryChoice.equals("Translation"))
 		{
 			try {
