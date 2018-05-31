@@ -46,6 +46,7 @@ public class Testing {
 	private Button editButton = new Button("Edit Filecard");
 	private Button cancelButton = new Button("Quit learning");
 	private Button nextButton = new Button("Next");
+	private Integer levelUp = 0;
 	
 	public Testing(Stage testFileCardsStage, UserInterface ui, String levelChoice, String categoryChoice, String from, String to)
 	{	
@@ -206,6 +207,15 @@ public class Testing {
 	            		answerLabel.setText("Correct, well done!");
 	            		answerLabel.setVisible(true);
 	            		editButton.setVisible(true);
+	            		
+	            		if(!(level.equals("4")))
+	            		{
+	            			levelUp = 1;
+	            		}else
+	            			levelUp = 0;
+	            		
+	            		dbUpdateQuery(Integer.parseInt(level)+levelUp, splittedTmp[0], splittedTmp[1], category);
+	            		
 	            	}else if((answerField.getText().trim().length() == 0 && category.equals("Translation")) || 
 	            			((answerArea.getText().trim().length() == 0 && category.equals("Definition"))))
 	    			{
@@ -221,6 +231,14 @@ public class Testing {
 	            		answerLabel.setVisible(true);
 	            		answerFileCard.setVisible(true);
 	            		editButton.setVisible(true);
+	            		
+	            		if(!(level.equals("1")))
+	            		{
+	            			levelUp = -1;
+	            		}else
+	            			levelUp = 0;
+	            		
+	            		dbUpdateQuery(Integer.parseInt(level)+levelUp, splittedTmp[0], splittedTmp[1], category);
 	            	}
 	            }
 	        }
@@ -238,6 +256,15 @@ public class Testing {
         		answerLabel.setText("Correct, well done!");
         		answerLabel.setVisible(true);
         		editButton.setVisible(true);
+        		
+        		if(!(level.equals("4")))
+        		{
+        			levelUp = 1;
+        		}else
+        			levelUp = 0;
+        
+        		dbUpdateQuery(Integer.parseInt(level)+levelUp, splittedTmp[0], splittedTmp[1], category);
+        		
         	}else if((answerField.getText().trim().length() == 0 && category.equals("Translation")) || 
         			((answerArea.getText().trim().length() == 0 && category.equals("Definition"))))
 			{
@@ -253,7 +280,15 @@ public class Testing {
         		answerLabel.setVisible(true);
         		answerFileCard.setVisible(true);
         		editButton.setVisible(true);
-        	}
+        		
+        		if(!(level.equals("1")))
+        		{
+        			levelUp = -1;
+        		}else
+        			levelUp = 0;
+        		
+        		dbUpdateQuery(Integer.parseInt(level)+levelUp, splittedTmp[0], splittedTmp[1], category);
+			}
 		});
 		
 		nextButton.setOnAction(e -> {
@@ -343,6 +378,37 @@ public class Testing {
 				}
 			} catch (SQLException e) {
 				System.out.println("Could not get resultset for testing.");
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	private void dbUpdateQuery(Integer levelUp, String wordID1, String wordID2, String categoryChoice) 
+	{	
+		if(categoryChoice.equals("Translation"))
+		{
+			categoryChoice = "Translate";
+			
+			try {
+				HSQLDB.getInstance().update("UPDATE Translate " + "SET Level =" + levelUp + " " + " WHERE (WordID1 = " + wordID1 + "" + " AND WordID2 =" + wordID2 + ")");
+			} catch (SQLException e) {
+				System.out.println("Could not update level of Translate table.");
+				e.printStackTrace();
+			} catch (Exception e) {
+				System.out.println("Could not update level of Translate table.");
+				e.printStackTrace();
+			}
+		}else {
+			
+			categoryChoice = "Definition";
+			
+			try {
+				HSQLDB.getInstance().update("UPDATE Definition " + "SET Level =" + levelUp + " " + " WHERE (WordID = " + wordID1 + "" + " AND DefinitionID =" + wordID2 + ")");
+			} catch (SQLException e) {
+				System.out.println("Could not update level of Definition table.");
+				e.printStackTrace();
+			} catch (Exception e) {
+				System.out.println("Could not update level of Definition table.");
 				e.printStackTrace();
 			}
 		}
