@@ -22,6 +22,14 @@
     -fx-alignment: center;
 }
 
+#paneTabPane{
+    -fx-background-color: derive(#FFA70D,0%);
+    -fx-background-repeat: no-repeat;   
+    -fx-background-size: 400 400;
+    -fx-background-position: 12.5% 50%;
+    -fx-alignment: center center;
+}
+
 #button{
 	-fx-background-color: linear-gradient(#99d6ff, #4dc3ff /* #61a2b1*/);		/* #fa4518 orange */ /*#00cc44 green */
 	-fx-border: solid;
@@ -79,4 +87,35 @@
 .text-field{
 	-fx-font-size: 12pt;
 	-fy-font-family: "Segoe UI Semibold";
+}
+
+
+/*TabPane*/
+
+
+.tab-pane .tab-header-area .tab-header-background {
+    -fx-opacity: 0;
+}
+
+.tab-pane .tab
+{
+    -fx-background-color: #e6e6e6;
+
+}
+
+.tab-pane .tab:selected
+{
+    -fx-background-color: #3c3c3c;
+}
+
+.tab .tab-label { 
+    -fx-alignment: CENTER;
+    -fx-text-fill: #828282;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.tab:selected .tab-label { 
+    -fx-alignment: CENTER;
+    -fx-text-fill: #96b946;
 }

@@ -3,6 +3,7 @@ import javafx.scene.control.Tab;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -62,14 +63,17 @@ public class ResultsWindow {
 	
 	private String[] diffLanguages = {"German","English","Spanish","French"};
 	
-	ArrayList<Integer> barflowDefinition;
-	ArrayList<Integer> barflowVocabulary;
-	ArrayList<Integer> barflowLvlDef;
-	ArrayList<Integer> barflowLvlVoc;
+	private ArrayList<Integer> barflowDefinition;
+	private ArrayList<Integer> barflowVocabulary;
+	private ArrayList<Integer> barflowLvlDef;
+	private ArrayList<Integer> barflowLvlVoc;
+	
+	private HashMap<String,String> doublerCheck = new HashMap<String,String>();
 
 	
 	//need this parameters to come back to the User Interface-Scene
 	ResultsWindow(Stage primaryStage, Scene uiScene) {
+		Login.userID=0;
 		
 		barflowDefinition = new ArrayList<Integer>();
 		barflowVocabulary = new ArrayList<Integer>();
@@ -79,7 +83,7 @@ public class ResultsWindow {
 		primaryStage.setTitle("Results");
 		
 		gridPane = new GridPane();
-		gridPane.setId("pane");
+		gridPane.setId("pane2");
 		
 		btnBack = new Button("Back");
 		btnBack.setPrefSize(100,70);
@@ -90,7 +94,7 @@ public class ResultsWindow {
 		tabDefinition = new Tab("Definition");
 		tabLvlVoc = new Tab("Level Vocabulary");
 		tabLvlDef = new Tab("Level Definition");
-		tabPane.setId("pane");
+		tabPane.setId("paneTabPane");
 		
 		//Barchart Handling
 	    xAxisVoc = new CategoryAxis();
@@ -147,47 +151,49 @@ public class ResultsWindow {
 	    ResultSet rs;
 	    ResultSet rsCounter; //Counter variable for the statistic values7
 	    String language1; //outer-loop
-	    String language2; //inner-loop
-	  //  String nativeLanguge;
-	    
+	    String language2; //inner-loop	    
 
 	    try {
 	    //For Vocabulary
 	    for(int i=0; i<diffLanguages.length;i++) {
 	    	language1 = diffLanguages[i];
-	    	rs=HSQLDB.getInstance().query("select w1.wordid, w2.wordid, w1.language from "
+	    	rs=HSQLDB.getInstance().query("select w1.language from "
 	    			+ "words w1 join words w2 on w1.userid= w1.userid where "
 	    			+ "((w1.wordid, w2.wordid) in (select wordid1, wordid2 from translate) " 
 	    			+ "or (w1.wordid, w2.wordid) in (select wordid2, wordid1 from "
 	    			+ "translate)) and (w1.language = '"+language1+"') "
 	    			+ "and w1.userid ="+Login.userID+"");
-	    	//Which native language used the user
+	    	//Is their any used language?
 	    	if(rs.next()) {
-	    		language2=language1;
+	    		//language2=language1;
 	    		rs=HSQLDB.getInstance().query("select  w2.language from words w1 join words "
-	    				+ "w2 on w1.userid= w1.userid where  ((w1.wordid, w2.wordid) in "
-	    				+ "(select wordid1, wordid2 from translate) or "
-	    				+ "(w1.wordid, w2.wordid) in (select wordid2, wordid1 "
-	    				+ "from translate)) and (w1.language = '"+language1+"' )and "
-	    				+ "w1.userid ="+Login.userID+" group by w2.language");
+	    				+ "w2 on w1.userid= w1.userid where  (w1.wordid, w2.wordid) in "
+	    				+ "(select wordid1, wordid2 from translate) and (w1.language = "
+	    				+  "'"+language1+"' )and w1.userid ="+Login.userID+" group by "
+	    				+ "w2.language");
 	    		
 	    		
 	    		while(rs.next()) {
-	    			language1=rs.getString(1);
+	    			language2=rs.getString(1);
 	    			rsCounter = HSQLDB.getInstance().query("select count(*) from words w1 "
 	    					+ "join words w2 on w1.userid= w1.userid where "
 	    					+ "((w1.wordid, w2.wordid) in (select wordid1, wordid2 from "
 	    					+ "translate) or (w1.wordid, w2.wordid) in "
-	    					+ "(select wordid2, wordid1 from translate)) "
-	    					+ "and (w1.language = '"+language2+"' and "
-	    					+ "w2.language='"+language1+"') and w1.userid ="+Login.userID+"");
+	    					+ "(select wordid2, wordid1 from translate)) and " 
+	    					+ "(w1.language = '"+language1+"' "
+	    					+ "and w2.language='"+language2+"')and w1.userid = "
+	    					+ ""+Login.userID+"");
 	    			if(rsCounter.next()) {
 	    				if(rsCounter.getInt(1)!=0) {
-	    		 String concatString = new StringBuffer(language2).append(" - ").
-	    				 										append(language1).toString();
+	    							
+	    				doublerCheck(language1, language2,seriesVocabulary1,
+	    								 barflowVocabulary,doublerCheck,rsCounter);
+	    				/*		
+	    		 String concatString = new StringBuffer(language1).append(" - ").
+	    				 										append(language2).toString();
 	    			seriesVocabulary1.getData().add(new Data<String, Number>(concatString, 
 	    					0));
-	    			barflowVocabulary.add(rsCounter.getInt(1));
+	    			barflowVocabulary.add(rsCounter.getInt(1));*/
 	    				}
 	    				}
 	    		}
@@ -242,8 +248,8 @@ public class ResultsWindow {
 		gridPane.setHgap(10);
 		gridPane.setVgap(10);
 		
-		GridPane.setConstraints(btnBack,0,0,2,1); //First row
-		GridPane.setHalignment(btnBack, HPos.LEFT);
+		GridPane.setConstraints(btnBack,0,8,2,1);
+		GridPane.setHalignment(btnBack, HPos.CENTER);
 		GridPane.setConstraints(tabPane,1,1,1,7);
 
 		
@@ -252,7 +258,7 @@ public class ResultsWindow {
 		
 		//Set the ColumnContraints and add them
 
-		ColumnConstraints column0 = new ColumnConstraints(15,50,250);
+		ColumnConstraints column0 = new ColumnConstraints(30,30,30);
 		ColumnConstraints column1 = new ColumnConstraints(60,65,Double.MAX_VALUE);
 		ColumnConstraints column2 = new ColumnConstraints(30,30,30);
 		
@@ -274,7 +280,9 @@ public class ResultsWindow {
 		RowConstraints row5 = new RowConstraints(10,60,60);
 		RowConstraints row6 = new RowConstraints(10,60,60);
 		RowConstraints row7 = new RowConstraints(10,60,60);
-		RowConstraints row8 = new RowConstraints(30,60,Double.MAX_VALUE);
+		RowConstraints row8 = new RowConstraints(10,60,60);
+		RowConstraints row9 = new RowConstraints(30,60,60);
+		RowConstraints row10 = new RowConstraints();
 		
 		//Every row have the same priority
 		
@@ -286,13 +294,14 @@ public class ResultsWindow {
 		row6.setVgrow(Priority.ALWAYS);
 		row7.setVgrow(Priority.ALWAYS);
 		row8.setVgrow(Priority.ALWAYS);
+		row9.setVgrow(Priority.ALWAYS);
 		
-		gridPane.getRowConstraints().addAll(row1,row2,row3,row4,row5,row6,row7,row8);
-		
+		gridPane.getRowConstraints().addAll(row1,row2,row3,row4,row5,row6,row7,row8,row9,
+										row10);		
     
     	Scene cssStyle = new Scene(gridPane,1000,600);
 		cssStyle.getStylesheets().addAll(this.getClass().getResource
-														("TabPane.css").toExternalForm());
+														("Style.css").toExternalForm());
 		primaryStage.setScene(cssStyle);
 		
 		//gridPane.setGridLinesVisible(true); //Debugging
@@ -343,9 +352,38 @@ public class ResultsWindow {
 		}
 
 	
-	
+	private void doublerCheck(String language1, String language2,
+							 XYChart.Series<String,Number> seriesVocabulary1,
+							 ArrayList<Integer> barflow, 
+							 HashMap<String,String> doublerCheck, ResultSet rsCounter) {
+		
+			String concatString = new StringBuffer(language1).append(" - ").
+									 		append(language2).toString();
+			
+			doublerCheck.put(concatString, concatString);
+			
+			//Build counterpart of the String
+			
+			concatString = new StringBuffer(language2).append(" - ").
+			 							append(language1).toString();
+			
+			
+			
+			if(!doublerCheck.containsKey(concatString) || language1.equals(language2))	{
+				seriesVocabulary1.getData().add(new Data<String, Number>(concatString, 
+						0));
+						try {
+							barflowVocabulary.add(rsCounter.getInt(1));
+						} catch (SQLException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+			}		
+	}
+	    
+	    
 
-	protected void dynamicChange(Tab tabDefinition, ArrayList<Integer> barflow,
+	private void dynamicChange(Tab tabDefinition, ArrayList<Integer> barflow,
 			BarChart<String, Number> barchart, NumberAxis yAxis) {
 		if(!barflow.isEmpty()) {
 		yAxis.setUpperBound(Collections.max(barflow)+5);
