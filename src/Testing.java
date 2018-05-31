@@ -32,7 +32,8 @@ public class Testing {
 	private String from;
 	private Label categoryLabel;
 	private Label cardLabel = new Label("Kartei: ");
-	private Label outOfLabel = new Label("1/"+numOfCards);
+	private Integer counter = 1;
+	private Label outOfLabel = new Label(counter+"/"+numOfCards);
 	private Label levelLabel;
 	private String language;
 	private Label whatIsLabel = new Label("What is");
@@ -47,6 +48,8 @@ public class Testing {
 	private Button cancelButton = new Button("Quit learning");
 	private Button nextButton = new Button("Next");
 	private Integer levelUp = 0;
+	private String tmp;
+	private String[] splittedTmp;
 	
 	public Testing(Stage testFileCardsStage, UserInterface ui, String levelChoice, String categoryChoice, String from, String to)
 	{	
@@ -71,8 +74,8 @@ public class Testing {
 		numOfCards = new Integer(resultSets.size()).toString();
 		outOfLabel = new Label("1/"+numOfCards);
 		
-		String tmp = iterator.next();
-		String[] splittedTmp = tmp.split("-_-");
+		tmp = iterator.next();
+		splittedTmp = tmp.split("-_-");
 		
 		fileCard = new Label(splittedTmp[2]);
 		answerFileCard = new Label(splittedTmp[3]);
@@ -207,6 +210,7 @@ public class Testing {
 	            		answerLabel.setVisible(true);
 	            		editButton.setVisible(true);
 	            		
+	            		
 	            		if(!(level.equals("4")))
 	            		{
 	            			levelUp = 1;
@@ -248,7 +252,6 @@ public class Testing {
 			if((answerField.getText().equals(answerFileCard.getText()) && category.equals("Translation")) ||
         			((answerArea.getText().equals(answerFileCard.getText()) && category.equals("Definition"))))
         	{
-				System.out.println("test");
         		answerField.setDisable(true);
         		answerArea.setDisable(true);
         		
@@ -291,7 +294,44 @@ public class Testing {
 		});
 		
 		nextButton.setOnAction(e -> {
-			 
+			
+			if(counter<Integer.parseInt(numOfCards) && (answerField.isDisabled() || answerArea.isDisabled()))
+			{
+				counter++;
+				
+				outOfLabel.setText(counter+"/"+numOfCards);
+				
+				answerLabel.setVisible(false);
+				editButton.setVisible(false);
+				answerFileCard.setVisible(false);
+				
+				answerField.clear();
+				answerArea.clear();
+				answerField.setDisable(false);
+        		answerArea.setDisable(false);
+				
+				tmp = iterator.next();
+				splittedTmp = tmp.split("-_-");
+				
+				fileCard.setText(splittedTmp[2]);
+				answerFileCard.setText(splittedTmp[3]);
+			}
+			else if(counter==Integer.parseInt(numOfCards) && (answerField.isDisabled() || answerArea.isDisabled()))
+			{
+				AlertBox.display("Congratulations", "Congratulations, you made it through the "+level+". level!\nYou can quit now.");
+				answerField.setDisable(true);
+				answerArea.setDisable(true);
+				
+				answerLabel.setVisible(true);
+        		answerFileCard.setVisible(true);
+        		editButton.setVisible(true);
+        	}
+			else
+			{
+				answerLabel.setText("You can't skip just like that!");
+				answerLabel.setVisible(true);
+			}
+			
 		});
 		
 		editButton.setOnAction(e -> {
@@ -384,12 +424,12 @@ public class Testing {
 	
 	private void dbUpdateQuery(Integer levelUp, String wordID1, String wordID2, String categoryChoice) 
 	{	
+		System.out.println(levelUp + "    " + wordID1 + "   " + wordID2 + "   " + categoryChoice);
+		
 		if(categoryChoice.equals("Translation"))
 		{
-			categoryChoice = "Translate";
-			
 			try {
-				HSQLDB.getInstance().update("UPDATE Translate " + "SET Level =" + levelUp + " " + " WHERE (WordID1 = " + wordID1 + "" + " AND WordID2 =" + wordID2 + ")");
+				HSQLDB.getInstance().update("UPDATE Translate " + "SET Level =" + levelUp + " " + " WHERE (WordID1 = " + wordID1 + ")");
 			} catch (SQLException e) {
 				System.out.println("Could not update level of Translate table.");
 				e.printStackTrace();
@@ -398,8 +438,6 @@ public class Testing {
 				e.printStackTrace();
 			}
 		}else {
-			
-			categoryChoice = "Definition";
 			
 			try {
 				HSQLDB.getInstance().update("UPDATE Definition " + "SET Level =" + levelUp + " " + " WHERE (WordID = " + wordID1 + "" + " AND DefinitionID =" + wordID2 + ")");
