@@ -11,6 +11,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -45,6 +46,10 @@ public class EditFileCards {
 	UserInterface ui;
 	Stage uiStage;
 
+	/**
+	 * @param uiStage
+	 * @param ui
+	 */
 	public EditFileCards(Stage uiStage, UserInterface ui) {
 		// Reference of userInterface
 		this.ui = ui;
@@ -73,11 +78,12 @@ public class EditFileCards {
 	 * 
 	 * @param uiStage The stage, where the window is called from
 	 * @param testing the reference of the parent window
-	 * @param IndividulEditing the FileCard of the entry to be loaded
+	 * @param filecard the FileCard of the entry to be loaded
 	 */
+	
 	public EditFileCards(Stage uiStage, Testing testing, FileCardsDB filecard) {
 		// Construct the View
-		view = new EditFileCardsLayout(this, uiStage, testing, true );
+		view = new EditFileCardsLayout(this, uiStage, true );
 		// Prepare the columns of the TableView
 		view.setColumns();
 		// Feed the tableview with initial data

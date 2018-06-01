@@ -21,6 +21,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 /**
@@ -69,8 +70,8 @@ public class EditFileCardsLayout {
 	/**
 	 * This constructor is the default one for generating the general functions of editing
 	 * 
-	 * @param control
-	 * @param uiStage
+	 * @param control the control class of the view
+	 * @param uiStage the Stage of the previous window
 	 */
 	public EditFileCardsLayout(EditFileCards control, Stage uiStage) {
 		this.control = control;
@@ -83,9 +84,19 @@ public class EditFileCardsLayout {
 		arrangeElements();
 	}
 
-	public EditFileCardsLayout(EditFileCards control, Stage uiStage, Testing testing, Boolean individualTesting) {
+	/**
+	 * This constructor is called when editing while the testmode. 
+	 * This will only display the corresponding content of the tested filecard.
+	 * 
+	 * @param control is the controlClass of the view
+	 * @param uiStage is the stage of the previous window
+	 * @param individualTesting this specifies that the right constructor gets called
+	 */
+	public EditFileCardsLayout(EditFileCards control, Stage uiStage, Boolean individualTesting) {
 		this.control = control;
 		this.uiStage = uiStage;
+		// Made modal, so the parentwindow cannot be activated as long as editing isn`t closed
+		editStage.initModality(Modality.APPLICATION_MODAL);
 		// Name the new stage (window)
 		editStage.setTitle("MyFileCards");
 		// Set MinMax of the buttons, textfields ect.
@@ -357,9 +368,9 @@ public class EditFileCardsLayout {
 	 * If the exportButton is clicked, the current viewed data can be saved as
 	 * FileCardsDBObjects. Therefore, a filechooser is opened and the user can
 	 * specify a name.
-	 * 
+	 * @param all if true it will only the "Quit" Button be decorated with an actionlistener,
+	 * which is the case when just one filecard should be edited (in testing mode)
 	 */
-
 	public void setActionListener(Boolean all) {
 		if (all) {
 			// Actionlistener for removing an entry
