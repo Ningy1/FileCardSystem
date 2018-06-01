@@ -68,9 +68,12 @@ public class EditFileCards {
 	}
 
 	/**
-	 * @param uiStage
-	 * @param testing
-	 * @param IndividulEditing
+	 * When this constructor is called, it is only one entry loaded into the tableview.
+	 * This entry can be edited.
+	 * 
+	 * @param uiStage The stage, where the window is called from
+	 * @param testing the reference of the parent window
+	 * @param IndividulEditing the FileCard of the entry to be loaded
 	 */
 	public EditFileCards(Stage uiStage, Testing testing, FileCardsDB filecard) {
 		// Construct the View
@@ -224,7 +227,7 @@ public class EditFileCards {
 				} else {
 					System.out.println("Already existing translate");
 					if (!InfoPopup.active) {
-						new InfoPopup("Entry already existing", 3, view.getEditStage());
+						new InfoPopup("Entry already existing", 2, view.getEditStage());
 					}
 				}
 				rs = HSQLDB.getInstance()
@@ -250,7 +253,7 @@ public class EditFileCards {
 				} else {
 					System.out.println("Already existing definition");
 					if (!InfoPopup.active) {
-						new InfoPopup("Entry already existing", 3, view.getEditStage());
+						new InfoPopup("Entry already existing", 2, view.getEditStage());
 					}
 				}
 				rs = HSQLDB.getInstance().query("SELECT * " + "FROM Definition " + "WHERE WordID =" + wordID1 + " "
@@ -353,7 +356,7 @@ public class EditFileCards {
 					System.out.println("DeleteRow");
 					deleteCurrentEntry(view.getFilterCategory().getValue(), view.getTable());
 					if (!InfoPopup.active) {
-						new InfoPopup("Entry already existing", 3, view.getEditStage());
+						new InfoPopup("Entry already existing", 2, view.getEditStage());
 					}
 				}
 			} else if (category.equals("Definition")) {
@@ -380,7 +383,7 @@ public class EditFileCards {
 					System.out.println("DeleteRow");
 					deleteCurrentEntry(view.getFilterCategory().getValue(), view.getTable());
 					if (!InfoPopup.active) {
-						new InfoPopup("Entry already existing", 3, view.getEditStage());
+						new InfoPopup("Entry already existing", 2, view.getEditStage());
 					}
 				}
 			}

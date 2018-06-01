@@ -66,6 +66,12 @@ public class EditFileCardsLayout {
 			"French", "Spanish");
 	private ObservableList<String> optionsSubCategoryDefintion = FXCollections.observableArrayList("Defintion");
 
+	/**
+	 * This constructor is the default one for generating the general functions of editing
+	 * 
+	 * @param control
+	 * @param uiStage
+	 */
 	public EditFileCardsLayout(EditFileCards control, Stage uiStage) {
 		this.control = control;
 		this.uiStage = uiStage;
