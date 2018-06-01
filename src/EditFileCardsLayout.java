@@ -360,7 +360,8 @@ public class EditFileCardsLayout {
 			deleteButton.setOnAction(edit -> {
 				if ((filterCategory.getValue() != null) && (filterSubCategoryA.getValue() != null)
 						&& (filterSubCategoryB.getValue() != null)) {
-					control.deleteCurrentEntry(addSideA.getText(), addSideB.getText(), filterCategory.getValue());
+				//	control.deleteCurrentEntry(addSideA.getText(), addSideB.getText(), filterCategory.getValue());
+					control.deleteCurrentEntry(filterCategory.getValue(), table.getSelectionModel().getTableView());
 				}
 				addSideA.clear();
 				addSideB.clear();
