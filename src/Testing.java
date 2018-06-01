@@ -324,7 +324,11 @@ public class Testing {
 		});
 		
 		editButton.setOnAction(e -> {
-			 
+			if(category.equalsIgnoreCase("Translation")) {
+				new EditFileCards(testingStage, this, new FileCardsDB(Integer.parseInt(splittedTmp[0]), Integer.parseInt(splittedTmp[1]), splittedTmp[2], splittedTmp[3], category, from, language));
+			} else if (category.equalsIgnoreCase("Definition")) {
+				new EditFileCards(testingStage, this, new FileCardsDB(Integer.parseInt(splittedTmp[0]), Integer.parseInt(splittedTmp[1]), splittedTmp[2], splittedTmp[3], category, from, "Definition"));
+			}
 		});
 		
 		cancelButton.setOnAction(e -> {

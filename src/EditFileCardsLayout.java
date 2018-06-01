@@ -66,9 +66,6 @@ public class EditFileCardsLayout {
 			"French", "Spanish");
 	private ObservableList<String> optionsSubCategoryDefintion = FXCollections.observableArrayList("Defintion");
 
-	
-	
-	
 	public EditFileCardsLayout(EditFileCards control, Stage uiStage) {
 		this.control = control;
 		this.uiStage = uiStage;
@@ -77,7 +74,18 @@ public class EditFileCardsLayout {
 		// Set MinMax of the buttons, textfields ect.
 		setElements();
 		// Arrange Elements in the window
-		arrangeElements();		
+		arrangeElements();
+	}
+
+	public EditFileCardsLayout(EditFileCards control, Stage uiStage, Testing testing, Boolean individualTesting) {
+		this.control = control;
+		this.uiStage = uiStage;
+		// Name the new stage (window)
+		editStage.setTitle("MyFileCards");
+		// Set MinMax of the buttons, textfields ect.
+		setElements();
+		// Arrange Elements in the window
+		arrangeElements();
 	}
 
 	/**
@@ -151,22 +159,20 @@ public class EditFileCardsLayout {
 		sideB.setMinWidth(50);
 		// Set columns to grow equally in width
 		table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-		
+
 		// Height of the table
 		table.setPrefHeight(3000);
 		table.setMinHeight(100);
 		table.setMaxHeight(3000);
 
-		
 		// Set IDs for css style
-		
+
 		exportButton.setId("buttonEditFileCards");
 		importButton.setId("buttonEditFileCards");
 		addButton.setId("buttonEditFileCards");
 		deleteButton.setId("buttonEditFileCards");
 		closeButton.setId("buttonEditFileCards");
 
-		
 		// Set size constraints of the textfields, buttons and label
 		addSideA.setMaxWidth(sideA.getMaxWidth());
 		addSideA.setPrefWidth(sideA.getPrefWidth());
@@ -189,7 +195,7 @@ public class EditFileCardsLayout {
 		filterSubCategoryB.setMaxWidth(sideB.getMaxWidth());
 		filterSubCategoryB.setMinWidth(sideB.getMinWidth());
 		filterSubCategoryB.setPrefWidth(sideB.getPrefWidth());
-		filterCategory.setMaxWidth(sideA.getMaxWidth()+sideB.getMaxWidth());
+		filterCategory.setMaxWidth(sideA.getMaxWidth() + sideB.getMaxWidth());
 		filterCategory.setMinWidth(sideA.getMinWidth());
 		filterCategory.setPrefWidth(sideA.getPrefWidth());
 		importButton.setMaxWidth(sideA.getMaxWidth());
@@ -203,11 +209,9 @@ public class EditFileCardsLayout {
 		closeButton.setMaxWidth(filterCategory.getMaxWidth());
 		closeButton.setMinWidth(filterCategory.getMinWidth());
 		closeButton.setPrefWidth(filterCategory.getPrefWidth());
-		
-		
+
 	}
-	
-	
+
 	/**
 	 * This method arranges the different elements in containers in the Scene, how
 	 * they should grow and the size of the boxes. It also configures the stage.
@@ -243,18 +247,18 @@ public class EditFileCardsLayout {
 		GridPane.setConstraints(hboxButtons, 0, 4);
 		GridPane.setConstraints(hboxImportExportButtons, 0, 5);
 		GridPane.setConstraints(closeButton, 0, 6);
-		
+
 		// Set size properties of the stage
 		editStage.setMaxWidth(addSideA.getMaxWidth() + addSideB.getMaxWidth());
 		// Open Stage on same size and extend as previous Stage
 		editStage.setWidth(700);
 		editStage.setHeight(400);
-		editStage.setX((uiStage.getX()+uiStage.getWidth()/2)-editStage.getWidth()/2);
-		editStage.setY(uiStage.getY()+uiStage.getHeight()/2-editStage.getHeight()/2);		
+		editStage.setX((uiStage.getX() + uiStage.getWidth() / 2) - editStage.getWidth() / 2);
+		editStage.setY(uiStage.getY() + uiStage.getHeight() / 2 - editStage.getHeight() / 2);
 		// Bin the width of the table(and following also the other elements) to the
 		// width of the stage
 		table.prefWidthProperty().bind(editStage.widthProperty());
-		
+
 		// The scene is characterized by the gridlayout
 		root.setId("pane2");
 		Scene scene = new Scene(root);
@@ -263,11 +267,9 @@ public class EditFileCardsLayout {
 		root.setPrefSize(editStage.getWidth(), editStage.getHeight());
 		root.setMinSize(editStage.getWidth(), editStage.getHeight());
 		editStage.setScene(scene);
-		
-		
-		
+
 		editStage.show();
-		
+
 	}
 
 	/**
@@ -331,10 +333,6 @@ public class EditFileCardsLayout {
 		// Add columns to the tableView
 		table.getColumns().addAll(sideA, sideB);
 	}
-	
-	
-	
-	
 
 	/**
 	 * This method specifies the different ActionListener on the Buttons.
@@ -356,46 +354,52 @@ public class EditFileCardsLayout {
 	 * 
 	 */
 
-	public void setActionListener() {
-		// Actionlistener for removing an entry
-		deleteButton.setOnAction(edit -> {
-			if ((filterCategory.getValue() != null) && (filterSubCategoryA.getValue() != null)
-					&& (filterSubCategoryB.getValue() != null)) {
-				control.deleteCurrentEntry(addSideA.getText(), addSideB.getText(), filterCategory.getValue());
-			}
-			addSideA.clear();
-			addSideB.clear();
-			addSideA.requestFocus();
+	public void setActionListener(Boolean all) {
+		if (all) {
+			// Actionlistener for removing an entry
+			deleteButton.setOnAction(edit -> {
+				if ((filterCategory.getValue() != null) && (filterSubCategoryA.getValue() != null)
+						&& (filterSubCategoryB.getValue() != null)) {
+					control.deleteCurrentEntry(addSideA.getText(), addSideB.getText(), filterCategory.getValue());
+				}
+				addSideA.clear();
+				addSideB.clear();
+				addSideA.requestFocus();
 
-		});
+			});
 
-		// Actionlistener for Button to add new entries
-		addButton.setOnAction(e -> {
+			// Actionlistener for Button to add new entries
+			addButton.setOnAction(e -> {
 
-			if ((filterCategory.getValue() != null) && (filterSubCategoryA.getValue() != null)
-					&& (filterSubCategoryB.getValue() != null)) {
-				control.insertEntry(addSideA.getText(), addSideB.getText(), filterSubCategoryA.getValue(),
-						filterSubCategoryB.getValue(), filterCategory.getValue(), Login.userID);
-			}
+				if ((filterCategory.getValue() != null) && (filterSubCategoryA.getValue() != null)
+						&& (filterSubCategoryB.getValue() != null)) {
+					control.insertEntry(addSideA.getText(), addSideB.getText(), filterSubCategoryA.getValue(),
+							filterSubCategoryB.getValue(), filterCategory.getValue(), Login.userID);
+				}
 
-			// Set textfields to placeholder
-			addSideA.clear();
-			addSideB.clear();
-		});
-		// Export data
-		exportButton.setOnAction(edit -> {
-			control.exportData(filterCategory.getValue(), filterSubCategoryA.getValue(), filterSubCategoryB.getValue(),
-					editStage);
-		});
-		// Import data
-		importButton.setOnAction(edit -> {
-			control.importData(filterCategory.getValue(), filterSubCategoryA.getValue(), filterSubCategoryB.getValue(),
-					editStage);
-		});
-		// Quit editing
-				closeButton.setOnAction(edit -> {
-					control.closeEditStage(editStage);
-		});
+				// Set textfields to placeholder
+				addSideA.clear();
+				addSideB.clear();
+			});
+			// Export data
+			exportButton.setOnAction(edit -> {
+				control.exportData(filterCategory.getValue(), filterSubCategoryA.getValue(),
+						filterSubCategoryB.getValue(), editStage);
+			});
+			// Import data
+			importButton.setOnAction(edit -> {
+				control.importData(filterCategory.getValue(), filterSubCategoryA.getValue(),
+						filterSubCategoryB.getValue(), editStage);
+			});
+			// Quit editing
+			closeButton.setOnAction(edit -> {
+				control.closeEditStage(editStage);
+			});
+		} else {
+			closeButton.setOnAction(edit -> {
+				editStage.close();
+			});
+		}
 
 	}
 
@@ -417,10 +421,11 @@ public class EditFileCardsLayout {
 
 		});
 	}
+
 	public void setWindowListener() {
 		control.closeProgram(editStage);
 	}
-	
+
 	/*
 	 * Getter and Setter
 	 */
@@ -448,8 +453,6 @@ public class EditFileCardsLayout {
 	public void setFilterSubCategoryB(ComboBox<String> filterSubCategoryB) {
 		this.filterSubCategoryB = filterSubCategoryB;
 	}
-
-	
 
 	public ComboBox<String> getFilterCategory() {
 		return filterCategory;

@@ -41,15 +41,15 @@ public class EditFileCards {
 	FileChooser filechooser = new FileChooser();
 	// The instance of the view class
 	EditFileCardsLayout view;
-	//Parent View User Interface
+	// Parent View User Interface
 	UserInterface ui;
 	Stage uiStage;
-	
-	public EditFileCards(Stage uiStage,UserInterface ui) {
-		//Reference of userInterface
+
+	public EditFileCards(Stage uiStage, UserInterface ui) {
+		// Reference of userInterface
 		this.ui = ui;
 		this.uiStage = uiStage;
-		//Hide userInterface
+		// Hide userInterface
 		uiStage.hide();
 		// Construct the View
 		view = new EditFileCardsLayout(this, uiStage);
@@ -59,12 +59,45 @@ public class EditFileCards {
 		initialValues(view.getFilterCategory().getValue(), view.getFilterSubCategoryA().getValue(),
 				view.getFilterSubCategoryB().getValue(), view.getTable());
 		// add ActionListener to buttons ect.
-		view.setActionListener();
+		view.setActionListener(true);
 		// add Key Listener to different Elements
 		view.setKeyListener();
 		// addFilterListener to refresh tableview depending on chosen categories
 		view.setFilterListener();
 		view.setWindowListener();
+	}
+
+	/**
+	 * @param uiStage
+	 * @param testing
+	 * @param IndividulEditing
+	 */
+	public EditFileCards(Stage uiStage, Testing testing, FileCardsDB filecard) {
+		// Construct the View
+		view = new EditFileCardsLayout(this, uiStage, testing, true );
+		// Prepare the columns of the TableView
+		view.setColumns();
+		// Feed the tableview with initial data
+		initialValues(view.getFilterCategory().getValue(), view.getFilterSubCategoryA().getValue(),
+				view.getFilterSubCategoryB().getValue(), view.getTable());
+		// add ActionListener to buttons ect.
+		view.setActionListener(false);
+		// add Key Listener to different Elements
+		view.setKeyListener();
+		// addFilterListener to refresh tableview depending on chosen categories
+		view.setFilterListener();
+		view.getFilterCategory().setValue(filecard.getCat());
+		view.getFilterSubCategoryA().setValue(filecard.getSubCatA());
+		view.getFilterSubCategoryB().setValue(filecard.getSubCatB());
+		view.getFilterCategory().setDisable(true);
+		view.getFilterSubCategoryA().setDisable(true);
+		view.getFilterSubCategoryB().setDisable(true);
+
+		data.clear();
+		data.add(filecard);
+		view.disableButtons();
+		
+
 	}
 
 	/**
@@ -190,7 +223,7 @@ public class EditFileCards {
 					data.add(new FileCardsDB(wordID1, wordID2, word1, word2, category, language1, language2));
 				} else {
 					System.out.println("Already existing translate");
-					if(!InfoPopup.active) {
+					if (!InfoPopup.active) {
 						new InfoPopup("Entry already existing", 3, view.getEditStage());
 					}
 				}
@@ -216,7 +249,7 @@ public class EditFileCards {
 					data.add(new FileCardsDB(wordID1, wordID2, word1, word2, category, language1, language2));
 				} else {
 					System.out.println("Already existing definition");
-					if(!InfoPopup.active) {
+					if (!InfoPopup.active) {
 						new InfoPopup("Entry already existing", 3, view.getEditStage());
 					}
 				}
@@ -319,7 +352,7 @@ public class EditFileCards {
 				} else {
 					System.out.println("DeleteRow");
 					deleteCurrentEntry(view.getFilterCategory().getValue(), view.getTable());
-					if(!InfoPopup.active) {
+					if (!InfoPopup.active) {
 						new InfoPopup("Entry already existing", 3, view.getEditStage());
 					}
 				}
@@ -346,7 +379,7 @@ public class EditFileCards {
 				} else {
 					System.out.println("DeleteRow");
 					deleteCurrentEntry(view.getFilterCategory().getValue(), view.getTable());
-					if(!InfoPopup.active) {
+					if (!InfoPopup.active) {
 						new InfoPopup("Entry already existing", 3, view.getEditStage());
 					}
 				}
@@ -541,8 +574,8 @@ public class EditFileCards {
 					for (int i = 0; i < dataNew.size(); i++) {
 						if (category.equals(dataNew.get(i).getCat()) && subCategoryA.equals(dataNew.get(i).getSubCatA())
 								&& subCategoryB.equals(dataNew.get(i).getSubCatB())) {
-							insertEntry(dataNew.get(i).sideA, dataNew.get(i).sideB, dataNew.get(i).subCatA, dataNew.get(i).subCatB,
-									dataNew.get(i).cat, Login.userID);
+							insertEntry(dataNew.get(i).sideA, dataNew.get(i).sideB, dataNew.get(i).subCatA,
+									dataNew.get(i).subCatB, dataNew.get(i).cat, Login.userID);
 						}
 					}
 				}
@@ -805,7 +838,7 @@ public class EditFileCards {
 		}
 
 	}
-	
+
 	/**
 	 * This method closes the editStage and shows again the UserInterface
 	 * 
@@ -816,20 +849,21 @@ public class EditFileCards {
 		uiStage.show();
 		uiStage.setWidth(1000);
 		uiStage.setHeight(600);
-		uiStage.setX((editStage.getX()+editStage.getWidth()/2)-uiStage.getWidth()/2);
-		uiStage.setY(editStage.getY()+editStage.getHeight()/2-uiStage.getHeight()/2);		
+		uiStage.setX((editStage.getX() + editStage.getWidth() / 2) - uiStage.getWidth() / 2);
+		uiStage.setY(editStage.getY() + editStage.getHeight() / 2 - uiStage.getHeight() / 2);
 	}
+
 	/**
-	 * This method asks the User with a dialog box if the user really wants to close the program
-	 * If the answer is true, the program is closed
+	 * This method asks the User with a dialog box if the user really wants to close
+	 * the program If the answer is true, the program is closed
 	 * 
 	 * @param editStage
 	 */
 	public void closeProgram(Stage editStage) {
-		editStage.setOnCloseRequest(e ->{
+		editStage.setOnCloseRequest(e -> {
 			e.consume();
 			boolean answer = ConfirmBox.display("Confirmation", "Are you sure you want to quit?");
-			if(answer){
+			if (answer) {
 				editStage.close();
 				System.out.println("Close Connection");
 				try {
@@ -838,10 +872,10 @@ public class EditFileCards {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-				
+
 			}
-			
+
 		});
 	}
-	
+
 }
