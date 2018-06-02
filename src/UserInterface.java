@@ -163,6 +163,10 @@ public class UserInterface {
 			new ResultsWindow(uiStage, cssStyle);
 		});
 		
+		btnSettings.setOnAction(e -> {
+			new SettingsWindow(uiStage, cssStyle);
+		});
+		
 		btnLogout.setOnAction(e -> {
 			//Close the User-DB!?
 			//Close Stage?

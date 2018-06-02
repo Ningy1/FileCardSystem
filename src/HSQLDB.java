@@ -63,6 +63,11 @@ import javafx.scene.control.TextField;
 				         		+ "ON DELETE RESTRICT "
 				         		+ "ON UPDATE RESTRICT) "
 				         		);
+			         
+			         update("CREATE TABLE IF NOT EXISTS Picture ("
+				         		+ "UserID INTEGER IDENTITY PRIMARY KEY NOT NULL, "
+				         		+ "Image BLOB)" 
+				         		);
 				  
 		         // Check if Connection was successfull
 		         if (con!= null){
