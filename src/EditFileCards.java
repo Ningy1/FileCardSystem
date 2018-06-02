@@ -232,9 +232,8 @@ public class EditFileCards {
 					data.add(new FileCardsDB(wordID1, wordID2, word1, word2, category, language1, language2));
 				} else {
 					System.out.println("Already existing translate");
-					if (!InfoPopup.active) {
-						new InfoPopup("Entry already existing", 2, view.getEditStage());
-					}
+					AlertBox.display("Attention", "Translation from '"+word1+"' to '"+word2+"' already exists");
+					
 				}
 				rs = HSQLDB.getInstance()
 						.query("SELECT * " + "FROM Translate " + "WHERE (WordID1 =" + wordID1 + " " + "AND WordID2 ="
@@ -258,9 +257,8 @@ public class EditFileCards {
 					data.add(new FileCardsDB(wordID1, wordID2, word1, word2, category, language1, language2));
 				} else {
 					System.out.println("Already existing definition");
-					if (!InfoPopup.active) {
-						new InfoPopup("Entry already existing", 2, view.getEditStage());
-					}
+					AlertBox.display("Attention", "Definition from '"+word1+"' to '"+word2+"' already exists");
+
 				}
 				rs = HSQLDB.getInstance().query("SELECT * " + "FROM Definition " + "WHERE WordID =" + wordID1 + " "
 						+ "AND definition ='" + word2 + "'");
@@ -361,9 +359,8 @@ public class EditFileCards {
 				} else {
 					System.out.println("DeleteRow");
 					deleteCurrentEntry(view.getFilterCategory().getValue(), view.getTable());
-					if (!InfoPopup.active) {
-						new InfoPopup("Entry already existing", 2, view.getEditStage());
-					}
+					AlertBox.display("Attention", "Translation from '"+word1New+"' to '"+word2New+"' already exists");
+
 				}
 			} else if (category.equals("Definition")) {
 				rs = isDuplicateWord(word1New, language1, userID);
@@ -388,9 +385,8 @@ public class EditFileCards {
 				} else {
 					System.out.println("DeleteRow");
 					deleteCurrentEntry(view.getFilterCategory().getValue(), view.getTable());
-					if (!InfoPopup.active) {
-						new InfoPopup("Entry already existing", 2, view.getEditStage());
-					}
+					AlertBox.display("Attention", "Defintion from '"+word1New+"' to '"+word2New+"' already exists");
+
 				}
 			}
 		} catch (Exception e) {
