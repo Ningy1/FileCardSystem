@@ -8,6 +8,7 @@ import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -22,6 +23,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.stage.Modality;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 /**
@@ -286,12 +288,18 @@ public class EditFileCardsLayout {
 		// The scene is characterized by the gridlayout
 		root.setId("pane2");
 		Scene scene = new Scene(root);
+		Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();
+
 		scene.getStylesheets().addAll(this.getClass().getResource("Style.css").toExternalForm());
 		root.setPadding(new Insets(10, 10, 10, 10));
 		root.setPrefSize(editStage.getWidth(), editStage.getHeight());
 		root.setMinSize(editStage.getWidth(), editStage.getHeight());
+		root.setMaxSize(primScreenBounds.getWidth(), primScreenBounds.getHeight());
 		editStage.setScene(scene);
-
+		editStage.setX((primScreenBounds.getWidth() - editStage.getWidth()) / 2);
+		editStage.setY((primScreenBounds.getHeight() - editStage.getHeight()) / 2);
+		editStage.setMaxHeight(primScreenBounds.getHeight());
+		editStage.setMaxWidth(primScreenBounds.getWidth());
 		editStage.show();
 
 	}
