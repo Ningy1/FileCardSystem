@@ -144,7 +144,6 @@ public class UserInterface {
 		Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();
 		uiStage.setX((primScreenBounds.getWidth() - uiStage.getWidth()) / 2);
 		uiStage.setY((primScreenBounds.getHeight() - uiStage.getHeight()) / 2);	
-		uiStage.setMaxHeight(primScreenBounds.getHeight());
 		
 		//gridPane.setGridLinesVisible(true); //Debugging
 		
