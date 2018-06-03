@@ -98,6 +98,10 @@ public class EditFileCardsLayout {
 		this.control = control;
 		this.uiStage = uiStage;
 		editStage = new Stage();
+		editStage.setWidth(700);
+		editStage.setHeight(400);
+		editStage.setX((uiStage.getX() + uiStage.getWidth() / 2) - editStage.getWidth() / 2);
+		editStage.setY(uiStage.getY() + uiStage.getHeight() / 2 - editStage.getHeight() / 2);
 		// Made modal, so the parentwindow cannot be activated as long as editing isn`t closed
 		editStage.initModality(Modality.APPLICATION_MODAL);
 		// Name the new stage (window)
