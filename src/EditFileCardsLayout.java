@@ -38,7 +38,8 @@ public class EditFileCardsLayout {
 	// Tableview - visualizes the data
 	private TableView<FileCardsDB> table = new TableView<FileCardsDB>();
 	// Layout stage
-	private Stage editStage = new Stage();
+//	private Stage editStage = new Stage();
+	private Stage editStage;
 	private Stage uiStage;
 	// Arangement of Objects in the stage
 	private GridPane root = new GridPane();
@@ -77,6 +78,7 @@ public class EditFileCardsLayout {
 		this.control = control;
 		this.uiStage = uiStage;
 		// Name the new stage (window)
+		editStage = uiStage;
 		editStage.setTitle("MyFileCards");
 		// Set MinMax of the buttons, textfields ect.
 		setElements();

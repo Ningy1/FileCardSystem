@@ -55,7 +55,7 @@ public class EditFileCards {
 		this.ui = ui;
 		this.uiStage = uiStage;
 		// Hide userInterface
-		uiStage.hide();
+//		uiStage.hide();
 		// Construct the View
 		view = new EditFileCardsLayout(this, uiStage);
 		// Prepare the columns of the TableView
@@ -859,8 +859,10 @@ public class EditFileCards {
 	 * @param editStage
 	 */
 	public void closeEditStage(Stage editStage) {
+		new UserInterface(editStage, ui.getName(), ui.getLoginScene());
 		editStage.close();
-		uiStage.show();
+	//	uiStage.show();
+		
 //		uiStage.setWidth(1000);
 //		uiStage.setHeight(600);
 //		uiStage.setX((editStage.getX() + editStage.getWidth() / 2) - uiStage.getWidth() / 2);
