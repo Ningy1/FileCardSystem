@@ -336,7 +336,8 @@ public class Testing {
 			boolean answer = ConfirmBox.display("Confirmation", "Do you want to stop learning?");
 			if(answer)
 			{
-				new UserInterface(testingStage, ui.getName(), ui.getLoginScene());
+		//		new UserInterface(testingStage, ui.getName(), ui.getLoginScene());
+				new UserInterface(ui.getLoginStage(), ui.getName(), ui.getLoginScene());
 				testingStage.close();
 			}
 		});

@@ -97,6 +97,7 @@ public class EditFileCardsLayout {
 	public EditFileCardsLayout(EditFileCards control, Stage uiStage, Boolean individualTesting) {
 		this.control = control;
 		this.uiStage = uiStage;
+		editStage = new Stage();
 		// Made modal, so the parentwindow cannot be activated as long as editing isn`t closed
 		editStage.initModality(Modality.APPLICATION_MODAL);
 		// Name the new stage (window)
