@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.SelectionMode;
@@ -19,6 +20,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.Popup;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 /**
@@ -859,7 +861,12 @@ public class EditFileCards {
 	 * @param editStage
 	 */
 	public void closeEditStage(Stage editStage) {
-		new UserInterface(editStage, ui.getName(), ui.getLoginScene());
+		
+//		Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();	
+//		editStage.setX((primScreenBounds.getWidth() - editStage.getWidth()) / 2);
+//		editStage.setY((primScreenBounds.getHeight() - editStage.getHeight()) / 2);
+		
+		new UserInterface(ui.getLoginStage(), ui.getName(), ui.getLoginScene());
 		editStage.close();
 	//	uiStage.show();
 		
