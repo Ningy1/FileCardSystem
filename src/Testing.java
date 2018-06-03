@@ -200,8 +200,8 @@ public class Testing {
 	        {
 	            if (key.getCode().equals(KeyCode.ENTER))
 	            {
-	            	if((answerField.getText().equals(answerFileCard.getText()) && category.equals("Translation")) ||
-	            			((answerArea.getText().equals(answerFileCard.getText()) && category.equals("Definition"))))
+	            	if(((answerField.getText().equals(answerFileCard.getText()) || answerField.getText().toLowerCase().equals(answerFileCard.getText().toLowerCase())) && category.equals("Translation")) ||
+	            			(((answerArea.getText().equals(answerFileCard.getText()) || answerArea.getText().toLowerCase().equals(answerFileCard.getText().toLowerCase())) && category.equals("Definition"))))
 	            	{
 	            		answerField.setDisable(true);
 	            		answerArea.setDisable(true);
@@ -243,8 +243,8 @@ public class Testing {
 		
 		checkButton.setOnAction(e -> {
 			
-			if((answerField.getText().equals(answerFileCard.getText()) && category.equals("Translation")) ||
-        			((answerArea.getText().equals(answerFileCard.getText()) && category.equals("Definition"))))
+			if(((answerField.getText().equals(answerFileCard.getText()) || answerField.getText().toLowerCase().equals(answerFileCard.getText().toLowerCase())) && category.equals("Translation")) ||
+        			(((answerArea.getText().equals(answerFileCard.getText()) || answerArea.getText().toLowerCase().equals(answerFileCard.getText().toLowerCase())) && category.equals("Definition"))))
         	{
         		answerField.setDisable(true);
         		answerArea.setDisable(true);
@@ -336,7 +336,6 @@ public class Testing {
 			boolean answer = ConfirmBox.display("Confirmation", "Do you want to stop learning?");
 			if(answer)
 			{
-		//		new UserInterface(testingStage, ui.getName(), ui.getLoginScene());
 				new UserInterface(ui.getLoginStage(), ui.getName(), ui.getLoginScene());
 				testingStage.close();
 			}
