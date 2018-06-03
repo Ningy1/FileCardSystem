@@ -861,10 +861,10 @@ public class EditFileCards {
 	public void closeEditStage(Stage editStage) {
 		editStage.close();
 		uiStage.show();
-		uiStage.setWidth(1000);
-		uiStage.setHeight(600);
-		uiStage.setX((editStage.getX() + editStage.getWidth() / 2) - uiStage.getWidth() / 2);
-		uiStage.setY(editStage.getY() + editStage.getHeight() / 2 - uiStage.getHeight() / 2);
+//		uiStage.setWidth(1000);
+//		uiStage.setHeight(600);
+//		uiStage.setX((editStage.getX() + editStage.getWidth() / 2) - uiStage.getWidth() / 2);
+//		uiStage.setY(editStage.getY() + editStage.getHeight() / 2 - uiStage.getHeight() / 2);
 	}
 
 	/**
