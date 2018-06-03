@@ -484,4 +484,20 @@ public class EditFileCardsLayout {
 		return editStage;
 	}
 
+	public TextField getAddSideA() {
+		return addSideA;
+	}
+
+	public void setAddSideA(TextField addSideA) {
+		this.addSideA = addSideA;
+	}
+
+	public TextField getAddSideB() {
+		return addSideB;
+	}
+
+	public void setAddSideB(TextField addSideB) {
+		this.addSideB = addSideB;
+	}
+
 }

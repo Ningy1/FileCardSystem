@@ -101,6 +101,8 @@ public class EditFileCards {
 		view.getFilterCategory().setDisable(true);
 		view.getFilterSubCategoryA().setDisable(true);
 		view.getFilterSubCategoryB().setDisable(true);
+		view.getAddSideA().setDisable(true);
+		view.getAddSideB().setDisable(true);
 
 		data.clear();
 		data.add(filecard);
