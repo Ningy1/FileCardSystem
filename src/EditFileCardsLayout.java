@@ -275,7 +275,7 @@ public class EditFileCardsLayout {
 		GridPane.setConstraints(closeButton, 0, 6);
 
 		// Set size properties of the stage
-		editStage.setMaxWidth(addSideA.getMaxWidth() + addSideB.getMaxWidth());
+//		editStage.setMaxWidth(addSideA.getMaxWidth() + addSideB.getMaxWidth());
 		// Open Stage on same size and extend as previous Stage
 //		editStage.setWidth(700);
 //		editStage.setHeight(400);
@@ -289,17 +289,21 @@ public class EditFileCardsLayout {
 		root.setId("pane2");
 		Scene scene = new Scene(root);
 		Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();
+		
 
 		scene.getStylesheets().addAll(this.getClass().getResource("Style.css").toExternalForm());
 		root.setPadding(new Insets(10, 10, 10, 10));
-		root.setPrefSize(editStage.getWidth(), editStage.getHeight());
+	//	root.setPrefSize(editStage.getWidth(), editStage.getHeight());
 		root.setMinSize(editStage.getWidth(), editStage.getHeight());
 		root.setMaxSize(primScreenBounds.getWidth(), primScreenBounds.getHeight());
 		editStage.setScene(scene);
 		editStage.setX((primScreenBounds.getWidth() - editStage.getWidth()) / 2);
 		editStage.setY((primScreenBounds.getHeight() - editStage.getHeight()) / 2);
+		
+		
 		editStage.setMaxHeight(primScreenBounds.getHeight());
 		editStage.setMaxWidth(primScreenBounds.getWidth());
+		
 		editStage.show();
 
 	}
