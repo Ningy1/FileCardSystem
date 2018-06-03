@@ -79,6 +79,7 @@ public class ResultsWindow {
 	 */
 	private ArrayList<String> lvlLanguage1 = new ArrayList<String>();
 	private ArrayList<String> lvlLanguage2 = new ArrayList<String>();
+	private ArrayList<String> selectionForDefLanguages = new ArrayList<>();
 	
 	//Holds the total Values for the counted different Sections
 	//Every Arrayfield represent the level of the Vocabulary or Definition
@@ -92,7 +93,6 @@ public class ResultsWindow {
 	
 	//need this parameters to come back to the User Interface-Scene
 	ResultsWindow(Stage primaryStage, Scene uiScene) {
-		//Login.userID=0;
 		barflowDefinition = new ArrayList<Integer>();
 		barflowVocabulary = new ArrayList<Integer>();
 		//Define the size of the Levels for Definition and Vocabulary.
@@ -169,9 +169,9 @@ public class ResultsWindow {
 	    																	yAxisVoc);
 	    BarChart<String,Number> definitionChart = new BarChart<String,Number>(xAxisDef,
 	    																	yAxisDef);
-	    BarChart<String,Number> levelVocChart = new BarChart<String,Number>(xAxislvlDef, 
+	    BarChart<String,Number> levelVocChart = new BarChart<String,Number>(xAxislvlVoc, 
 	    																yAxislvlVoc);
-	    BarChart<String,Number> levelDefChart = new BarChart<String,Number>(xAxislvlVoc,
+	    BarChart<String,Number> levelDefChart = new BarChart<String,Number>(xAxislvlDef,
 	    																yAxislvlDef);
 	    vocabularyChart.setTitle("Overview");
 	    definitionChart.setTitle("Overview");
@@ -189,19 +189,7 @@ public class ResultsWindow {
 	    											new XYChart.Series<String, Number>();
 	    XYChart.Series<String, Number> seriesLvlVocabulary1 = 
 	    											new XYChart.Series<String,Number>();
-	    XYChart.Series<String, Number> seriesLvlVocabulary2 = 
-													new XYChart.Series<String,Number>();
-	    XYChart.Series<String, Number> seriesLvlVocabulary3 = 
-													new XYChart.Series<String,Number>();
-	    XYChart.Series<String, Number> seriesLvlVocabulary4 = 
-													new XYChart.Series<String,Number>();
 	    XYChart.Series<String, Number> seriesLvlDefinition1 = 
-	    											new XYChart.Series<String,Number>(); 
-	    XYChart.Series<String, Number> seriesLvlDefinition2 = 
-													new XYChart.Series<String,Number>(); 
-	    XYChart.Series<String, Number> seriesLvlDefinition3 = 
-													new XYChart.Series<String,Number>(); 
-	    XYChart.Series<String, Number> seriesLvlDefinition4 = 
 	    											new XYChart.Series<String,Number>(); 
 	    
 
@@ -269,13 +257,14 @@ public class ResultsWindow {
 				if(rsCounter.getInt(1)!=0) {
 			seriesDefinition1.getData().add(new Data<String, Number>(language1, 
 					0));
+			selectionForDefLanguages.add(language1);
 			barflowDefinition.add(rsCounter.getInt(1));
 			
 					}
 				}
 	    }
-	    
-	    
+	      
+
 	    //For the levels of vocabulary
 	    
 	    /*This for loop runs as long as different language there are.
@@ -300,8 +289,8 @@ public class ResultsWindow {
 	    			 *through the method "doublerCheck"(->lvlLanguage1.add() and
 	    			 *lvlLanguage2.add()) in the correct order.
 	    			 */
-	    			String concatString = new StringBuffer(lvlLanguage2.get(i)).append(" - ").
-	    					append(lvlLanguage1.get(i)).toString();
+	    			String concatString = new StringBuffer(lvlLanguage1.get(i)).append(" - ").
+	    					append(lvlLanguage2.get(i)).toString();
 	    			
 	    			/*Add the correct language combination (concatString) and the 
 	    			 *total count value in the correct level
@@ -310,43 +299,86 @@ public class ResultsWindow {
 	    		switch(x) {
 	    		//Level 1
 	    		case 0:
-	    			seriesLvlVocabulary1.getData().add(new Data<String, Number>(concatString,
-	    											0));
 	    			/*x represent the level. 0 means 1, 1 means 2 and so on.
 	    			 *safe the total Value of the language combination in the corresponding
 	    			 *level (it will be safed in an ArrayList).
 	    			 */
+	    			seriesLvlVocabulary1.getData().add(new Data<String, Number>(concatString,
+	    											0));
 	    			barflowLvlVoc.get(x).add(rsCounter.getInt(1));
 	    			break;
 	    		//Level 2
 	    		case 1:
-	    			seriesLvlVocabulary2.getData().add(new Data<String, Number>(concatString,
-							0));
 	    			barflowLvlVoc.get(x).add(rsCounter.getInt(1));;
 	    			break;
 	    		//Level 3	
 	    		case 2:
-	    			seriesLvlVocabulary3.getData().add(new Data<String, Number>(concatString,
-							0));
 	    			barflowLvlVoc.get(x).add(rsCounter.getInt(1));
 	    			break;
 	    		//Level 4
 	    		case 3:
-	    			seriesLvlVocabulary4.getData().add(new Data<String, Number>(concatString,
-							0));
 	    			barflowLvlVoc.get(x).add(rsCounter.getInt(1));
 	    			break;
-	    			
 	    		default:
 	    			System.out.println("Wrong implementation");
 	    		}
 
-				
-		//				}
 					}
 	    		
 	    	}
 	    }
+	    
+	    
+	    //For the levels of Definition
+	    
+	    for(int i=0; i < selectionForDefLanguages.size(); i++) {
+	    	/* ForLoop to count the total Value in the different levels(1-4)
+	    	 * and for the different language combinations
+	    	 */
+	    	for(int x=0; x<=3;x++) {
+		    	rsCounter=HSQLDB.getInstance().query("SELECT count(*) FROM Words w "
+		    			+ "NATURAL JOIN Definition d WHERE w.UserID = "+Login.userID+ " "
+		    			+ "and w.language='"+selectionForDefLanguages.get(i)+"' "
+		    			+ "and level="+(x+1)+"");
+	    		if(rsCounter.next()) {
+			//		if(rsCounter.getInt(1)!=0) {
+	    			/*Add the correct language combination (concatString) and the 
+	    			 *total count value in the correct level
+	    			 */
+	    		
+	    		switch(x) {
+	    		//Level 1
+	    		case 0:
+	    			/*x represent the level. 0 means 1, 1 means 2 and so on.
+	    			 *safe the total Value of the language combination in the corresponding
+	    			 *level (it will be safed in an ArrayList).
+	    			 */
+	    			seriesLvlDefinition1.getData().add(new Data<String, Number>
+	    									(selectionForDefLanguages.get(i),0));
+	    			barflowLvlDef.get(x).add(rsCounter.getInt(1));
+	    			break;
+	    		//Level 2
+	    		case 1:
+	    			barflowLvlDef.get(x).add(rsCounter.getInt(1));;
+	    			break;
+	    		//Level 3	
+	    		case 2:
+	    			barflowLvlDef.get(x).add(rsCounter.getInt(1));
+	    			break;
+	    		//Level 4
+	    		case 3:
+	    			barflowLvlDef.get(x).add(rsCounter.getInt(1));
+	    			break;
+	    		default:
+	    			System.out.println("Wrong implementation");
+	    		}
+
+					}
+	    		
+	    	}
+	    }
+	    
+	    
 	    
 	
 	    } catch (SQLException e) {
@@ -366,10 +398,9 @@ public class ResultsWindow {
 	    	
 	    	levelVocChart.getData().addAll(seriesLvlVocabulary1);
 	    	dynamicChange(barflowLvlVoc,levelVocChart,yAxislvlVoc,levels[0]);
-	    	
-	    	
-	    	
+
 	    	levelDefChart.getData().addAll(seriesLvlDefinition1);
+	    	dynamicChange(barflowLvlDef,levelDefChart,yAxislvlDef,levels[0]);
 
 	    //Tab resp. TabPane handling
 	    
@@ -471,11 +502,41 @@ public class ResultsWindow {
 			
 			if(cbLvlFilterVoc.getValue()=="Level 1") {
 				
+		    	dynamicChange(barflowLvlVoc,levelVocChart,yAxislvlVoc,levels[0]);
+				
 			} else if(cbLvlFilterVoc.getValue()=="Level 2") {
+				
+		    	dynamicChange(barflowLvlVoc,levelVocChart,yAxislvlVoc,levels[1]);
 				
 			} else if(cbLvlFilterVoc.getValue()=="Level 3") {
 				
+				dynamicChange(barflowLvlVoc,levelVocChart,yAxislvlVoc,levels[2]);
+				
 			} else if(cbLvlFilterVoc.getValue()=="Level 4") {
+				
+				dynamicChange(barflowLvlVoc,levelVocChart,yAxislvlVoc,levels[3]);
+				
+			} 			
+			
+		});
+		
+cbLvlFilterDef.setOnAction(e -> {
+			
+			if(cbLvlFilterDef.getValue()=="Level 1") {
+				
+		    	dynamicChange(barflowLvlDef,levelDefChart,yAxislvlDef,levels[0]);
+				
+			} else if(cbLvlFilterDef.getValue()=="Level 2") {
+				
+				dynamicChange(barflowLvlDef,levelDefChart,yAxislvlDef,levels[1]);
+				
+			} else if(cbLvlFilterDef.getValue()=="Level 3") {
+				
+				dynamicChange(barflowLvlDef,levelDefChart,yAxislvlDef,levels[2]);
+				
+			} else if(cbLvlFilterDef.getValue()=="Level 4") {
+				
+				dynamicChange(barflowLvlDef,levelDefChart,yAxislvlDef,levels[3]);
 				
 			} 			
 			
@@ -493,7 +554,11 @@ public class ResultsWindow {
 		        {//Do this firstly to enable a dynamic Chart
 		            if (mostRecentlySelectedTab.equals(tabVocabulary))
 		            {
-		            	
+		            	//Set the Filter always to level 1 after switching the tab
+		            	cbLvlFilterVoc.getSelectionModel().selectFirst();
+		            	cbLvlFilterDef.getSelectionModel().selectFirst();
+		            //If the User change the tabs, the chart(series) must always set to
+		            //zero. In other case, the Bar will be decreased for zero-values
 		 	           for (XYChart.Series<String, Number> series :
 		 	        	   									vocabularyChart.getData()) {
 			               for (XYChart.Data<String, Number> data : series.getData()) {
@@ -505,6 +570,8 @@ public class ResultsWindow {
 		            }
 		            if (mostRecentlySelectedTab.equals(tabDefinition))
 		            {   
+		            	cbLvlFilterVoc.getSelectionModel().selectFirst();
+		            	cbLvlFilterDef.getSelectionModel().selectFirst();
 			 	           for (XYChart.Series<String, Number> series : 
 			 	       	   									definitionChart.getData()) {
 				               for (XYChart.Data<String, Number> data : series.getData()) {
@@ -516,7 +583,9 @@ public class ResultsWindow {
 		            
 		            }
 		            if (mostRecentlySelectedTab.equals(tabLvlVoc))
-		            {   
+		            {  
+		            	cbLvlFilterVoc.getSelectionModel().selectFirst();
+		            	
 		     		   for (XYChart.Series<String, Number> series :
 		     			   									levelVocChart.getData()) {
 		    		       for (XYChart.Data<String, Number> data : series.getData()) {
@@ -524,6 +593,20 @@ public class ResultsWindow {
 		    		       }
 		    		   }
 		     		dynamicChange(barflowLvlVoc,levelVocChart,yAxislvlVoc,levels[0]);
+		            
+		            }
+		            
+		            if (mostRecentlySelectedTab.equals(tabLvlDef))
+		            {  
+		            	cbLvlFilterDef.getSelectionModel().selectFirst();
+		            	
+		     		   for (XYChart.Series<String, Number> series :
+		     			   									levelDefChart.getData()) {
+		    		       for (XYChart.Data<String, Number> data : series.getData()) {
+		    		    	   		data.setYValue(0);
+		    		       }
+		    		   }
+		     		dynamicChange(barflowLvlDef,levelDefChart,yAxislvlDef,levels[0]);
 		            
 		            }
 		            
@@ -581,7 +664,8 @@ public class ResultsWindow {
 	
 	private void dynamicChange(ArrayList<ArrayList<Integer>> barflow, 
 						BarChart<String, Number> barchart, NumberAxis yAxis, int lvl) {
-		if(!barflow.isEmpty()) {
+		if(!barflow.get(0).isEmpty() || !barflow.get(1).isEmpty() ||
+				!barflow.get(2).isEmpty() || !barflow.get(3).isEmpty()) {
 		//To avoid the default empty BarChart Y-Axis boundary
 		yAxis.setUpperBound(Collections.max(barflow.get(lvl))+5);	
 		Timeline timeline = new Timeline();
