@@ -76,6 +76,7 @@ public class Login extends Application  {
 		Scene cssStyle = new Scene(new LoginLayout(loginWindow,this),1000,600);
 		cssStyle.getStylesheets().addAll(this.getClass().getResource("Style.css").toExternalForm());
 		loginWindow.setScene(cssStyle);
+		loginWindow.sizeToScene();
 		loginWindow.show();
 		Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();
 		loginWindow.setX((primScreenBounds.getWidth() - loginWindow.getWidth()) / 2);
