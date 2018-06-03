@@ -159,6 +159,7 @@ public class TestFileCards {
 		//grid.setGridLinesVisible(true);
 		
 		Scene testWindowScene = new Scene(grid, 500, 600);
+		testFileCardsStage.sizeToScene();
 		testWindowScene.getStylesheets().addAll(this.getClass().getResource("Style.css").toExternalForm());
 		
 		Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();
