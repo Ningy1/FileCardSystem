@@ -578,20 +578,27 @@ public class EditFileCards {
 					ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
 					dataNew = (ArrayList<FileCardsDB>) ois.readObject();
 					ois.close();
+					Boolean check = false;
 					for (int i = 0; i < dataNew.size(); i++) {
 						if (category.equals(dataNew.get(i).getCat()) && subCategoryA.equals(dataNew.get(i).getSubCatA())
 								&& subCategoryB.equals(dataNew.get(i).getSubCatB())) {
 							insertEntry(dataNew.get(i).sideA, dataNew.get(i).sideB, dataNew.get(i).subCatA,
 									dataNew.get(i).subCatB, dataNew.get(i).cat, Login.userID);
+						} else {
+							check = true;
 						}
+					}
+					if(check) {
+						AlertBox.display("Attention", "The format has to be:\n "+ category+"\n from "+subCategoryA+" to "+subCategoryB+"");
 					}
 				}
 			} catch (FileNotFoundException e) {
+				AlertBox.display("Error", "Could not read the file");
 				System.out.println("File not found");
 			} catch (IOException e) {
-				e.printStackTrace();
+				AlertBox.display("Error", "Could not read the file");
 			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
+				AlertBox.display("Error", "Could not read the file");
 			}
 
 		}
