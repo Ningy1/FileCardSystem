@@ -39,7 +39,7 @@ import javafx.scene.control.TextField;
 				         		);
 			         update("CREATE TABLE IF NOT EXISTS Definition ("
 				         		+ "DefinitionID INTEGER IDENTITY PRIMARY KEY NOT NULL, "
-				         		+ "Definition VARCHAR(80) NOT NULL, "
+				         		+ "Definition VARCHAR(160) NOT NULL, "
 				         		+ "WordID INTEGER NOT NULL, "
 				         		+ "Level INTEGER DEFAULT 1, "
 				         		+ "Totalcount INTEGER, "
