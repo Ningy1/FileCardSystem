@@ -177,7 +177,34 @@ public class UserInterface {
 				loginStage.show();
 			}
 			});
+		
+		uiStage.setOnCloseRequest(e -> {
+			e.consume();
+			closeProgram(uiStage);
+		});
 	}
+	
+	
+	private void closeProgram(Stage loginWindow)
+	{
+		{
+			boolean answer = ConfirmBox.display("Confirmation", "Are you sure you want to quit?");
+			if(answer){
+				loginWindow.close();
+				try {
+					(HSQLDB.getInstance()).close();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				System.out.println("Connection closed");
+				
+			}
+		}
+	}
+	
+	
+	
 	
 	public Stage getLoginStage()
 	{
