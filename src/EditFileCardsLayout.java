@@ -2,6 +2,8 @@ import java.awt.ScrollPane;
 import java.awt.Scrollbar;
 import java.sql.SQLException;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -86,6 +88,7 @@ public class EditFileCardsLayout {
 		setElements();
 		// Arrange Elements in the window
 		arrangeElements();
+		
 	}
 
 	/**
@@ -289,16 +292,15 @@ public class EditFileCardsLayout {
 		root.setId("pane2");
 		Scene scene = new Scene(root);
 		Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();
-		
 
 		scene.getStylesheets().addAll(this.getClass().getResource("Style.css").toExternalForm());
 		root.setPadding(new Insets(10, 10, 10, 10));
-	//	root.setPrefSize(editStage.getWidth(), editStage.getHeight());
+		root.setPrefSize(editStage.getWidth(), editStage.getHeight());
 		root.setMinSize(editStage.getWidth(), editStage.getHeight());
 		root.setMaxSize(primScreenBounds.getWidth(), primScreenBounds.getHeight());
 		editStage.setScene(scene);
-		editStage.setX((primScreenBounds.getWidth() - editStage.getWidth()) / 2);
-		editStage.setY((primScreenBounds.getHeight() - editStage.getHeight()) / 2);
+//		editStage.setX((primScreenBounds.getWidth() - editStage.getWidth()) / 2);
+//		editStage.setY((primScreenBounds.getHeight() - editStage.getHeight()) / 2);
 		
 		
 		editStage.setMaxHeight(primScreenBounds.getHeight());
@@ -408,15 +410,16 @@ public class EditFileCardsLayout {
 			// Actionlistener for Button to add new entries
 			addButton.setOnAction(e -> {
 
-				if ((filterCategory.getValue() != null) && (filterSubCategoryA.getValue() != null)
-						&& (filterSubCategoryB.getValue() != null)) {
+				if (((filterCategory.getValue() != null) && (filterSubCategoryA.getValue() != null)
+						&& (filterSubCategoryB.getValue() != null)) && ((!(addSideA.getText().isEmpty())) && (!(addSideB.getText().isEmpty())))) {
 					control.insertEntry(addSideA.getText(), addSideB.getText(), filterSubCategoryA.getValue(),
 							filterSubCategoryB.getValue(), filterCategory.getValue(), Login.userID);
-				}
+				
 
-				// Set textfields to placeholder
-				addSideA.clear();
-				addSideB.clear();
+					// Set textfields to placeholder
+					addSideA.clear();
+					addSideB.clear();
+				}
 			});
 			// Export data
 			exportButton.setOnAction(edit -> {
@@ -448,7 +451,7 @@ public class EditFileCardsLayout {
 	 */
 	public void setKeyListener() {
 		addSideB.setOnKeyReleased(e -> {
-			control.addKeyListener(addSideA, addButton, e);
+			control.addKeyListener(addSideA, addSideB, addButton, e);
 		});
 		table.addEventHandler(KeyEvent.KEY_RELEASED, new EventHandler<KeyEvent>() {
 			@Override

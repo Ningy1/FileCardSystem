@@ -328,74 +328,78 @@ public class EditFileCards {
 		ResultSet rs = null;
 		int wordID1;
 		int wordID2;
-		try {
-			if (category.equals("Translation")) {
-				rs = isDuplicateWord(word1New, language1, userID);
-				if (!rs.next()) {
-					System.out.println("WordDup1");
-					rs = insertWord(word1New, language1, userID);
-					rs.next();
+		if(word1New.isEmpty() || word2New.isEmpty()){
+			AlertBox.display("Attention", "The Filecard should not be empty");
+		} else {
+			try {
+				if (category.equals("Translation")) {
+					rs = isDuplicateWord(word1New, language1, userID);
+					if (!rs.next()) {
+						System.out.println("WordDup1");
+						rs = insertWord(word1New, language1, userID);
+						rs.next();
+					}
+					wordID1 = rs.getInt(1);
+					rs = isDuplicateWord(word2New, language2, userID);
+					if (!rs.next()) {
+						System.out.println("WordDup2");
+						rs = insertWord(word2New, language2, userID);
+						rs.next();
+					}
+					wordID2 = rs.getInt(1);
+	
+					rs = isDuplicateTranslate(wordID1, wordID2);
+					if (!rs.next()) {
+						System.out.println("Updating tranlslate");
+						HSQLDB.getInstance()
+								.update("UPDATE Translate " + "SET WordID1 =" + wordID1 + ", WordID2 = " + wordID2 + " "
+										+ " WHERE (WordID1 = " + wordID1old + "" + " AND WordID2 =" + wordID2old + ")"
+										+ " OR (WordID1 =" + wordID2old + "" + " AND WordID2 =" + wordID1old + ")");
+						// Insert the new value + wordID in the Observable List (update tableView)
+						table.getSelectionModel().getSelectedItem().setSideA(word1New);
+						table.getSelectionModel().getSelectedItem().setIdSideA(wordID1);
+						table.getSelectionModel().getSelectedItem().setSideB(word2New);
+						table.getSelectionModel().getSelectedItem().setIdSideB(wordID2);
+	
+						deleteWords(wordID1old);
+						deleteWords(wordID2old);
+					} else {
+						System.out.println("DeleteRow");
+						deleteCurrentEntry(view.getFilterCategory().getValue(), view.getTable());
+						AlertBox.display("Attention", "Translation from '"+word1New+"' to '"+word2New+"' already exists");
+	
+					}
+				} else if (category.equals("Definition")) {
+					rs = isDuplicateWord(word1New, language1, userID);
+					if (!rs.next()) {
+						System.out.println("WordDup1");
+						rs = insertWord(word1New, language1, userID);
+						rs.next();
+					}
+					wordID1 = rs.getInt(1);
+	
+					rs = isDuplicateDefinition(wordID1, word2New);
+					if (!rs.next()) {
+						System.out.println("Updating Definition");
+						HSQLDB.getInstance().update("UPDATE Definition " + "SET WordID =" + wordID1 + ", definition = '"
+								+ word2New + "' " + " WHERE definitionID = " + wordID2old + "");
+						// Insert the new value + wordID in the Observable List (update tableView)
+						table.getSelectionModel().getSelectedItem().setSideA(word1New);
+						table.getSelectionModel().getSelectedItem().setIdSideA(wordID1);
+						table.getSelectionModel().getSelectedItem().setSideB(word2New);
+						table.getSelectionModel().getSelectedItem().setIdSideB(wordID2old);
+						deleteWords(wordID1old);
+					} else {
+						System.out.println("DeleteRow");
+						deleteCurrentEntry(view.getFilterCategory().getValue(), view.getTable());
+						AlertBox.display("Attention", "Defintion from '"+word1New+"' to '"+word2New+"' already exists");
+	
+					}
 				}
-				wordID1 = rs.getInt(1);
-				rs = isDuplicateWord(word2New, language2, userID);
-				if (!rs.next()) {
-					System.out.println("WordDup2");
-					rs = insertWord(word2New, language2, userID);
-					rs.next();
-				}
-				wordID2 = rs.getInt(1);
-
-				rs = isDuplicateTranslate(wordID1, wordID2);
-				if (!rs.next()) {
-					System.out.println("Updating tranlslate");
-					HSQLDB.getInstance()
-							.update("UPDATE Translate " + "SET WordID1 =" + wordID1 + ", WordID2 = " + wordID2 + " "
-									+ " WHERE (WordID1 = " + wordID1old + "" + " AND WordID2 =" + wordID2old + ")"
-									+ " OR (WordID1 =" + wordID2old + "" + " AND WordID2 =" + wordID1old + ")");
-					// Insert the new value + wordID in the Observable List (update tableView)
-					table.getSelectionModel().getSelectedItem().setSideA(word1New);
-					table.getSelectionModel().getSelectedItem().setIdSideA(wordID1);
-					table.getSelectionModel().getSelectedItem().setSideB(word2New);
-					table.getSelectionModel().getSelectedItem().setIdSideB(wordID2);
-
-					deleteWords(wordID1old);
-					deleteWords(wordID2old);
-				} else {
-					System.out.println("DeleteRow");
-					deleteCurrentEntry(view.getFilterCategory().getValue(), view.getTable());
-					AlertBox.display("Attention", "Translation from '"+word1New+"' to '"+word2New+"' already exists");
-
-				}
-			} else if (category.equals("Definition")) {
-				rs = isDuplicateWord(word1New, language1, userID);
-				if (!rs.next()) {
-					System.out.println("WordDup1");
-					rs = insertWord(word1New, language1, userID);
-					rs.next();
-				}
-				wordID1 = rs.getInt(1);
-
-				rs = isDuplicateDefinition(wordID1, word2New);
-				if (!rs.next()) {
-					System.out.println("Updating Definition");
-					HSQLDB.getInstance().update("UPDATE Definition " + "SET WordID =" + wordID1 + ", definition = '"
-							+ word2New + "' " + " WHERE definitionID = " + wordID2old + "");
-					// Insert the new value + wordID in the Observable List (update tableView)
-					table.getSelectionModel().getSelectedItem().setSideA(word1New);
-					table.getSelectionModel().getSelectedItem().setIdSideA(wordID1);
-					table.getSelectionModel().getSelectedItem().setSideB(word2New);
-					table.getSelectionModel().getSelectedItem().setIdSideB(wordID2old);
-					deleteWords(wordID1old);
-				} else {
-					System.out.println("DeleteRow");
-					deleteCurrentEntry(view.getFilterCategory().getValue(), view.getTable());
-					AlertBox.display("Attention", "Defintion from '"+word1New+"' to '"+word2New+"' already exists");
-
-				}
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 		return rs;
 	}
@@ -825,12 +829,12 @@ public class EditFileCards {
 	 * @param e
 	 *            the KeyEvent
 	 */
-	public void addKeyListener(TextField addSideA, Button addButton, KeyEvent e) {
+	public void addKeyListener(TextField addSideA, TextField addSideB, Button addButton, KeyEvent e) {
 
 		// ActionListener for key pressed (Enter) when adding entry and focusing on
 		// textfieldSideA again
 
-		if (!(addSideA.getText().isEmpty()) && e.getCode().equals(KeyCode.ENTER)) {
+		if (((!(addSideA.getText().isEmpty())) && (!(addSideB.getText().isEmpty()))) && e.getCode().equals(KeyCode.ENTER)) {
 			addButton.fire();
 			addSideA.requestFocus();
 		}
@@ -862,18 +866,8 @@ public class EditFileCards {
 	 */
 	public void closeEditStage(Stage editStage) {
 		
-//		Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();	
-//		editStage.setX((primScreenBounds.getWidth() - editStage.getWidth()) / 2);
-//		editStage.setY((primScreenBounds.getHeight() - editStage.getHeight()) / 2);
-		
 		new UserInterface(ui.getLoginStage(), ui.getName(), ui.getLoginScene());
 		editStage.close();
-	//	uiStage.show();
-		
-//		uiStage.setWidth(1000);
-//		uiStage.setHeight(600);
-//		uiStage.setX((editStage.getX() + editStage.getWidth() / 2) - uiStage.getWidth() / 2);
-//		uiStage.setY(editStage.getY() + editStage.getHeight() / 2 - uiStage.getHeight() / 2);
 	}
 
 	/**
