@@ -41,6 +41,16 @@ public class LoginLayout extends GridPane{
 		loginButton.setId("button");
 		registerButton.setId("button");
 		
+		usernameField.setMinWidth(300);
+		usernameField.setMaxWidth(300);
+		usernameField.setMinHeight(40);
+		usernameField.setMaxHeight(40);
+		
+		passwordField.setMinWidth(300);
+		passwordField.setMaxWidth(300);
+		passwordField.setMinHeight(40);
+		passwordField.setMaxHeight(40);
+		
 		registerButton.setOnAction(e -> {
 			Scene cssStyle = new Scene(new Register(create,this.LoginViewControl),1000,600);
 			cssStyle.getStylesheets().addAll(this.getClass().getResource("Style.css").toExternalForm());
@@ -57,9 +67,11 @@ public class LoginLayout extends GridPane{
 		setConstraints(username, 48, 6);
 		setHalignment(username, HPos.CENTER);
 		setConstraints(usernameField, 49, 6);
+		setHalignment(usernameField, HPos.CENTER);
 		setConstraints(password, 48, 7);
 		setHalignment(password, HPos.CENTER);
 		setConstraints(passwordField, 49, 7);
+		setHalignment(passwordField, HPos.CENTER);
 		setConstraints(loginButton, 49, 15);
 		setConstraints(registerButton, 49, 15);
 		setHalignment(loginButton, HPos.LEFT);

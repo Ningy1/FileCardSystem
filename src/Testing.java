@@ -81,6 +81,11 @@ public class Testing {
 		answerFileCard = new Label(splittedTmp[3]);
 		answerLabel = new Label("blablub");
 		
+		answerFileCard.setMinHeight(100);
+		answerFileCard.setMinWidth(300);
+		answerFileCard.setMaxHeight(100);
+		answerFileCard.setMaxWidth(300);
+		
 		cardLabel.setId("headerTesting");
 		outOfLabel.setId("headerTesting");
 		levelLabel.setId("headerTesting");
@@ -92,10 +97,22 @@ public class Testing {
 		answerField.setPromptText("Enter your answer");
 		fileCard.setUnderline(true);
 		answerField.setPrefSize(fileCard.getWidth(), fileCard.getHeight());
+		answerArea.setPromptText("Enter your answer");
+		
+		answerArea.setMinHeight(100);
+		answerArea.setMinWidth(300);
+		answerArea.setMaxHeight(100);
+		answerArea.setMaxWidth(300);
+		
+		answerField.setMinWidth(300);
+		answerField.setMaxWidth(300);
+		answerField.setMinHeight(40);
+		answerField.setMaxHeight(40);
 		
 		answerLabel.setVisible(false);
 		editButton.setVisible(false);
 		answerFileCard.setVisible(false);
+		answerFileCard.setWrapText(true);
 		
 		Pane pane = new Pane();
 		pane.minHeightProperty().bind(whatIsLabel.heightProperty());
@@ -181,13 +198,13 @@ public class Testing {
 			grid.add(nextButton, 5, 5, 1, 2);
 			GridPane.setHalignment(nextButton, HPos.LEFT);
 			grid.add(pane2, 0, 7);
-			grid.add(answerLabel, 1, 7, 1, 2);
+			grid.add(answerLabel, 1, 8, 1, 2);
 			GridPane.setHalignment(answerLabel, HPos.RIGHT);
-			grid.add(answerFileCard, 2, 7, 2, 2);
+			grid.add(answerFileCard, 2, 8, 3, 2);
 			GridPane.setHalignment(answerFileCard, HPos.LEFT);
-			grid.add(editButton, 1, 10);
+			grid.add(editButton, 1, 11);
 			GridPane.setHalignment(editButton, HPos.CENTER);
-			grid.add(cancelButton, 4, 10);
+			grid.add(cancelButton, 4, 11);
 			GridPane.setHalignment(cancelButton, HPos.LEFT);
 		}
 		
@@ -352,7 +369,17 @@ public class Testing {
 			}
 		});
 	
-		Scene testingScene = new Scene(grid, 800, 400);
+		Scene testingScene;
+		
+		if(category.equals("Translation"))
+		{
+			testingScene = new Scene(grid, 800, 450);
+		}
+		else
+		{
+			testingScene = new Scene(grid, 800, 500);
+		}
+	
 		testingScene.getStylesheets().addAll(this.getClass().getResource("Style.css").toExternalForm());
 		
 		Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();
