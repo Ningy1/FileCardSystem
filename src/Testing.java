@@ -3,6 +3,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -103,6 +105,9 @@ public class Testing {
 		fileCard.setUnderline(true);
 		answerField.setPrefSize(fileCard.getWidth(), fileCard.getHeight());
 		answerArea.setPromptText("Enter your answer");
+		answerArea.setWrapText(true);
+		answerArea.setStyle("-fx-font-size: 16");
+		answerField.setStyle("-fx-font-size: 16");
 		
 		answerArea.setMinHeight(100);
 		answerArea.setMinWidth(350);
@@ -113,6 +118,26 @@ public class Testing {
 		answerField.setMaxWidth(300);
 		answerField.setMinHeight(40);
 		answerField.setMaxHeight(40);
+		
+		answerField.textProperty().addListener(new ChangeListener<String>() {
+			
+			public void changed(ObservableValue<? extends String> observable,
+		            String oldValue, String newValue) {
+				if(newValue.length()>80) {
+					answerField.setText(oldValue);
+				}
+		    }	
+		});
+		
+		answerArea.textProperty().addListener(new ChangeListener<String>() {
+			
+			public void changed(ObservableValue<? extends String> observable,
+		            String oldValue, String newValue) {
+				if(newValue.length()>160) {
+					answerArea.setText(oldValue);
+				}
+		    }	
+		});
 		
 		answerLabel.setVisible(false);
 		editButton.setVisible(false);
