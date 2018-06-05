@@ -178,8 +178,6 @@ public class TestFileCards {
 			
 			if(categoryBox.getValue().equals("Translation"))
 			{
-				categoryChoice = "Translate";
-				
 				try {
 				
 					rs = db.query("select w1.wordid, w2.wordid, w1.word, w2.word "
@@ -199,8 +197,6 @@ public class TestFileCards {
 				}
 			}else
 			{
-				categoryChoice = "Definition";
-				
 				rs = db.query("SELECT w.wordID, d.definitionID, w.word, d.Definition  "
 						+ "FROM Words w NATURAL JOIN Definition d " + "WHERE w.UserID = " + Login.userID
 						+ "AND w.Language = '" + from + "' and d.Level= "+levelChoice+"");

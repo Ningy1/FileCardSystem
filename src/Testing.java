@@ -81,10 +81,15 @@ public class Testing {
 		answerFileCard = new Label(splittedTmp[3]);
 		answerLabel = new Label("blablub");
 		
+		fileCard.setMaxWidth(130);
+		
 		answerFileCard.setMinHeight(100);
 		answerFileCard.setMinWidth(300);
 		answerFileCard.setMaxHeight(100);
 		answerFileCard.setMaxWidth(300);
+		
+		answerLabel.setMinWidth(200);
+		answerLabel.setMaxWidth(200);
 		
 		cardLabel.setId("headerTesting");
 		outOfLabel.setId("headerTesting");
@@ -100,9 +105,9 @@ public class Testing {
 		answerArea.setPromptText("Enter your answer");
 		
 		answerArea.setMinHeight(100);
-		answerArea.setMinWidth(300);
+		answerArea.setMinWidth(350);
 		answerArea.setMaxHeight(100);
-		answerArea.setMaxWidth(300);
+		answerArea.setMaxWidth(350);
 		
 		answerField.setMinWidth(300);
 		answerField.setMaxWidth(300);
