@@ -119,7 +119,7 @@ public class ResultsWindow {
 		gridForTabDef = new GridPane();
 		
 		btnBack = new Button("Back");
-		btnBack.setPrefSize(100,70);
+		btnBack.setPrefSize(150,70);
 		btnBack.setId("button");
 		
 		tabPane = new TabPane();
@@ -494,7 +494,7 @@ public class ResultsWindow {
 		//Eventhandler
 		
 		btnBack.setOnAction(e -> {
-			
+			primaryStage.setTitle("File Card System");
 			primaryStage.setScene(uiScene);
 				});
 		

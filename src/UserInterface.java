@@ -97,7 +97,7 @@ public class UserInterface {
 		
 		//Set the ColumnContraints and add them
 
-		ColumnConstraints column0 = new ColumnConstraints(15,100,600);
+		ColumnConstraints column0 = new ColumnConstraints(15,350,Double.MAX_VALUE);
 		ColumnConstraints column1 = new ColumnConstraints(60,65,Double.MAX_VALUE);
 		
 		//Both Columns have the same priority
