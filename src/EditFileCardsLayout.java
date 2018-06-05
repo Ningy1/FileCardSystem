@@ -1,13 +1,7 @@
-import java.awt.ScrollPane;
-import java.awt.Scrollbar;
-import java.sql.SQLException;
-
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.transformation.FilteredList;
-import javafx.collections.transformation.SortedList;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Rectangle2D;
@@ -322,6 +316,10 @@ public class EditFileCardsLayout {
 		root.setId("pane2");
 		Scene scene = new Scene(root);
 		Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();
+		System.out.println(editStage.getWidth());
+		System.out.println(editStage.getHeight());
+		System.out.println(primScreenBounds.getWidth());
+		System.out.println(primScreenBounds.getHeight());
 
 		scene.getStylesheets().addAll(this.getClass().getResource("Style.css").toExternalForm());
 		root.setPadding(new Insets(10, 10, 10, 10));
