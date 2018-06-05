@@ -865,7 +865,6 @@ public class EditFileCards {
 	 * @param editStage
 	 */
 	public void closeEditStage(Stage editStage) {
-		
 		new UserInterface(ui.getLoginStage(), ui.getName(), ui.getLoginScene());
 		editStage.close();
 	}

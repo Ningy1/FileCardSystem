@@ -310,8 +310,8 @@ public class EditFileCardsLayout {
 		// Set size properties of the stage
 //		editStage.setMaxWidth(addSideA.getMaxWidth() + addSideB.getMaxWidth());
 		// Open Stage on same size and extend as previous Stage
-//		editStage.setWidth(700);
-//		editStage.setHeight(400);
+		editStage.setWidth(1000);
+		editStage.setHeight(600);
 //		editStage.setX((uiStage.getX() + uiStage.getWidth() / 2) - editStage.getWidth() / 2);
 //		editStage.setY(uiStage.getY() + uiStage.getHeight() / 2 - editStage.getHeight() / 2);
 		// Bin the width of the table(and following also the other elements) to the
@@ -329,8 +329,8 @@ public class EditFileCardsLayout {
 		root.setMinSize(editStage.getWidth(), editStage.getHeight());
 		root.setMaxSize(primScreenBounds.getWidth(), primScreenBounds.getHeight());
 		editStage.setScene(scene);
-//		editStage.setX((primScreenBounds.getWidth() - editStage.getWidth()) / 2);
-//		editStage.setY((primScreenBounds.getHeight() - editStage.getHeight()) / 2);
+		editStage.setX((primScreenBounds.getWidth() - editStage.getWidth()) / 2);
+		editStage.setY((primScreenBounds.getHeight() - editStage.getHeight()) / 2);
 		
 		
 		editStage.setMaxHeight(primScreenBounds.getHeight());
