@@ -150,6 +150,10 @@ public class EditFileCardsLayout {
 		deleteButton.setDisable(true);
 		importButton.setDisable(true);
 		exportButton.setDisable(true);
+		addSideA.clear();
+		addSideA.setDisable(true);
+		addSideB.clear();
+		addSideB.setDisable(true);
 	}
 
 	/**
@@ -161,6 +165,10 @@ public class EditFileCardsLayout {
 		deleteButton.setDisable(false);
 		importButton.setDisable(false);
 		exportButton.setDisable(false);
+		addSideA.clear();
+		addSideA.setDisable(false);
+		addSideB.clear();
+		addSideB.setDisable(false);
 	}
 
 	/**
@@ -207,9 +215,11 @@ public class EditFileCardsLayout {
 		addSideA.setPrefWidth(sideA.getPrefWidth());
 		addSideA.setMinWidth(sideA.getMinWidth());
 		addSideA.setPromptText("SideA");
+		addSideA.setDisable(true);
 		addSideB.setMaxWidth(sideB.getMaxWidth());
 		addSideB.setPrefWidth(sideB.getPrefWidth());
 		addSideB.setPromptText("SideB");
+		addSideB.setDisable(true);
 		addButton.setMaxWidth(sideA.getMaxWidth());
 		addButton.setMinWidth(sideA.getMinWidth());
 		addButton.setPrefWidth(sideA.getPrefWidth());
@@ -238,9 +248,29 @@ public class EditFileCardsLayout {
 		closeButton.setMaxWidth(filterCategory.getMaxWidth());
 		closeButton.setMinWidth(filterCategory.getMinWidth());
 		closeButton.setPrefWidth(filterCategory.getPrefWidth());
-
+		addSideA.textProperty().addListener(new ChangeListener<String>() {
+			@Override
+			public void changed(ObservableValue<? extends String> observable,
+		            String oldValue, String newValue) {
+				if(newValue.length()>80) {
+					addSideA.setText(oldValue);
+				}
+		    }	
+		});
+		addSideB.textProperty().addListener(new ChangeListener<String>() {
+			@Override
+			public void changed(ObservableValue<? extends String> observable,
+		            String oldValue, String newValue) {
+				System.out.println(filterCategory.getValue());
+				if(filterCategory.getValue().equals("Definition") && newValue.length()>160) {
+					addSideB.setText(oldValue);
+				} else if(!(filterCategory.getValue().equals("Definition")) && newValue.length()>80){
+					addSideB.setText(oldValue);
+				}
+		    }	
+		});
 	}
-
+	
 	/**
 	 * This method arranges the different elements in containers in the Scene, how
 	 * they should grow and the size of the boxes. It also configures the stage.
@@ -326,18 +356,26 @@ public class EditFileCardsLayout {
 
 		// Set the cell to a textfield when editing
 		sideA.setCellFactory(TextFieldTableCell.forTableColumn());
-
 		// Tell what should happen when editing
 		// Implement anonymous class (Eventhandler)
 		sideA.setOnEditCommit(new EventHandler<CellEditEvent<FileCardsDB, String>>() {
+			
+			
 			@Override
 			public void handle(CellEditEvent<FileCardsDB, String> edit) {
-				// Get the new value of the cell after editing
-				String wordNew = edit.getNewValue();
+				String wordNew;
+				if(edit.getNewValue().length() > 80) {
+					wordNew = edit.getOldValue();
+				} else {
+					// Get the new value of the cell after editing
+					wordNew = edit.getNewValue();
+				}
 				// Update Translate
-				control.updateEntry(wordNew, edit.getRowValue().getSideB(), edit.getRowValue().getIdSideA(),
-						edit.getRowValue().getIdSideB(), getFilterSubCategoryA().getValue(),
-						getFilterSubCategoryB().getValue(), filterCategory.getValue(), table, Login.userID);
+				if(!wordNew.equals(edit.getOldValue())) {
+					control.updateEntry(wordNew, edit.getRowValue().getSideB(), edit.getRowValue().getIdSideA(),
+							edit.getRowValue().getIdSideB(), getFilterSubCategoryA().getValue(),
+							getFilterSubCategoryB().getValue(), filterCategory.getValue(), table, Login.userID);		
+				}
 				// Refresh tableview
 				edit.getTableView().getColumns().get(0).setVisible(false);
 				edit.getTableView().getColumns().get(0).setVisible(true);
@@ -351,15 +389,25 @@ public class EditFileCardsLayout {
 		// Tell what should happen when editing
 		// Implement anonymous class
 		sideB.setOnEditCommit(new EventHandler<CellEditEvent<FileCardsDB, String>>() {
+			
 			// Add necessary mehtod
 			@Override
 			public void handle(CellEditEvent<FileCardsDB, String> edit) {
-				// Get the new value of the cell after editing
-				String wordNew = edit.getNewValue();
+				String wordNew ;
+				if(filterCategory.getValue().equals("Translation") && edit.getNewValue().length() > 80) {
+					wordNew = edit.getOldValue();
+				} else if(filterCategory.getValue().equals("Definition") && edit.getNewValue().length() > 160) {
+					wordNew = edit.getOldValue();
+				} else {
+					// Get the new value of the cell after editing
+					wordNew = edit.getNewValue();
+				}
 				// Update
+				if(!wordNew.equals(edit.getOldValue())) {
 				control.updateEntry(edit.getRowValue().getSideA(), wordNew, edit.getRowValue().getIdSideA(),
 						edit.getRowValue().getIdSideB(), getFilterSubCategoryA().getValue(),
 						getFilterSubCategoryB().getValue(), filterCategory.getValue(), table, Login.userID);
+				}
 				// Refresh tableview
 				edit.getTableView().getColumns().get(0).setVisible(false);
 				edit.getTableView().getColumns().get(0).setVisible(true);
