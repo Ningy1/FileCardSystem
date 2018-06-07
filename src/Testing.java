@@ -507,7 +507,7 @@ public class Testing {
 		
 		editButton.setOnAction(e -> {
 			if(category.equalsIgnoreCase("Translation")) {
-				new EditFileCards(testingStage, this, new FileCardsDB(card.getIdSideA(), card.getIdSideA(), card.getSideA(), card.getSideB(), category, from, language));
+				new EditFileCards(testingStage, this, new FileCardsDB(card.getIdSideA(), card.getIdSideB(), card.getSideA(), card.getSideB(), category, from, language));
 			} else if (category.equalsIgnoreCase("Definition")) {
 				new EditFileCards(testingStage, this, new FileCardsDB(card.getIdSideA(), card.getIdSideB(), card.getSideA(), card.getSideB(), category, from, "Definition"));
 			}
