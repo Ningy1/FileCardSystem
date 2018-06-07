@@ -28,9 +28,16 @@ public class Testing {
 	private UserInterface ui;
 	private String category;
 	private String level;
-	private	ArrayList<String> resultSets = new ArrayList<String>();
-	private Iterator<String> iterator; 
-	private String numOfCards;
+	private	ArrayList<FileCardsDB> resultSets = new ArrayList<FileCardsDB>();
+	private ArrayList<FileCardsDB> duplicates = new ArrayList<FileCardsDB>();
+	private Iterator<FileCardsDB> iterator;
+	private Iterator<FileCardsDB> duplicateIterator;
+	private String givenAnswers = "";
+	private String possibleAnswers = "";
+	private Integer numOfPossibleAnswers;
+	private Integer duplicateCounter = 0;
+	private Integer numOfDuplicates;
+	private Integer numOfCards;
 	private String from;
 	private Label categoryLabel;
 	private Label cardLabel = new Label("Kartei: ");
@@ -50,8 +57,7 @@ public class Testing {
 	private Button cancelButton = new Button("Quit learning");
 	private Button nextButton = new Button("Next");
 	private Integer levelUp = 0;
-	private String tmp;
-	private String[] splittedTmp;
+	private FileCardsDB card;
 	
 	public Testing(Stage testFileCardsStage, UserInterface ui, String levelChoice, String categoryChoice, String from, String to)
 	{	
@@ -73,14 +79,16 @@ public class Testing {
 	private void createTestingWindowScene()
 	{
 		levelLabel = new Label("Level "+level);
-		numOfCards = new Integer(resultSets.size()).toString();
+		numOfDuplicates = checkDuplicatesForTotalNumOfCards();
+		numOfCards = resultSets.size() - numOfDuplicates;
 		outOfLabel = new Label("1/"+numOfCards);
 		
-		tmp = iterator.next();
-		splittedTmp = tmp.split("-_-");
+		card = iterator.next();
+		iterator.remove();
+		hasDuplicates(card);
 		
-		fileCard = new Label(splittedTmp[2]);
-		answerFileCard = new Label(splittedTmp[3]);
+		fileCard = new Label(card.getSideA());
+		answerFileCard = new Label(card.getSideB());
 		answerLabel = new Label("blablub");
 		
 		fileCard.setMaxWidth(130);
@@ -90,8 +98,8 @@ public class Testing {
 		answerFileCard.setMaxHeight(100);
 		answerFileCard.setMaxWidth(300);
 		
-		answerLabel.setMinWidth(200);
-		answerLabel.setMaxWidth(200);
+		answerLabel.setMinWidth(230);
+		answerLabel.setMaxWidth(230);
 		
 		cardLabel.setId("headerTesting");
 		outOfLabel.setId("headerTesting");
@@ -242,47 +250,105 @@ public class Testing {
 		
 		answerField.setOnKeyPressed(new EventHandler<KeyEvent>()
 	    {
-	        @Override
 	        public void handle(KeyEvent key)
 	        {
 	            if (key.getCode().equals(KeyCode.ENTER))
-	            {
-	            	if(((answerField.getText().equals(answerFileCard.getText()) || answerField.getText().toLowerCase().equals(answerFileCard.getText().toLowerCase())) && category.equals("Translation")) ||
-	            			(((answerArea.getText().equals(answerFileCard.getText()) || answerArea.getText().toLowerCase().equals(answerFileCard.getText().toLowerCase())) && category.equals("Definition"))))
+	            { 	
+	            	if(duplicateIterator != null)
 	            	{
-	            		answerField.setDisable(true);
-	            		answerArea.setDisable(true);
+	            		nextButton.setDisable(true);
+	            		FileCardsDB tmp = duplicateIterator.next();
 	            		
-	            		answerLabel.setText("Correct, well done!");
-	            		answerLabel.setVisible(true);
-	            		editButton.setVisible(true);
-	            		
-	            		
-	            		if(!(level.equals("4")))
+	            		if(checkForPossibleAnswers(answerField.getText().toLowerCase()))
 	            		{
-	            			levelUp = 1;
-	            		}else
-	            			levelUp = 0;
-	            		
-	            		dbUpdateQuery(Integer.parseInt(level)+levelUp, splittedTmp[0], splittedTmp[1], category);
-	            		
-	            	}else if((answerField.getText().trim().length() == 0 && category.equals("Translation")) || 
-	            			((answerArea.getText().trim().length() == 0 && category.equals("Definition"))))
-	    			{
-	    				answerLabel.setText("You didn't type anything!");
-	    				answerLabel.setVisible(true);
-	    				
-	    			}else{
-	            	
-	            		answerField.setDisable(true);
-	            		answerArea.setDisable(true);
-	            		
-	            		answerLabel.setText("Wrong, the anwer is: ");
-	            		answerLabel.setVisible(true);
-	            		answerFileCard.setVisible(true);
-	            		editButton.setVisible(true);
-	            		
-	            		dbUpdateQuery(1, splittedTmp[0], splittedTmp[1], category);
+	            			if(numOfDuplicates == duplicateCounter)
+	                		{
+	                			nextButton.setDisable(false);
+	                			givenAnswers = givenAnswers + " " + answerField.getText();
+	                			answerLabel.setText("Everything correct!");
+	                			answerFileCard.setText("Entered: " + givenAnswers + ".");
+	                			answerLabel.setVisible(true);
+	                			answerFileCard.setVisible(true);
+	                			answerField.setDisable(true);
+	                			answerArea.setDisable(true);
+	                			checkButton.setDisable(true);
+	                			answerField.clear();
+	                			answerArea.clear();
+	                		}
+	            			else
+	                		{
+	            				givenAnswers = givenAnswers + " " + answerField.getText();
+		            			answerLabel.setText("Correct, what else?");
+		            			answerFileCard.setText("Entered: " + givenAnswers + ". " + numOfDuplicates + " answer(s) remaining.");
+		            			answerLabel.setVisible(true);
+		            			answerFileCard.setVisible(true);
+		            			answerField.clear();
+		            			answerArea.clear();
+		            			
+		            			if(!(level.equals("4")))
+			            		{
+			            			levelUp = 1;
+			            		}else
+			            			levelUp = 0;
+			            		
+			            		//dbUpdateQuery(Integer.parseInt(level)+levelUp, tmp.getIdSideA().toString(), tmp.getIdSideB().toString(), category);
+	                		}
+	            		}
+	            		else
+	            		{
+	            			answerField.setDisable(true);
+		            		answerArea.setDisable(true);
+	            			
+	            			answerLabel.setText("Wrong, possible answers are: ");
+	            			answerLabel.setVisible(true);
+		            		answerFileCard.setVisible(true);
+		            		answerFileCard.setText(possibleAnswers);
+		            		editButton.setVisible(true);
+		            		nextButton.setDisable(false);
+		            		checkButton.setDisable(true);
+		            		
+		            		dbUpdateQuery(1, tmp.getIdSideA().toString(), tmp.getIdSideB().toString(), category);
+	            		}
+	            	}
+	            	else
+	            	{
+	            		if(((answerField.getText().toLowerCase().equals(answerFileCard.getText().toLowerCase()) || answerField.getText().toLowerCase().equals(answerFileCard.getText().toLowerCase())) && category.equals("Translation")) ||
+		            			(((answerArea.getText().toLowerCase().equals(answerFileCard.getText().toLowerCase()) || answerArea.getText().toLowerCase().equals(answerFileCard.getText().toLowerCase())) && category.equals("Definition"))))
+		            	{
+		            		answerField.setDisable(true);
+		            		answerArea.setDisable(true);
+		            		
+		            		answerLabel.setText("Correct, well done!");
+		            		answerLabel.setVisible(true);
+		            		editButton.setVisible(true);
+		            		
+		            		
+		            		if(!(level.equals("4")))
+		            		{
+		            			levelUp = 1;
+		            		}else
+		            			levelUp = 0;
+		            		
+		            		dbUpdateQuery(Integer.parseInt(level)+levelUp, card.getIdSideA().toString(), card.getIdSideB().toString(), category);
+		            		
+		            	}else if((answerField.getText().trim().length() == 0 && category.equals("Translation")) || 
+		            			((answerArea.getText().trim().length() == 0 && category.equals("Definition"))))
+		    			{
+		    				answerLabel.setText("You didn't type anything!");
+		    				answerLabel.setVisible(true);
+		    				
+		    			}else{
+		            	
+		            		answerField.setDisable(true);
+		            		answerArea.setDisable(true);
+		            		
+		            		answerLabel.setText("Wrong, the answer is: ");
+		            		answerLabel.setVisible(true);
+		            		answerFileCard.setVisible(true);
+		            		editButton.setVisible(true);
+		            		
+		            		dbUpdateQuery(1, card.getIdSideA().toString(), card.getIdSideB().toString(), category);
+		            	}
 	            	}
 	            }
 	        }
@@ -290,48 +356,107 @@ public class Testing {
 		
 		checkButton.setOnAction(e -> {
 			
-			if(((answerField.getText().equals(answerFileCard.getText()) || answerField.getText().toLowerCase().equals(answerFileCard.getText().toLowerCase())) && category.equals("Translation")) ||
-        			(((answerArea.getText().equals(answerFileCard.getText()) || answerArea.getText().toLowerCase().equals(answerFileCard.getText().toLowerCase())) && category.equals("Definition"))))
+			if(duplicateIterator != null)
         	{
-        		answerField.setDisable(true);
-        		answerArea.setDisable(true);
+        		nextButton.setDisable(true);
+        		FileCardsDB tmp = duplicateIterator.next();
         		
-        		answerLabel.setText("Correct, well done!");
-        		answerLabel.setVisible(true);
-        		editButton.setVisible(true);
-        		
-        		
-        		if(!(level.equals("4")))
+        		if(checkForPossibleAnswers(answerField.getText().toLowerCase()))
         		{
-        			levelUp = 1;
-        		}else
-        			levelUp = 0;
-        		
-        		dbUpdateQuery(Integer.parseInt(level)+levelUp, splittedTmp[0], splittedTmp[1], category);
-        		
-        	}else if((answerField.getText().trim().length() == 0 && category.equals("Translation")) || 
-        			((answerArea.getText().trim().length() == 0 && category.equals("Definition"))))
-			{
-				answerLabel.setText("You didn't type anything!");
-				answerLabel.setVisible(true);
-				
-			}else{
-        	
-        		answerField.setDisable(true);
-        		answerArea.setDisable(true);
-        		
-        		answerLabel.setText("Wrong, the anwer is: ");
-        		answerLabel.setVisible(true);
-        		answerFileCard.setVisible(true);
-        		editButton.setVisible(true);
-        		
-        		dbUpdateQuery(1, splittedTmp[0], splittedTmp[1], category);
+        			if(numOfDuplicates == duplicateCounter)
+            		{
+            			nextButton.setDisable(false);
+            			givenAnswers = givenAnswers + " " + answerField.getText();
+            			answerLabel.setText("Everything correct!");
+            			answerFileCard.setText("Entered: " + givenAnswers + ".");
+            			answerLabel.setVisible(true);
+            			answerFileCard.setVisible(true);
+            			answerField.setDisable(true);
+            			answerArea.setDisable(true);
+            			checkButton.setDisable(true);
+            			answerField.clear();
+            			answerArea.clear();
+            		}
+        			else
+            		{
+        				givenAnswers = givenAnswers + " " + answerField.getText();
+            			answerLabel.setText("Correct, what else?");
+            			answerFileCard.setText("Entered: " + givenAnswers + ". " + numOfDuplicates + " answer(s) remaining.");
+            			answerLabel.setVisible(true);
+            			answerFileCard.setVisible(true);
+            			answerField.clear();
+            			answerArea.clear();
+            			
+            			if(!(level.equals("4")))
+	            		{
+	            			levelUp = 1;
+	            		}else
+	            			levelUp = 0;
+	            		
+	            		//dbUpdateQuery(Integer.parseInt(level)+levelUp, tmp.getIdSideA().toString(), tmp.getIdSideB().toString(), category);
+            		}
+        		}
+        		else
+        		{
+        			answerField.setDisable(true);
+            		answerArea.setDisable(true);
+        			
+        			answerLabel.setText("Wrong, possible answers are: ");
+        			answerLabel.setVisible(true);
+            		answerFileCard.setVisible(true);
+            		answerFileCard.setText(possibleAnswers);
+            		editButton.setVisible(true);
+            		nextButton.setDisable(false);
+            		checkButton.setDisable(true);
+            		
+            		dbUpdateQuery(1, tmp.getIdSideA().toString(), tmp.getIdSideB().toString(), category);
+        		}
+        	}
+        	else
+        	{
+        		if(((answerField.getText().toLowerCase().equals(answerFileCard.getText().toLowerCase()) || answerField.getText().toLowerCase().equals(answerFileCard.getText().toLowerCase())) && category.equals("Translation")) ||
+            			(((answerArea.getText().toLowerCase().equals(answerFileCard.getText().toLowerCase()) || answerArea.getText().toLowerCase().equals(answerFileCard.getText().toLowerCase())) && category.equals("Definition"))))
+            	{
+            		answerField.setDisable(true);
+            		answerArea.setDisable(true);
+            		
+            		answerLabel.setText("Correct, well done!");
+            		answerLabel.setVisible(true);
+            		editButton.setVisible(true);
+            		
+            		
+            		if(!(level.equals("4")))
+            		{
+            			levelUp = 1;
+            		}else
+            			levelUp = 0;
+            		
+            		dbUpdateQuery(Integer.parseInt(level)+levelUp, card.getIdSideA().toString(), card.getIdSideB().toString(), category);
+            		
+            	}else if((answerField.getText().trim().length() == 0 && category.equals("Translation")) || 
+            			((answerArea.getText().trim().length() == 0 && category.equals("Definition"))))
+    			{
+    				answerLabel.setText("You didn't type anything!");
+    				answerLabel.setVisible(true);
+    				
+    			}else{
+            	
+            		answerField.setDisable(true);
+            		answerArea.setDisable(true);
+            		
+            		answerLabel.setText("Wrong, the answer is: ");
+            		answerLabel.setVisible(true);
+            		answerFileCard.setVisible(true);
+            		editButton.setVisible(true);
+            		
+            		dbUpdateQuery(1, card.getIdSideA().toString(), card.getIdSideB().toString(), category);
+            	}
         	}
 		});
 		
 		nextButton.setOnAction(e -> {
 			
-			if(counter<Integer.parseInt(numOfCards) && (answerField.isDisabled() || answerArea.isDisabled()))
+			if(counter<numOfCards && (answerField.isDisabled() || answerArea.isDisabled()))
 			{
 				counter++;
 				
@@ -345,21 +470,31 @@ public class Testing {
 				answerArea.clear();
 				answerField.setDisable(false);
         		answerArea.setDisable(false);
+        		checkButton.setDisable(false);
 				
-				tmp = iterator.next();
-				splittedTmp = tmp.split("-_-");
+        		iterator = resultSets.iterator();
+        		
+        		possibleAnswers = "";
+        		duplicates.clear();
+        		
+				card = iterator.next();
+				iterator.remove();
+				hasDuplicates(card);
 				
-				fileCard.setText(splittedTmp[2]);
-				answerFileCard.setText(splittedTmp[3]);
+				duplicateCounter = 0;
+				givenAnswers = "";
+				
+				
+				fileCard.setText(card.getSideA());
+				answerFileCard.setText(card.getSideB());
 			}
-			else if(counter==Integer.parseInt(numOfCards) && (answerField.isDisabled() || answerArea.isDisabled()))
+			else if(counter==numOfCards && (answerField.isDisabled() || answerArea.isDisabled()))
 			{
 				AlertBox.display("Congratulations", "Congratulations, you made it through the "+level+". level!\nYou can quit now.");
 				answerField.setDisable(true);
 				answerArea.setDisable(true);
 				
 				answerLabel.setVisible(true);
-        		answerFileCard.setVisible(true);
         		editButton.setVisible(true);
         	}
 			else
@@ -372,9 +507,9 @@ public class Testing {
 		
 		editButton.setOnAction(e -> {
 			if(category.equalsIgnoreCase("Translation")) {
-				new EditFileCards(testingStage, this, new FileCardsDB(Integer.parseInt(splittedTmp[0]), Integer.parseInt(splittedTmp[1]), splittedTmp[2], splittedTmp[3], category, from, language));
+				new EditFileCards(testingStage, this, new FileCardsDB(card.getIdSideA(), card.getIdSideA(), card.getSideA(), card.getSideB(), category, from, language));
 			} else if (category.equalsIgnoreCase("Definition")) {
-				new EditFileCards(testingStage, this, new FileCardsDB(Integer.parseInt(splittedTmp[0]), Integer.parseInt(splittedTmp[1]), splittedTmp[2], splittedTmp[3], category, from, "Definition"));
+				new EditFileCards(testingStage, this, new FileCardsDB(card.getIdSideA(), card.getIdSideB(), card.getSideA(), card.getSideB(), category, from, "Definition"));
 			}
 		});
 		
@@ -439,7 +574,8 @@ public class Testing {
 				{
 					while(rs.next())
 					{
-						resultSets.add(rs.getString(1) + "-_-" + rs.getString(2) + "-_-" + rs.getString(3) + "-_-" + rs.getString(4));
+						FileCardsDB card = new FileCardsDB(rs.getInt(1), rs.getInt(2), rs.getString(3), rs.getString(4), categoryChoice, from, to);
+						resultSets.add(card);
 					}
 					iterator = resultSets.iterator();
 				}
@@ -458,7 +594,8 @@ public class Testing {
 				{
 					while(rs.next())
 					{
-						resultSets.add(rs.getString(1) + "-_-" + rs.getString(2) + "-_-" + rs.getString(3) + "-_-" + rs.getString(4));
+						FileCardsDB card = new FileCardsDB(rs.getInt(1), rs.getInt(2), rs.getString(3), rs.getString(4), categoryChoice, from, "Definition");
+						resultSets.add(card);
 					}
 					iterator = resultSets.iterator();
 				}
@@ -494,5 +631,85 @@ public class Testing {
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	private Integer checkDuplicatesForTotalNumOfCards()
+	{
+		FileCardsDB tmp1 = new FileCardsDB();
+		FileCardsDB tmp2 = new FileCardsDB();
+		Integer counter = 0;
+		ArrayList<FileCardsDB> duplicateSets = new ArrayList<FileCardsDB>(resultSets);
+		
+    	for(Iterator<FileCardsDB> iter1 = duplicateSets.iterator(); iter1.hasNext();) {
+    		
+    		tmp1 = iter1.next();
+    		iter1.remove();
+    		
+    		for(Iterator<FileCardsDB> iter2 = duplicateSets.iterator(); iter2.hasNext();) {
+    			
+    			tmp2 = iter2.next();
+    			
+    			if(tmp1.getSideA().toLowerCase().equals(tmp2.getSideA().toLowerCase()) && !(tmp1.getSideB().toLowerCase().equals(tmp2.getSideB().toLowerCase())))
+    			{
+    				counter++;
+    			}
+    		}
+    	}
+
+    	return counter;
+	}
+	
+	private void hasDuplicates(FileCardsDB currentCard)
+	{
+		FileCardsDB tmp = new FileCardsDB();
+		duplicates.add(currentCard);
+		System.out.println(currentCard.getSideA() + "   " + currentCard.getSideB());
+		possibleAnswers = possibleAnswers + currentCard.getSideB() + " ";
+		
+		for(Iterator<FileCardsDB> iter1 = resultSets.iterator(); iter1.hasNext();) {
+			
+			tmp = iter1.next();
+			
+    		if(currentCard.getSideA().toLowerCase().equals(tmp.getSideA().toLowerCase()))
+    		{
+    			possibleAnswers = possibleAnswers + tmp.getSideB() + " ";
+    			iter1.remove();
+    			duplicates.add(tmp);
+    			System.out.println(tmp.getSideA() + "  " + tmp.getSideB());
+    		}
+		}
+		
+		if(duplicates.size() == 1)			// only current card
+		{
+			duplicates.clear();
+			duplicateIterator = null;
+			numOfDuplicates = 0;
+		}
+		else
+		{
+			duplicateIterator = duplicates.iterator();
+			numOfDuplicates = duplicates.size();
+		}
+		
+	}
+	
+	private Boolean checkForPossibleAnswers(String answer)
+	{
+		FileCardsDB tmp = new FileCardsDB();
+		
+		for(Iterator<FileCardsDB> iter1 = duplicates.iterator(); iter1.hasNext();) {
+			
+			tmp = iter1.next();
+			
+    		if(tmp.getSideB().toLowerCase().equals(answer))
+    		{
+    			iter1.remove();
+    			duplicateCounter++;
+    			duplicateIterator = duplicates.iterator();
+    			return true;
+    		}
+		}
+		
+		return false;
 	}
 }

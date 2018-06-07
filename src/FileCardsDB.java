@@ -24,6 +24,16 @@ public class FileCardsDB implements Serializable{
 		this.subCatA = subCatA;
 		this.subCatB = subCatB;
 	}
+	public FileCardsDB()
+	{
+		idSideA = null;
+		idSideB = null;
+		sideA = null;
+		sideB = null;
+		cat = null;
+		subCatA = null;
+		subCatB = null;
+	}
 	public Integer getIdSideA()
     {
     	return idSideA;
