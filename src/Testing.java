@@ -254,7 +254,8 @@ public class Testing {
 	        {
 	            if (key.getCode().equals(KeyCode.ENTER))
 	            { 	
-	            	if(duplicateIterator != null)
+	            	if(duplicateIterator != null && (answerField.getText().trim().length() != 0 && category.equals("Translation")) || 
+	            			((answerArea.getText().trim().length() != 0 && category.equals("Definition"))))
 	            	{
 	            		nextButton.setDisable(true);
 	            		FileCardsDB tmp = duplicateIterator.next();
@@ -272,11 +273,14 @@ public class Testing {
 	                			answerField.setDisable(true);
 	                			answerArea.setDisable(true);
 	                			checkButton.setDisable(true);
+	                			editButton.setVisible(true);
 	                			answerField.clear();
 	                			answerArea.clear();
 	                		}
 	            			else
 	                		{
+	            				numOfDuplicates--;
+	            				duplicateCounter--;
 	            				givenAnswers = givenAnswers + " " + answerField.getText();
 		            			answerLabel.setText("Correct, what else?");
 		            			answerFileCard.setText("Entered: " + givenAnswers + ". " + numOfDuplicates + " answer(s) remaining.");
@@ -356,7 +360,8 @@ public class Testing {
 		
 		checkButton.setOnAction(e -> {
 			
-			if(duplicateIterator != null)
+			if(duplicateIterator != null && (answerField.getText().trim().length() != 0 && category.equals("Translation")) || 
+        			((answerArea.getText().trim().length() != 0 && category.equals("Definition"))))
         	{
         		nextButton.setDisable(true);
         		FileCardsDB tmp = duplicateIterator.next();
@@ -374,11 +379,14 @@ public class Testing {
             			answerField.setDisable(true);
             			answerArea.setDisable(true);
             			checkButton.setDisable(true);
+            			editButton.setVisible(true);
             			answerField.clear();
             			answerArea.clear();
             		}
         			else
             		{
+        				numOfDuplicates--;
+        				duplicateCounter--;
         				givenAnswers = givenAnswers + " " + answerField.getText();
             			answerLabel.setText("Correct, what else?");
             			answerFileCard.setText("Entered: " + givenAnswers + ". " + numOfDuplicates + " answer(s) remaining.");
