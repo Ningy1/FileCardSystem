@@ -81,6 +81,7 @@ public class Testing {
 		levelLabel = new Label("Level "+level);
 		numOfDuplicates = checkDuplicatesForTotalNumOfCards();
 		numOfCards = resultSets.size() - numOfDuplicates;
+		System.out.println(resultSets.size() + "  " + numOfDuplicates);
 		outOfLabel = new Label("1/"+numOfCards);
 		
 		card = iterator.next();
@@ -659,9 +660,12 @@ public class Testing {
     			
     			if(tmp1.getSideA().toLowerCase().equals(tmp2.getSideA().toLowerCase()) && !(tmp1.getSideB().toLowerCase().equals(tmp2.getSideB().toLowerCase())))
     			{
+    				iter2.remove();
     				counter++;
     			}
     		}
+    		
+    		iter1 = duplicateSets.iterator();
     	}
 
     	return counter;
@@ -673,6 +677,7 @@ public class Testing {
 		duplicates.add(currentCard);
 		System.out.println(currentCard.getSideA() + "   " + currentCard.getSideB());
 		possibleAnswers = possibleAnswers + currentCard.getSideB() + " ";
+		
 		
 		for(Iterator<FileCardsDB> iter1 = resultSets.iterator(); iter1.hasNext();) {
 			
