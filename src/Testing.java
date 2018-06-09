@@ -39,7 +39,7 @@ public class Testing {
 	private Integer numOfCards;
 	private String from;
 	private Label categoryLabel;
-	private Label cardLabel = new Label("Kartei: ");
+	private Label cardLabel = new Label("Filecard: ");
 	private Integer counter = 1;
 	private Label outOfLabel = new Label(counter+"/"+numOfCards);
 	private Label levelLabel;
@@ -346,7 +346,7 @@ public class Testing {
 	                		answerLabel.setText("Correct, well done!");
 	                		answerLabel.setVisible(true);
 	                		editButton.setVisible(true);
-	                		
+	                		checkButton.setDisable(true);
 	                		
 	                		if(!(level.equals("4")))
 	                		{
@@ -371,6 +371,7 @@ public class Testing {
 	                		answerLabel.setVisible(true);
 	                		answerFileCard.setVisible(true);
 	                		editButton.setVisible(true);
+	                		checkButton.setDisable(true);
 	                		
 	                		dbUpdateQuery(1, card.getIdSideA().toString(), card.getIdSideB().toString(), category);
 	                	}
@@ -474,7 +475,7 @@ public class Testing {
             		answerLabel.setText("Correct, well done!");
             		answerLabel.setVisible(true);
             		editButton.setVisible(true);
-            		
+            		checkButton.setDisable(true);
             		
             		if(!(level.equals("4")))
             		{
@@ -499,6 +500,7 @@ public class Testing {
             		answerLabel.setVisible(true);
             		answerFileCard.setVisible(true);
             		editButton.setVisible(true);
+            		checkButton.setDisable(true);
             		
             		dbUpdateQuery(1, card.getIdSideA().toString(), card.getIdSideB().toString(), category);
             	}
@@ -522,6 +524,7 @@ public class Testing {
 				answerField.setDisable(false);
         		answerArea.setDisable(false);
         		checkButton.setDisable(false);
+        		editButton.setDisable(false);
 				
         		iterator = resultSets.iterator();
         		
@@ -568,6 +571,7 @@ public class Testing {
 			} else if (category.equalsIgnoreCase("Definition") && !(fixedDuplicates.isEmpty())) {
 				new EditFileCards(testingStage, this, fixedDuplicates);
 			}
+			editButton.setDisable(true);
 		});
 		
 		cancelButton.setOnAction(e -> {
@@ -746,6 +750,7 @@ public class Testing {
 			duplicates.clear();
 			duplicateIterator = null;
 			numOfDuplicates = 0;
+			fixedDuplicates = new ArrayList<FileCardsDB>();
 		}
 		else
 		{
