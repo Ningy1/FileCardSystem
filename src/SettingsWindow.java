@@ -50,8 +50,12 @@ public class SettingsWindow extends PictureRowSetListener{
 	private Label catProfile;
 	private Label catAccount;
 	private Label basicInformation;
+	private Label basicInformation1;
+	private Label basicInformation2;
 	private TextField fName;
 	private TextField lName;
+	private TextField emailField;
+	private TextField usernameField;
 	private PasswordField oldpassword;
 	private PasswordField newpassword1;
 	private PasswordField newpassword2;
@@ -75,8 +79,8 @@ public class SettingsWindow extends PictureRowSetListener{
 		
 		//nodes of window
 		btnBack = new Button("Back");
-		btnBack.setPrefSize(100,70);
-		btnBack.setId("button");
+		btnBack.setPrefSize(115, 45);
+		//btnBack.setId("button");
 		
 		navigation = addNavigation();
 		page = addPage(primaryStage);
@@ -84,18 +88,23 @@ public class SettingsWindow extends PictureRowSetListener{
 		
 		//Set the ColumnContraints and add them
 		ColumnConstraints column0 = new ColumnConstraints();
-		column0.setPercentWidth(20);
+		column0.setPercentWidth(12);
 		column0.setHgrow(Priority.ALWAYS);
 		ColumnConstraints column1 = new ColumnConstraints();
-		column1.setPercentWidth(80);
+		column1.setPercentWidth(20);
 		column1.setHgrow(Priority.ALWAYS);
+		ColumnConstraints column2 = new ColumnConstraints();
+		column2.setPercentWidth(68);
+		column2.setHgrow(Priority.ALWAYS);
 		
-		gridPane.getColumnConstraints().addAll(column0,column1);
+		gridPane.getColumnConstraints().addAll(column0,column1,column2);
 		
 		//Set the RowConstraints and add them
-		RowConstraints row0 = new RowConstraints(50,50,50);
+		RowConstraints row0 = new RowConstraints();
+		row0.setPercentHeight(10);
 		row0.setVgrow(Priority.ALWAYS);
-		RowConstraints row1 = new RowConstraints(140,140,Double.MAX_VALUE);
+		RowConstraints row1 = new RowConstraints();
+		row1.setPercentHeight(90);
 		row1.setVgrow(Priority.ALWAYS);
 		
 		gridPane.getRowConstraints().addAll(row0,row1);
@@ -134,11 +143,10 @@ public class SettingsWindow extends PictureRowSetListener{
 			e1.printStackTrace();
 		}
 		
-		GridPane.setConstraints(btnBack,0,0,1,1,HPos.LEFT,VPos.CENTER);
-		GridPane.setConstraints(navigation,0,1,1,1,HPos.CENTER,VPos.CENTER);
-		GridPane.setConstraints(page,1,1,1,1,HPos.CENTER,VPos.CENTER);
+		GridPane.setConstraints(navigation,1,1,1,1,HPos.CENTER,VPos.CENTER);
+		GridPane.setConstraints(page,2,1,1,1,HPos.CENTER,VPos.CENTER);
 		
-		gridPane.getChildren().setAll(btnBack,navigation,page);
+		gridPane.getChildren().setAll(navigation,page);
 		//gridPane.setGridLinesVisible(true);
 		
 		
@@ -154,8 +162,7 @@ public class SettingsWindow extends PictureRowSetListener{
 				GridPane pageNew = addPage(primaryStage);
 				GridPane.setConstraints(navigationNew,0,1,1,1,HPos.CENTER,VPos.CENTER);
 				GridPane.setConstraints(pageNew,1,1,1,1,HPos.CENTER,VPos.CENTER);
-				gridPane.getChildren().setAll(navigationNew,pageNew,btnBack);
-				//gridPane.setGridLinesVisible(true);
+				gridPane.getChildren().setAll(navigationNew,pageNew);
 				
 				
 			//reset the value of booleanProperty
@@ -272,18 +279,20 @@ public class SettingsWindow extends PictureRowSetListener{
 		//Set the RowConstraints and add them
 		RowConstraints row0 = new RowConstraints(155,155,160);
 		row0.setVgrow(Priority.ALWAYS);
-		RowConstraints row1 = new RowConstraints(30,30,30);
+		RowConstraints row1 = new RowConstraints(60,60,60);
 		row1.setVgrow(Priority.ALWAYS);
 		RowConstraints row2 = new RowConstraints(30,30,30);
 		row2.setVgrow(Priority.ALWAYS);
 		RowConstraints row3 = new RowConstraints(30,30,30);
-		row3.setVgrow(Priority.ALWAYS);
+		row2.setVgrow(Priority.ALWAYS);
 		RowConstraints row4 = new RowConstraints(30,30,30);
 		row4.setVgrow(Priority.ALWAYS);
-		RowConstraints row5 = new RowConstraints(60,60,Double.MAX_VALUE);
+		RowConstraints row5 = new RowConstraints(30,30,30);
 		row5.setVgrow(Priority.ALWAYS);
+		RowConstraints row6 = new RowConstraints(60,60,Double.MAX_VALUE);
+		row6.setVgrow(Priority.ALWAYS);
 		
-		layoutNavigation.getRowConstraints().addAll(row0,row1,row2,row3,row4,row5);
+		layoutNavigation.getRowConstraints().addAll(row0,row1,row2,row3,row4,row5,row6);
 		
 		//GridPane handling
 		layoutNavigation.setHgap(5);
@@ -292,10 +301,10 @@ public class SettingsWindow extends PictureRowSetListener{
 						
 		GridPane.setConstraints(cir,0,0,1,2,HPos.CENTER,VPos.TOP); 
 		GridPane.setConstraints(title,0,0,1,1,HPos.CENTER,VPos.BOTTOM);
-		GridPane.setConstraints(title1,0,1,1,1,HPos.LEFT,VPos.CENTER);
-		GridPane.setConstraints(btnPrf,0,2,1,1,HPos.LEFT,VPos.CENTER);
-		GridPane.setConstraints(btnPic,0,3,1,1,HPos.LEFT,VPos.CENTER);
-		GridPane.setConstraints(btnAcc,0,4,1,1,HPos.LEFT,VPos.CENTER);
+		GridPane.setConstraints(title1,0,2,1,1,HPos.LEFT,VPos.CENTER);
+		GridPane.setConstraints(btnPrf,0,3,1,1,HPos.LEFT,VPos.CENTER);
+		GridPane.setConstraints(btnPic,0,4,1,1,HPos.LEFT,VPos.CENTER);
+		GridPane.setConstraints(btnAcc,0,5,1,1,HPos.LEFT,VPos.CENTER);
 		
 		layoutNavigation.getChildren().addAll(cir,title,title1,btnPrf,btnPic,btnAcc);
 		//layoutNavigation.setGridLinesVisible(true); // debugging
@@ -310,13 +319,13 @@ public class SettingsWindow extends PictureRowSetListener{
 		
 		//Set the ColumnContraints and add them
 		ColumnConstraints column0 = new ColumnConstraints();
-		column0.setPercentWidth(20);
+		column0.setPercentWidth(15);
 		column0.setHgrow(Priority.ALWAYS);
 		ColumnConstraints column1 = new ColumnConstraints();
-		column1.setPercentWidth(60);
+		column1.setPercentWidth(70);
 		column1.setHgrow(Priority.ALWAYS);
 		ColumnConstraints column2 = new ColumnConstraints();
-		column2.setPercentWidth(20);
+		column2.setPercentWidth(15);
 		column2.setHgrow(Priority.ALWAYS);
 		
 		layoutPage.getColumnConstraints().addAll(column0,column1,column2);
@@ -324,40 +333,46 @@ public class SettingsWindow extends PictureRowSetListener{
 		//Set the RowConstraints and add them
 		RowConstraints row0 = new RowConstraints(80,80,80);
 		row0.setVgrow(Priority.ALWAYS);
-		RowConstraints row1 = new RowConstraints(40,40,40);
+		RowConstraints row1 = new RowConstraints(15,15,30);
 		row1.setVgrow(Priority.ALWAYS);
-		RowConstraints row2 = new RowConstraints(40,40,40);
+		RowConstraints row2 = new RowConstraints(65,65,65);
 		row2.setVgrow(Priority.ALWAYS);
-		RowConstraints row3 = new RowConstraints(40,40,40);
+		RowConstraints row3 = new RowConstraints(65,65,65);
 		row3.setVgrow(Priority.ALWAYS);
-		RowConstraints row4 = new RowConstraints(40,40,40);
+		RowConstraints row4 = new RowConstraints(65,65,65);
 		row4.setVgrow(Priority.ALWAYS);
-		RowConstraints row5 = new RowConstraints(80,80,Double.MAX_VALUE);
+		RowConstraints row5 = new RowConstraints(40,40,40);
 		row5.setVgrow(Priority.ALWAYS);
+		RowConstraints row6 = new RowConstraints(40,40,40);
+		row6.setVgrow(Priority.ALWAYS);
+		RowConstraints row7 = new RowConstraints(80,100,Double.MAX_VALUE);
+		row7.setVgrow(Priority.ALWAYS);
 		
-		layoutPage.getRowConstraints().addAll(row0,row1,row2,row3,row4,row5);
+		layoutPage.getRowConstraints().addAll(row0,row1,row2,row3,row4,row5,row6,row7);
 		
 		//GridPane handling
 		layoutPage.setHgap(5);
 		layoutPage.setVgap(5);
 		layoutPage.setPadding(new Insets(0));
-		layoutPage.setGridLinesVisible(true);
 		
 		btnPrf.setOnAction(event -> {
 				// create nodes of Profile
 				catProfile = new Label("Profile");
 		    	catProfile.setId("header");
 		        
-		        defProfile = new Label("Add information about yourself to share on your profile.");
+		        defProfile = new Label("Add information about yourself.");
 		        defProfile.setId("label");
 		        
-		        basicInformation = new Label("Basics: ");
+		        basicInformation = new Label("Prename: ");
 		        basicInformation.setId("label");
+		        
+		        basicInformation1 = new Label("Surname: ");
+		        basicInformation1.setId("label");
 
 		        fName = new TextField();
 		        fName.setId("text-field");
 		        fName.setPromptText("First Name");
-		        fName.setMaxSize(680, 55);
+		        fName.setMaxSize(680, 40);
 		        
 		        try {
 					rs = HSQLDB.getInstance().query("SELECT Firstname FROM User WHERE UserID = " + Login.userID);
@@ -372,7 +387,7 @@ public class SettingsWindow extends PictureRowSetListener{
 		        lName = new TextField();
 		        lName.setId("text-field");
 		        lName.setPromptText("Last Name");
-		        lName.setMaxSize(680, 55);
+		        lName.setMaxSize(680, 40);
 		        
 		        try {
 					rs = HSQLDB.getInstance().query("SELECT Lastname FROM User WHERE UserID = " + Login.userID);
@@ -413,11 +428,13 @@ public class SettingsWindow extends PictureRowSetListener{
 				layoutPage.getChildren().clear();
 				GridPane.setConstraints(catProfile,1,0,1,1,HPos.CENTER,VPos.CENTER); 
 				GridPane.setConstraints(defProfile,1,0,1,1,HPos.CENTER,VPos.BOTTOM); 
-				GridPane.setConstraints(basicInformation,1,1,1,1,HPos.LEFT,VPos.BOTTOM); 
-				GridPane.setConstraints(fName,1,2,1,1,HPos.CENTER,VPos.TOP); 
-				GridPane.setConstraints(lName,1,3,1,1,HPos.CENTER,VPos.TOP); 
-				GridPane.setConstraints(btnSavePrf,1,5,1,1,HPos.CENTER,VPos.BOTTOM); 
-				layoutPage.getChildren().addAll(catProfile,defProfile,basicInformation,fName,lName,btnSavePrf);
+				GridPane.setConstraints(basicInformation,1,2,1,1,HPos.LEFT,VPos.TOP); 
+				GridPane.setConstraints(fName,1,2,1,1,HPos.CENTER,VPos.BOTTOM); 
+				GridPane.setConstraints(basicInformation1,1,3,1,1,HPos.LEFT,VPos.TOP); 
+				GridPane.setConstraints(lName,1,3,1,1,HPos.CENTER,VPos.BOTTOM); 
+				GridPane.setConstraints(btnSavePrf,1,7,1,1,HPos.RIGHT,VPos.CENTER);
+				GridPane.setConstraints(btnBack,1,7,1,1,HPos.LEFT,VPos.CENTER);
+				layoutPage.getChildren().addAll(catProfile,defProfile,basicInformation,fName,basicInformation1,lName,btnSavePrf,btnBack);
 	    });
 		
 		btnAcc.setOnAction( e -> {
@@ -425,26 +442,42 @@ public class SettingsWindow extends PictureRowSetListener{
 				catAccount = new Label("Account");
 		    	catAccount.setId("header");
 		    	
-		    	defAcc = new Label("Edit your account settings and change your password here.");
+		    	defAcc = new Label("Edit your account settings.");
 		        defAcc.setId("label");
-		    	
-		    	basicInformation = new Label("Password: ");
+		        
+		        basicInformation = new Label("Password: ");
 			    basicInformation.setId("label");
 		          
 		        oldpassword = new PasswordField();
 		        oldpassword.setId("text-field");
 		        oldpassword.setPromptText("Enter Current Password");
-		        oldpassword.setMaxSize(680, 55);
+		        oldpassword.setMaxSize(680, 40);
 		        
 		        newpassword1 = new PasswordField();
 		        newpassword1.setId("text-field");
 		        newpassword1.setPromptText("Enter New password");
-		        newpassword1.setMaxSize(680, 55);
+		        newpassword1.setMaxSize(680, 40);
 		        
 		        newpassword2 = new PasswordField();
 		        newpassword2.setId("text-field");
 		        newpassword2.setPromptText("Re-type New password");
-		        newpassword2.setMaxSize(680, 55);
+		        newpassword2.setMaxSize(680, 40);
+		        
+		    	basicInformation1 = new Label("Username: ");
+			    basicInformation1.setId("label");
+			    
+			    usernameField = new PasswordField();
+		        usernameField.setId("text-field");
+		        usernameField.setPromptText("Username");
+		        usernameField.setMaxSize(680, 40);
+			    
+		    	basicInformation2 = new Label("Email: ");
+			    basicInformation2.setId("label");
+			    
+			    emailField = new PasswordField();
+		        emailField.setId("text-field");
+		        emailField.setPromptText("Email");
+		        emailField.setMaxSize(680, 40);
 		        
 		        btnSaveAcc = new Button("Save");
 				btnSaveAcc.setPrefSize(115, 45);
@@ -458,7 +491,7 @@ public class SettingsWindow extends PictureRowSetListener{
 					String newpw2 = newpassword2.getText();
 					String actualPW=null;
 					
-					if(oldpw.length()>0 && newpw1.length()>0 || newpw2.length()>0) {
+					if(oldpw.length()>0 && newpw1.length()>7 || newpw2.length()>7) {
 						try {
 							rs = HSQLDB.getInstance().query("SELECT Password FROM User WHERE UserID = " + Login.userID);
 							while (rs.next()) {
@@ -491,6 +524,11 @@ public class SettingsWindow extends PictureRowSetListener{
 						} catch (Exception e1) {
 							e1.printStackTrace();
 						}
+					}else {
+						AlertBox.display("Error", "The password must be at least 8 characters");
+						oldpassword.clear();
+						newpassword1.clear();
+						newpassword2.clear();
 					}
 					
 				});
@@ -499,12 +537,18 @@ public class SettingsWindow extends PictureRowSetListener{
 				layoutPage.getChildren().clear();
 				GridPane.setConstraints(catAccount,1,0,1,1,HPos.CENTER,VPos.CENTER);
 				GridPane.setConstraints(defAcc,1,0,1,1,HPos.CENTER,VPos.BOTTOM); 
-				GridPane.setConstraints(basicInformation,1,1,1,1,HPos.LEFT,VPos.BOTTOM);
-				GridPane.setConstraints(oldpassword,1,2,1,1,HPos.CENTER,VPos.TOP); 
-				GridPane.setConstraints(newpassword1,1,3,1,1,HPos.CENTER,VPos.TOP);
-				GridPane.setConstraints(newpassword2,1,4,1,1,HPos.CENTER,VPos.TOP);
-				GridPane.setConstraints(btnSaveAcc,1,5,1,1,HPos.CENTER,VPos.BOTTOM); 
-				layoutPage.getChildren().addAll(catAccount,defAcc,basicInformation,oldpassword,newpassword1,newpassword2,btnSaveAcc);
+				GridPane.setConstraints(basicInformation1,1,2,1,1,HPos.LEFT,VPos.TOP);
+				GridPane.setConstraints(usernameField,1,2,1,1,HPos.CENTER,VPos.BOTTOM);
+				GridPane.setConstraints(basicInformation2,1,3,1,1,HPos.LEFT,VPos.TOP);
+				GridPane.setConstraints(emailField,1,3,1,1,HPos.CENTER,VPos.BOTTOM);
+				GridPane.setConstraints(basicInformation,1,4,1,1,HPos.LEFT,VPos.TOP);
+				GridPane.setConstraints(oldpassword,1,4,1,1,HPos.CENTER,VPos.BOTTOM); 
+				GridPane.setConstraints(newpassword1,1,5,1,1,HPos.CENTER,VPos.TOP);
+				GridPane.setConstraints(newpassword2,1,6,1,1,HPos.CENTER,VPos.TOP);
+				GridPane.setConstraints(btnSaveAcc,1,7,1,1,HPos.RIGHT,VPos.CENTER); 
+				GridPane.setConstraints(btnBack,1,7,1,1,HPos.LEFT,VPos.CENTER);
+				layoutPage.getChildren().addAll(catAccount,defAcc,basicInformation1,usernameField,basicInformation2,
+						emailField,basicInformation,oldpassword,newpassword1,newpassword2,btnSaveAcc,btnBack);
 		});
 		
 		btnPic.setOnAction(event -> {
@@ -550,7 +594,6 @@ public class SettingsWindow extends PictureRowSetListener{
 									rowSetPicture2.addRowSetListener(listenerPicture);
 									
 								} catch (SQLException e2) {
-									// TODO Auto-generated catch block
 									e2.printStackTrace();
 								}
 								
@@ -578,6 +621,8 @@ public class SettingsWindow extends PictureRowSetListener{
 									//start the event of btnPic 
 									btnPic.fire();
 								}
+							}else {
+								AlertBox.display("Error", "The specified file could not be uploaded. \n Only JPEG and PNG image formats can be used.");
 							}
 						} catch (IOException e1) {
 							e1.printStackTrace();
@@ -590,8 +635,9 @@ public class SettingsWindow extends PictureRowSetListener{
 			    
 				//Gridpane handling
 				layoutPage.getChildren().clear();
-				GridPane.setConstraints(btnUpload,1,5,1,1,HPos.CENTER,VPos.BOTTOM);
-				layoutPage.getChildren().addAll(btnUpload);
+				GridPane.setConstraints(btnUpload,1,7,1,1,HPos.RIGHT,VPos.CENTER);
+				GridPane.setConstraints(btnBack,1,7,1,1,HPos.LEFT,VPos.CENTER);
+				layoutPage.getChildren().addAll(btnUpload,btnBack);
 
 		});
 		
@@ -601,7 +647,9 @@ public class SettingsWindow extends PictureRowSetListener{
 			btnPrf.fire();
 		}
 		
+		//layoutPage.setGridLinesVisible(true);
 		return layoutPage;
+		
 	}
 	
 	static public BufferedImage resizeImage(BufferedImage original, int width, int height) {
