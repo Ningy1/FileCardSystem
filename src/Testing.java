@@ -30,11 +30,11 @@ public class Testing {
 	private String level;
 	private	ArrayList<FileCardsDB> resultSets = new ArrayList<FileCardsDB>();
 	private ArrayList<FileCardsDB> duplicates = new ArrayList<FileCardsDB>();
+	private ArrayList<FileCardsDB> fixedDuplicates;
 	private Iterator<FileCardsDB> iterator;
 	private Iterator<FileCardsDB> duplicateIterator;
 	private String givenAnswers = "";
 	private String possibleAnswers = "";
-	private Integer numOfPossibleAnswers;
 	private Integer duplicateCounter = 0;
 	private Integer numOfDuplicates;
 	private Integer numOfCards;
@@ -81,7 +81,6 @@ public class Testing {
 		levelLabel = new Label("Level "+level);
 		numOfDuplicates = checkDuplicatesForTotalNumOfCards();
 		numOfCards = resultSets.size() - numOfDuplicates;
-		System.out.println(resultSets.size() + "  " + numOfDuplicates);
 		outOfLabel = new Label("1/"+numOfCards);
 		
 		card = iterator.next();
@@ -259,7 +258,7 @@ public class Testing {
 	            			((answerArea.getText().trim().length() != 0 && category.equals("Definition"))))
 	            	{
 	            		nextButton.setDisable(true);
-	            		FileCardsDB tmp = duplicateIterator.next();
+	            		FileCardsDB updateTmp;
 	            		
 	            		if(checkForPossibleAnswers(answerField.getText().toLowerCase()))
 	            		{
@@ -277,6 +276,18 @@ public class Testing {
 	                			editButton.setVisible(true);
 	                			answerField.clear();
 	                			answerArea.clear();
+	                			
+	                			if(!(level.equals("4")))
+			            		{
+			            			levelUp = 1;
+			            		}else
+			            			levelUp = 0;
+	                			
+	                			for(Iterator<FileCardsDB> iter = fixedDuplicates.iterator(); iter.hasNext();) {
+	                				
+	                				updateTmp = iter.next();
+	                				dbUpdateQuery(Integer.parseInt(level)+levelUp, updateTmp.getIdSideA().toString(), updateTmp.getIdSideB().toString(), category);
+	                			}
 	                		}
 	            			else
 	                		{
@@ -289,14 +300,6 @@ public class Testing {
 		            			answerFileCard.setVisible(true);
 		            			answerField.clear();
 		            			answerArea.clear();
-		            			
-		            			if(!(level.equals("4")))
-			            		{
-			            			levelUp = 1;
-			            		}else
-			            			levelUp = 0;
-			            		
-			            		//dbUpdateQuery(Integer.parseInt(level)+levelUp, tmp.getIdSideA().toString(), tmp.getIdSideB().toString(), category);
 	                		}
 	            		}
 	            		else
@@ -312,7 +315,11 @@ public class Testing {
 		            		nextButton.setDisable(false);
 		            		checkButton.setDisable(true);
 		            		
-		            		dbUpdateQuery(1, tmp.getIdSideA().toString(), tmp.getIdSideB().toString(), category);
+		            		for(Iterator<FileCardsDB> iter = fixedDuplicates.iterator(); iter.hasNext();) {
+                				
+                				updateTmp = iter.next();
+                				dbUpdateQuery(1, updateTmp.getIdSideA().toString(), updateTmp.getIdSideB().toString(), category);
+                			}		
 	            		}
 	            	}
 	            	else
@@ -365,7 +372,7 @@ public class Testing {
         			((answerArea.getText().trim().length() != 0 && category.equals("Definition"))))
         	{
         		nextButton.setDisable(true);
-        		FileCardsDB tmp = duplicateIterator.next();
+        		FileCardsDB updateTmp;
         		
         		if(checkForPossibleAnswers(answerField.getText().toLowerCase()))
         		{
@@ -383,6 +390,18 @@ public class Testing {
             			editButton.setVisible(true);
             			answerField.clear();
             			answerArea.clear();
+            			
+            			if(!(level.equals("4")))
+	            		{
+	            			levelUp = 1;
+	            		}else
+	            			levelUp = 0;
+            			
+            			for(Iterator<FileCardsDB> iter = fixedDuplicates.iterator(); iter.hasNext();) {
+            				
+            				updateTmp = iter.next();
+            				dbUpdateQuery(Integer.parseInt(level)+levelUp, updateTmp.getIdSideA().toString(), updateTmp.getIdSideB().toString(), category);
+            			}
             		}
         			else
             		{
@@ -395,14 +414,6 @@ public class Testing {
             			answerFileCard.setVisible(true);
             			answerField.clear();
             			answerArea.clear();
-            			
-            			if(!(level.equals("4")))
-	            		{
-	            			levelUp = 1;
-	            		}else
-	            			levelUp = 0;
-	            		
-	            		//dbUpdateQuery(Integer.parseInt(level)+levelUp, tmp.getIdSideA().toString(), tmp.getIdSideB().toString(), category);
             		}
         		}
         		else
@@ -418,7 +429,11 @@ public class Testing {
             		nextButton.setDisable(false);
             		checkButton.setDisable(true);
             		
-            		dbUpdateQuery(1, tmp.getIdSideA().toString(), tmp.getIdSideB().toString(), category);
+            		for(Iterator<FileCardsDB> iter = fixedDuplicates.iterator(); iter.hasNext();) {
+        				
+        				updateTmp = iter.next();
+        				dbUpdateQuery(1, updateTmp.getIdSideA().toString(), updateTmp.getIdSideB().toString(), category);
+        			}		
         		}
         	}
         	else
@@ -485,6 +500,7 @@ public class Testing {
         		
         		possibleAnswers = "";
         		duplicates.clear();
+        		fixedDuplicates.clear();
         		
 				card = iterator.next();
 				iterator.remove();
@@ -678,15 +694,14 @@ public class Testing {
 		System.out.println(currentCard.getSideA() + "   " + currentCard.getSideB());
 		possibleAnswers = possibleAnswers + currentCard.getSideB() + " ";
 		
-		
-		for(Iterator<FileCardsDB> iter1 = resultSets.iterator(); iter1.hasNext();) {
+		for(Iterator<FileCardsDB> iter = resultSets.iterator(); iter.hasNext();) {
 			
-			tmp = iter1.next();
+			tmp = iter.next();
 			
     		if(currentCard.getSideA().toLowerCase().equals(tmp.getSideA().toLowerCase()))
     		{
     			possibleAnswers = possibleAnswers + tmp.getSideB() + " ";
-    			iter1.remove();
+    			iter.remove();
     			duplicates.add(tmp);
     			System.out.println(tmp.getSideA() + "  " + tmp.getSideB());
     		}
@@ -702,6 +717,7 @@ public class Testing {
 		{
 			duplicateIterator = duplicates.iterator();
 			numOfDuplicates = duplicates.size();
+			fixedDuplicates = new ArrayList<FileCardsDB>(duplicates);
 		}
 		
 	}
