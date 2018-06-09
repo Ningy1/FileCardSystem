@@ -115,6 +115,38 @@ public class EditFileCards {
 
 	}
 
+	public EditFileCards(Stage uiStage, Testing testing, FileCardsDB filecard) {
+		// Construct the View
+		view = new EditFileCardsLayout(this, uiStage, true );
+		// Prepare the columns of the TableView
+		view.setColumns();
+		// Feed the tableview with initial data
+		initialValues(view.getFilterCategory().getValue(), view.getFilterSubCategoryA().getValue(),
+				view.getFilterSubCategoryB().getValue(), view.getTable());
+		// add ActionListener to buttons ect.
+		view.setActionListener(false);
+		// add Key Listener to different Elements
+		view.setKeyListener();
+		// addFilterListener to refresh tableview depending on chosen categories
+		view.setFilterListener();
+		view.getFilterCategory().setValue(filecard.getCat());
+		view.getFilterSubCategoryA().setValue(filecard.getSubCatA());
+		view.getFilterSubCategoryB().setValue(filecard.getSubCatB());
+		view.getFilterCategory().setDisable(true);
+		view.getFilterSubCategoryA().setDisable(true);
+		view.getFilterSubCategoryB().setDisable(true);
+		view.getAddSideA().setDisable(true);
+		view.getAddSideB().setDisable(true);
+
+		data.clear();
+		data.add(filecard);
+		
+		view.disableButtons();
+		
+
+	}
+	
+	
 	/**
 	 * This method checks if a word already is present in a DB Table by a select
 	 * query. If the Resultset is not empty, the word already exists for the user
