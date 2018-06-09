@@ -83,7 +83,7 @@ public class EditFileCards {
 	 * @param filecard the FileCard of the entry to be loaded
 	 */
 	
-	public EditFileCards(Stage uiStage, Testing testing, FileCardsDB filecard) {
+	public EditFileCards(Stage uiStage, Testing testing, ArrayList<FileCardsDB> filecard) {
 		// Construct the View
 		view = new EditFileCardsLayout(this, uiStage, true );
 		// Prepare the columns of the TableView
@@ -97,9 +97,9 @@ public class EditFileCards {
 		view.setKeyListener();
 		// addFilterListener to refresh tableview depending on chosen categories
 		view.setFilterListener();
-		view.getFilterCategory().setValue(filecard.getCat());
-		view.getFilterSubCategoryA().setValue(filecard.getSubCatA());
-		view.getFilterSubCategoryB().setValue(filecard.getSubCatB());
+		view.getFilterCategory().setValue(filecard.get(0).getCat());
+		view.getFilterSubCategoryA().setValue(filecard.get(0).getSubCatA());
+		view.getFilterSubCategoryB().setValue(filecard.get(0).getSubCatB());
 		view.getFilterCategory().setDisable(true);
 		view.getFilterSubCategoryA().setDisable(true);
 		view.getFilterSubCategoryB().setDisable(true);
@@ -107,7 +107,9 @@ public class EditFileCards {
 		view.getAddSideB().setDisable(true);
 
 		data.clear();
-		data.add(filecard);
+		for(int i = 0; i<filecard.size(); i++) {
+			data.add(filecard.get(i));
+		}
 		view.disableButtons();
 		
 
