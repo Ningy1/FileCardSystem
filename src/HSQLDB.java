@@ -19,8 +19,10 @@ import java.sql.SQLException;
 			        
 			         update("CREATE TABLE IF NOT EXISTS User ("
 			         		+ "UserID INTEGER IDENTITY PRIMARY KEY NOT NULL, "
+			         		+ "Username VARCHAR(80) NOT NULL,"
 			         		+ "Firstname VARCHAR(80) NOT NULL, "
 			         		+ "Lastname VARCHAR(80) NOT NULL, "
+			         		+ "Email VARCHAR(80) NOT NULL,"
 			         		+ "Password VARCHAR(80) not null)"
 			         		);
 			        
