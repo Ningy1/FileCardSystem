@@ -531,10 +531,14 @@ public class Testing {
 		});
 		
 		editButton.setOnAction(e -> {
-			if(category.equalsIgnoreCase("Translation")) {
+			if(category.equalsIgnoreCase("Translation") && fixedDuplicates.isEmpty()) {
 				new EditFileCards(testingStage, this, new FileCardsDB(card.getIdSideA(), card.getIdSideB(), card.getSideA(), card.getSideB(), category, from, language));
-			} else if (category.equalsIgnoreCase("Definition")) {
+			} else if (category.equalsIgnoreCase("Definition") && fixedDuplicates.isEmpty()) {
 				new EditFileCards(testingStage, this, new FileCardsDB(card.getIdSideA(), card.getIdSideB(), card.getSideA(), card.getSideB(), category, from, "Definition"));
+			} else if (category.equalsIgnoreCase("Translation") && !(fixedDuplicates.isEmpty())) {
+				new EditFileCards(testingStage, this, fixedDuplicates);
+			} else if (category.equalsIgnoreCase("Definition") && !(fixedDuplicates.isEmpty())) {
+				new EditFileCards(testingStage, this, fixedDuplicates);
 			}
 		});
 		
