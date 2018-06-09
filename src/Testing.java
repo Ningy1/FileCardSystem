@@ -527,6 +527,7 @@ public class Testing {
         		
         		possibleAnswers = "";
         		duplicates.clear();
+        		if(fixedDuplicates != null)
         		fixedDuplicates.clear();
         		
 				card = iterator.next();
