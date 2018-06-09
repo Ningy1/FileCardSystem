@@ -1,25 +1,13 @@
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.HPos;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
-import javafx.geometry.VPos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.scene.layout.*;
-
 
 public class UserInterface {
 	
@@ -33,7 +21,6 @@ public class UserInterface {
 	private Button btnResults;
 	private Button btnLogout;
 	private Button btnSettings;
-	
 	private GridPane gridPane;
 	
 	

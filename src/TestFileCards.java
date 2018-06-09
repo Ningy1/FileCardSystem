@@ -18,7 +18,6 @@ public class TestFileCards {
 
 	private Stage testFileCardsStage;
 	private UserInterface ui;
-	private String name;
 	private Label filecardLabel = new Label("Filecard");
 	private Label categoryLabel = new Label("Category:");
 	private Label sideLabel = new Label("Language:");

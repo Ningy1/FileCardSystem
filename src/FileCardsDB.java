@@ -1,8 +1,5 @@
 import java.io.Serializable;
 
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
-
 public class FileCardsDB implements Serializable{
 	Integer idSideA;
 	Integer idSideB;
