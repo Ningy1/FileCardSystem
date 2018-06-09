@@ -15,6 +15,8 @@ public class Register extends GridPane {
 
 	Login LoginViewControl;
 	Label title;
+	Label userName;
+	TextField userNameField;
 	Label firstName;
 	TextField firstNameField = new TextField() ;
 	Label lastName;
@@ -23,6 +25,8 @@ public class Register extends GridPane {
 	PasswordField passwordField1;
 	Label password2;
 	PasswordField passwordField2;
+	Label email;
+	TextField emailField;
 	Button registerButton;
 	Button cancelButton;
 	
@@ -32,13 +36,17 @@ public class Register extends GridPane {
 	
 	title = new Label("Register to the File Card System");
 	firstName = new Label("First Name:");
-	TextField firstNameField = new TextField() ;
+	userName = new Label("Username:");
+	userNameField = new TextField();
+	firstNameField = new TextField() ;
 	lastName = new Label("Last Name:");
 	lastNameField = new TextField();
 	password1 = new Label("Password:");
 	passwordField1 = new PasswordField();
 	password2 = new Label("Verify entered password:");
 	passwordField2 = new PasswordField();
+	email = new Label("Email:");
+	emailField = new TextField();
 	registerButton = new Button("Register now");
 	cancelButton = new Button("Cancel registration");
 	
@@ -67,26 +75,34 @@ public class Register extends GridPane {
 	
 	setConstraints(title, 48, 0, 2, 1);
 	setHalignment(title, HPos.CENTER);
-	setConstraints(firstName, 48, 6);
+	setConstraints(userName, 48, 6);
+	setHalignment(userName, HPos.CENTER);
+	setConstraints(userNameField, 49, 6);
+	setHalignment(userNameField, HPos.CENTER);
+	setConstraints(firstName, 48, 7);
 	setHalignment(firstName, HPos.CENTER);
-	setConstraints(firstNameField, 49, 6);
-	setConstraints(lastName, 48, 7);
+	setConstraints(firstNameField, 49, 7);
+	setConstraints(lastName, 48, 8);
 	setHalignment(lastName, HPos.CENTER);
-	setConstraints(lastNameField, 49, 7);
-	setConstraints(password1, 48, 8);
+	setConstraints(lastNameField, 49, 8);
+	setConstraints(email, 48, 9);
+	setHalignment(email, HPos.CENTER);
+	setConstraints(emailField, 49, 9);
+	setHalignment(emailField, HPos.CENTER);
+	setConstraints(password1, 48, 10);
 	setHalignment(password1, HPos.CENTER);
-	setConstraints(passwordField1, 49, 8);
-	setConstraints(password2, 48, 9);
+	setConstraints(passwordField1, 49, 10);
+	setConstraints(password2, 48, 11);
 	setHalignment(password2, HPos.CENTER);
-	setConstraints(passwordField2, 49, 9);
-	setConstraints(registerButton, 48, 15);
+	setConstraints(passwordField2, 49, 11);
+	setConstraints(registerButton, 48, 17);
 	setHalignment(registerButton, HPos.CENTER);
-	setConstraints(cancelButton, 49, 15);
+	setConstraints(cancelButton, 49, 17);
 	setHalignment(cancelButton, HPos.CENTER);
 	
-	getChildren().addAll(title, firstName,
+	getChildren().addAll(title, firstName, userName, userNameField,
 			firstNameField, lastName, lastNameField, password1, passwordField1,
-			password2, passwordField2, registerButton, cancelButton);
+			password2, passwordField2, email, emailField, registerButton, cancelButton);
 	//loginWindowLayout.setGridLinesVisible(true);
 	
 	//Scene registerScene = new Scene(loginWindowLayout, 1000, 600);
