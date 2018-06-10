@@ -628,7 +628,7 @@ cbLvlFilterDef.setOnAction(e -> {
 				seriesVocabulary1.getData().add(new Data<String, Number>(concatString, 
 						0));
 						try {
-							barflowVocabulary.add(rsCounter.getInt(1));
+							barflow.add(rsCounter.getInt(1));
 						} catch (SQLException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
