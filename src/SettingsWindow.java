@@ -160,8 +160,8 @@ public class SettingsWindow extends PictureRowSetListener{
 				//if upload of picture was successful reload the data of the program
 				GridPane navigationNew = addNavigation();
 				GridPane pageNew = addPage(primaryStage);
-				GridPane.setConstraints(navigationNew,0,1,1,1,HPos.CENTER,VPos.CENTER);
-				GridPane.setConstraints(pageNew,1,1,1,1,HPos.CENTER,VPos.CENTER);
+				GridPane.setConstraints(navigationNew,1,1,1,1,HPos.CENTER,VPos.CENTER);
+				GridPane.setConstraints(pageNew,2,1,1,1,HPos.CENTER,VPos.CENTER);
 				gridPane.getChildren().setAll(navigationNew,pageNew);
 				
 				
