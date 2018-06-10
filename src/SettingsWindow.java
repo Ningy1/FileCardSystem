@@ -28,6 +28,7 @@ import javafx.scene.layout.RowConstraints;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
@@ -45,13 +46,21 @@ public class SettingsWindow extends PictureRowSetListener{
 	private Button btnPrf;
 	private Button btnAcc;
 	private Button btnPic;
+	private Button btnReset;
+	private Button btnResetLvl;
+	private Button btnDelAcc;
 	private Label defProfile;
 	private Label defAcc;
 	private Label catProfile;
 	private Label catAccount;
+	private Label catReset;
 	private Label basicInformation;
 	private Label basicInformation1;
 	private Label basicInformation2;
+	private Label lvlHeader;
+	private Label delAccHeader;
+	private Text lvlText;
+	private Text delAccText;
 	private TextField fName;
 	private TextField lName;
 	private TextField emailField;
@@ -60,6 +69,8 @@ public class SettingsWindow extends PictureRowSetListener{
 	private PasswordField newpassword1;
 	private PasswordField newpassword2;
 	private Circle cir = null;
+	private Line divLine;
+	private Line divLine1;
 	private Image pPicture;
 	private BufferedImage im = null;
 	private FileChooser filechooser = new FileChooser();
@@ -268,6 +279,10 @@ public class SettingsWindow extends PictureRowSetListener{
 	    btnAcc.setPrefSize(198,30);
 	    btnAcc.setMaxSize(298, 30);
 	    //btnAcc.setId("button");
+	    
+	    btnReset = new Button("Reset");
+	    btnReset.setPrefSize(198, 30);
+	    btnReset.setMaxSize(298, 30);
 		
 		//Set the ColumnContraints and add them
 		ColumnConstraints column0 = new ColumnConstraints();
@@ -289,8 +304,10 @@ public class SettingsWindow extends PictureRowSetListener{
 		row4.setVgrow(Priority.ALWAYS);
 		RowConstraints row5 = new RowConstraints(30,30,30);
 		row5.setVgrow(Priority.ALWAYS);
-		RowConstraints row6 = new RowConstraints(60,60,Double.MAX_VALUE);
+		RowConstraints row6 = new RowConstraints(30,30,30);
 		row6.setVgrow(Priority.ALWAYS);
+		RowConstraints row7 = new RowConstraints(60,60,Double.MAX_VALUE);
+		row7.setVgrow(Priority.ALWAYS);
 		
 		layoutNavigation.getRowConstraints().addAll(row0,row1,row2,row3,row4,row5,row6);
 		
@@ -305,8 +322,9 @@ public class SettingsWindow extends PictureRowSetListener{
 		GridPane.setConstraints(btnPrf,0,3,1,1,HPos.LEFT,VPos.CENTER);
 		GridPane.setConstraints(btnPic,0,4,1,1,HPos.LEFT,VPos.CENTER);
 		GridPane.setConstraints(btnAcc,0,5,1,1,HPos.LEFT,VPos.CENTER);
+		GridPane.setConstraints(btnReset,0,6,1,1,HPos.LEFT,VPos.CENTER);
 		
-		layoutNavigation.getChildren().addAll(cir,title,title1,btnPrf,btnPic,btnAcc);
+		layoutNavigation.getChildren().addAll(cir,title,title1,btnPrf,btnPic,btnAcc,btnReset);
 		//layoutNavigation.setGridLinesVisible(true); // debugging
 		
 		return layoutNavigation;
@@ -466,7 +484,7 @@ public class SettingsWindow extends PictureRowSetListener{
 		    	basicInformation1 = new Label("Username: ");
 			    basicInformation1.setId("label");
 			    
-			    usernameField = new PasswordField();
+			    usernameField = new TextField();
 		        usernameField.setId("text-field");
 		        usernameField.setPromptText("Username");
 		        usernameField.setMaxSize(680, 40);
@@ -474,7 +492,7 @@ public class SettingsWindow extends PictureRowSetListener{
 		    	basicInformation2 = new Label("Email: ");
 			    basicInformation2.setId("label");
 			    
-			    emailField = new PasswordField();
+			    emailField = new TextField();
 		        emailField.setId("text-field");
 		        emailField.setPromptText("Email");
 		        emailField.setMaxSize(680, 40);
@@ -639,6 +657,72 @@ public class SettingsWindow extends PictureRowSetListener{
 				GridPane.setConstraints(btnBack,1,7,1,1,HPos.LEFT,VPos.CENTER);
 				layoutPage.getChildren().addAll(btnUpload,btnBack);
 
+		});
+		
+		btnReset.setOnAction(e ->{
+			
+			//create nodes of Reset 
+			catReset = new Label("Reset");
+	    	catReset.setId("header");
+			
+	    	lvlHeader = new Label("Reset your testing level");
+	    	lvlHeader.setId("label");
+	    	
+	    	lvlText = new Text("Warning: If you reset your testing level, \nyou will lose your progress in testing.");
+	    	lvlText.setId("Text");
+	    	
+	    	delAccHeader = new Label("Delete my Account");
+	    	delAccHeader.setId("label");
+	    	
+	    	delAccText = new Text("Warning: If you delete your account, you will not be able to reactive your account\n"
+	    						+ "or retrive any of information you have added.");
+	    	delAccText.setId("Text");
+	    	
+	    	btnDelAcc = new Button("Delete Account");
+	    	btnDelAcc.setPrefSize(100, 30);
+	    	//btnDelAcc.setId("button");
+	    	
+	    	btnResetLvl = new Button("Reset Level");
+	    	btnResetLvl.setPrefSize(100, 30);
+	    	//btnResetLvl.setId("button");
+	    	
+	    	divLine = new Line();
+	    	divLine.setStartX(100);
+	    	divLine.setStartY(150);
+	    	divLine.setEndX(550);
+	    	divLine.setEndY(150);
+	    	
+	    	divLine1 = new Line();
+	    	divLine1.setStartX(100);
+	    	divLine1.setStartY(150);
+	    	divLine1.setEndX(550);
+	    	divLine1.setEndY(150);
+	    
+			//Event handler
+	    	
+
+	    	btnDelAcc.setOnAction(event ->{
+	    		
+	    	});
+	    	
+	    	btnResetLvl.setOnAction(event -> {
+	    		
+	    	});
+			
+			//Gridpane handling 
+			layoutPage.getChildren().clear();
+			GridPane.setConstraints(catReset,1,0,1,1,HPos.CENTER,VPos.CENTER);
+			GridPane.setConstraints(lvlHeader,1,2,1,1,HPos.LEFT,VPos.TOP);
+			GridPane.setConstraints(lvlText,1,2,1,1,HPos.LEFT,VPos.BOTTOM);
+			GridPane.setConstraints(btnResetLvl,1,3,1,1,HPos.LEFT,VPos.TOP);
+			GridPane.setConstraints(divLine,1,4,1,1,HPos.LEFT,VPos.TOP);
+			GridPane.setConstraints(delAccHeader,1,4,1,1,HPos.LEFT,VPos.BOTTOM);
+			GridPane.setConstraints(delAccText,1,5,1,1,HPos.LEFT,VPos.CENTER);
+			GridPane.setConstraints(btnDelAcc,1,6,1,1,HPos.LEFT,VPos.TOP);
+			GridPane.setConstraints(divLine1,1,7,1,1,HPos.LEFT,VPos.TOP);
+			GridPane.setConstraints(btnBack,1,7,1,1,HPos.CENTER,VPos.CENTER);
+			layoutPage.getChildren().addAll(catReset,lvlHeader,lvlText,btnResetLvl,divLine,
+					delAccHeader,delAccText,btnDelAcc,divLine1,btnBack);
 		});
 		
 		
