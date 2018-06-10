@@ -21,6 +21,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
@@ -46,14 +47,17 @@ public class SettingsWindow extends PictureRowSetListener{
 	private Button btnPrf;
 	private Button btnAcc;
 	private Button btnPic;
+	private Button btnUpload;
 	private Button btnReset;
 	private Button btnResetLvl;
 	private Button btnDelAcc;
 	private Label defProfile;
 	private Label defAcc;
+	private Label defPic;
 	private Label catProfile;
 	private Label catAccount;
 	private Label catReset;
+	private Label catPic;
 	private Label basicInformation;
 	private Label basicInformation1;
 	private Label basicInformation2;
@@ -72,6 +76,7 @@ public class SettingsWindow extends PictureRowSetListener{
 	private Line divLine;
 	private Line divLine1;
 	private Image pPicture;
+	private ImageView imageView;
 	private BufferedImage im = null;
 	private FileChooser filechooser = new FileChooser();
 	private ResultSet rs;
@@ -81,8 +86,15 @@ public class SettingsWindow extends PictureRowSetListener{
 	private PictureRowSetListener listenerPicture = new PictureRowSetListener();
 	private String firstname;
 	private int counterPicture;
+	private Stage loginStage;
+	private Stage primaryStage;
+	private Scene loginScene;
 
-	SettingsWindow(Stage primaryStage, Scene uiScene) {
+	SettingsWindow(Stage primaryStage, UserInterface ui) {
+		
+		this.loginScene = ui.getLoginScene();
+		this.loginStage = ui.getLoginStage();
+		this.primaryStage = primaryStage;
 		
 		primaryStage.setTitle("Settings");
 		gridPane = new GridPane();
@@ -123,7 +135,8 @@ public class SettingsWindow extends PictureRowSetListener{
 		//Eventhandler
 		
 		btnBack.setOnAction(e -> {		
-			primaryStage.setScene(uiScene);
+			primaryStage.close();
+			new UserInterface(ui.getLoginStage(), ui.getName(), ui.getLoginScene());
 		});
 		
 		//GridPane handling
@@ -572,8 +585,55 @@ public class SettingsWindow extends PictureRowSetListener{
 		btnPic.setOnAction(event -> {
 			
 				//create nodes of Picture
-				Button btnUpload = new Button("Upload");
+				
+				catPic = new Label("Picture");
+				catPic.setId("header");
+	    	
+				defPic = new Label("Upload a profil picture.");
+				defPic.setId("label");
+			
+				btnUpload = new Button("Upload");
+				//btnUpload.setId("button");
 			    btnUpload.setPrefSize(115, 45);
+			    
+			    try {
+					//check if a picture already exist
+					rs = HSQLDB.getInstance().query("SELECT 1 FROM Picture WHERE UserID = " + Login.userID);
+					while(rs.next()) {
+						counterPicture=rs.getInt(1);
+					}
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
+
+				if(counterPicture!=0) {
+						try {
+							rs = HSQLDB.getInstance().query("SELECT Image FROM Picture WHERE UserID = " + Login.userID);
+							while (rs.next()) {
+								im = ImageIO.read(rs.getBinaryStream("Image"));
+							}
+							
+							im = resizeImage(im,400,300);
+							
+						} catch (SQLException e1) {
+							e1.printStackTrace();
+						} catch (Exception e1) {
+							e1.printStackTrace();
+						}		
+				}
+				
+				if(im!=null) {
+					
+					pPicture = SwingFXUtils.toFXImage(im, null);
+					imageView = new ImageView(pPicture);
+				     
+				} else {
+					pPicture = new Image(SettingsWindow.class.getResourceAsStream("Images/no-profile-pic.jpg"),300,300,false,false);
+					imageView = new ImageView(pPicture);
+				}
+			   
 			    
 			    //Event handler
 				btnUpload.setOnAction(f -> {
@@ -640,7 +700,7 @@ public class SettingsWindow extends PictureRowSetListener{
 									btnPic.fire();
 								}
 							}else {
-								AlertBox.display("Error", "The specified file could not be uploaded. \n Only JPEG and PNG image formats can be used.");
+								AlertBox.display("Error", "The specified file could not be uploaded.\nOnly JPEG and PNG image formats can be used.");
 							}
 						} catch (IOException e1) {
 							e1.printStackTrace();
@@ -653,9 +713,12 @@ public class SettingsWindow extends PictureRowSetListener{
 			    
 				//Gridpane handling
 				layoutPage.getChildren().clear();
+				GridPane.setConstraints(catPic,1,0,1,1,HPos.CENTER,VPos.CENTER);
+				GridPane.setConstraints(defPic,1,0,1,1,HPos.CENTER,VPos.BOTTOM); 
+				GridPane.setConstraints(imageView,1,6,1,1,HPos.CENTER,VPos.BOTTOM); 
 				GridPane.setConstraints(btnUpload,1,7,1,1,HPos.RIGHT,VPos.CENTER);
 				GridPane.setConstraints(btnBack,1,7,1,1,HPos.LEFT,VPos.CENTER);
-				layoutPage.getChildren().addAll(btnUpload,btnBack);
+				layoutPage.getChildren().addAll(catPic,defPic,imageView,btnUpload,btnBack);
 
 		});
 		
@@ -701,12 +764,62 @@ public class SettingsWindow extends PictureRowSetListener{
 			//Event handler
 	    	
 
-	    	btnDelAcc.setOnAction(event ->{
+	    	btnDelAcc.setOnAction(event -> {
 	    		
+	    	
+				
+				boolean answer = ConfirmBox.display("", "Are you sure you want to delete your account?");
+				if(answer) {
+					
+					int id = Login.userID;
+		    		
+		    		loginStage.setScene(loginScene);
+					primaryStage.close();
+					loginStage.show();
+					
+					try {
+						HSQLDB.getInstance().update("DELETE FROM Translate "
+												+ "WHERE WordID1 in (SELECT WordID " 
+												+ "FROM Words WHERE UserID = " + id + ")");
+						
+						HSQLDB.getInstance().update("DELETE FROM Definition "
+												+ "WHERE WordID in (select WordID FROM Words WHERE UserID = " + id + ")");
+					
+						HSQLDB.getInstance().update("DELETE FROM Words "
+												+ "WHERE UserID = " + id);
+					
+						HSQLDB.getInstance().update("DELETE FROM Picture "
+												+ "WHERE UserID = " + id);
+					
+						HSQLDB.getInstance().update("DELETE FROM User "
+												+ "WHERE UserID = " + id);
+					
+					
+					} catch (Exception e1) {
+						e1.printStackTrace();
+					}
+				}
 	    	});
 	    	
 	    	btnResetLvl.setOnAction(event -> {
 	    		
+	    		boolean answer = ConfirmBox.display("", "Are you sure you want to reset the levels?");
+				if(answer) {
+					try {
+						HSQLDB.getInstance().update("UPDATE Translate "
+								+ "SET Level = " + 1 
+								+ " WHERE WordID1 in (SELECT WordID " 
+								+ "FROM Words WHERE UserID = " + Login.userID + ")");
+					
+						HSQLDB.getInstance().update("UPDATE Definition "
+								+ "SET Level = " + 1 
+								+ " WHERE WordID in (SELECT WordID " 
+								+ "FROM Words WHERE UserID = " + Login.userID + ")");
+					
+					} catch (Exception e1) {
+						e1.printStackTrace();
+					}
+				}
 	    	});
 			
 			//Gridpane handling 

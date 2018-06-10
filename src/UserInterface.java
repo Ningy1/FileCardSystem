@@ -150,7 +150,7 @@ public class UserInterface {
 		});
 		
 		btnSettings.setOnAction(e -> {
-			new SettingsWindow(uiStage, cssStyle);
+			new SettingsWindow(uiStage, this);
 		});
 		
 		btnLogout.setOnAction(e -> {
