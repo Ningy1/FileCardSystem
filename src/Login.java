@@ -119,7 +119,7 @@ public class Login extends Application  {
 				userNameField.setText("Username already exists.");
 				error = 1;
 			}else {
-				if(userNameField.getText().matches("^[a-zA-Z].*")) {
+				if(!userNameField.getText().matches("^[a-zA-Z].*")) {
 					userNameField.setText("Username must start with a letter.");
 					error = 1;
 				}
