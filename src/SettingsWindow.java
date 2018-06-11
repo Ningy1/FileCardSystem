@@ -84,7 +84,9 @@ public class SettingsWindow extends PictureRowSetListener{
 	private JdbcRowSet rowSetPicture2;
 	private JdbcRowSet rowSetName;
 	private PictureRowSetListener listenerPicture = new PictureRowSetListener();
-	private String firstname;
+	private String firstname1;
+	private String lastname1;
+	private String name;
 	private int counterPicture;
 	private Stage loginStage;
 	private Stage primaryStage;
@@ -263,8 +265,15 @@ public class SettingsWindow extends PictureRowSetListener{
 		try {
 			rs = HSQLDB.getInstance().query("SELECT Firstname FROM User WHERE UserID = " + Login.userID);
 			while (rs.next()) {
-				firstname=rs.getString("Firstname");
+				firstname1=rs.getString("Firstname");
 			}
+			
+			rs = HSQLDB.getInstance().query("SELECT Lastname FROM User WHERE UserID = " + Login.userID);
+			while (rs.next()) {
+				lastname1=rs.getString("Lastname");
+			}
+			
+			name = firstname1 + " " + lastname1;
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -272,7 +281,7 @@ public class SettingsWindow extends PictureRowSetListener{
 			e.printStackTrace();
 		}
 		
-	    Text title = new Text(firstname);
+	    Text title = new Text(name);
 	    title.setFont(Font.font("Arial", FontWeight.BOLD, 14));
 	     
 	    Text title1 = new Text("Categories");
@@ -443,8 +452,8 @@ public class SettingsWindow extends PictureRowSetListener{
 					try {
 						while (rowSetName.next()) {
 							if(rowSetName.getInt("UserID")==Login.userID) {
-								rowSetName.updateString(2, newfName);
-								rowSetName.updateString(3,newlName);
+								rowSetName.updateString(3, newfName);
+								rowSetName.updateString(4,newlName);
 								rowSetName.updateRow();
 							}		
 						}
@@ -501,6 +510,16 @@ public class SettingsWindow extends PictureRowSetListener{
 		        usernameField.setId("text-field");
 		        usernameField.setPromptText("Username");
 		        usernameField.setMaxSize(680, 40);
+		        
+		        try {
+					rs = HSQLDB.getInstance().query("SELECT Username FROM User WHERE UserID = " + Login.userID);
+					while (rs.next()) {
+			            String userName = rs.getString("Username");
+			            usernameField.textProperty().set(userName);
+			        }
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
 			    
 		    	basicInformation2 = new Label("Email: ");
 			    basicInformation2.setId("label");
@@ -510,6 +529,16 @@ public class SettingsWindow extends PictureRowSetListener{
 		        emailField.setPromptText("Email");
 		        emailField.setMaxSize(680, 40);
 		        
+		        try {
+					rs = HSQLDB.getInstance().query("SELECT Email FROM User WHERE UserID = " + Login.userID);
+					while (rs.next()) {
+			            String eMail = rs.getString("Email");
+			            emailField.textProperty().set(eMail);
+			        }
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+		        
 		        btnSaveAcc = new Button("Save");
 				btnSaveAcc.setPrefSize(115, 45);
 				//btnSaveAcc.setId("button");
@@ -517,51 +546,108 @@ public class SettingsWindow extends PictureRowSetListener{
 				//Event handler
 				btnSaveAcc.setOnAction(event ->{
 					
+					String oldUsername;
+					String newUsername = usernameField.getText();
+					String newmail = emailField.getText();
 					String oldpw= oldpassword.getText();
 					String newpw1 = newpassword1.getText();
 					String newpw2 = newpassword2.getText();
 					String actualPW=null;
+					int userExists = 0;
 					
-					if(oldpw.length()>0 && newpw1.length()>7 || newpw2.length()>7) {
-						try {
-							rs = HSQLDB.getInstance().query("SELECT Password FROM User WHERE UserID = " + Login.userID);
-							while (rs.next()) {
-					            actualPW = rs.getString("Password");
-					        }
+					try {
+						rs = HSQLDB.getInstance().query("SELECT 1 FROM user WHERE Username = '"+newUsername+"'");
+						while(rs.next()) {
+							userExists=rs.getInt(1);
+						}
+						
+						if(userExists == 1) {
 							
-							if(oldpw.equals(actualPW)) {
-								if(newpw1.equals(newpw2) && newpw1.length()>0) {
+							rs = HSQLDB.getInstance().query("SELECT Username FROM User WHERE Userid = " + Login.userID);
+							while(rs.next()) {
+								oldUsername=rs.getString("Username");
+								
+								if (!newUsername.equals(oldUsername)) {
+									AlertBox.display("Error", "Username already exists.");
+									usernameField.clear();
+								}
+							}
+							
+						}else {
+							if(newUsername.matches("^[a-zA-Z].*")) {
+								HSQLDB.getInstance()
+								.update("UPDATE user " + "SET Username = '" + newUsername + "' WHERE UserId = " + Login.userID);
+								AlertBox.display("Congrat", "Username changed to " + newUsername);
+							}
+						}
+					} catch (Exception e2) {
+						e2.printStackTrace();
+					}
+					
+				
+					try {
+						if(emailField.getText().matches("^[a-zA-Z].*")) {
 									
-									HSQLDB.getInstance()
-									.update("UPDATE user " + "SET Password = '" + newpw1 + "' WHERE UserId = " + Login.userID);
-									AlertBox.display("Congrat", "Password changed");
-									oldpassword.clear();
-									newpassword1.clear();
-									newpassword2.clear();
+							if(emailField.getText().matches("[0-9a-zA-Z\\-\\_\\.]+@[0-9a-zA-Z]+\\.[a-z]{2,3}")) {
+								HSQLDB.getInstance()
+								.update("UPDATE user " + "SET Email = '" + newmail + "' WHERE UserId = " + Login.userID);
+								
+							}else {
+								emailField.setText("Insert only valid character");
+							}
+							
+						}else {
+							emailField.setText("Must start with a letter");
+						}
+					
+								
+					} catch (Exception e1) {
+						e1.printStackTrace();
+					}
+					
+					if(oldpw.length()>0){	
+						
+						if(oldpw.length()>0 && newpw1.length()>7 || newpw2.length()>7) {
+							try {
+								rs = HSQLDB.getInstance().query("SELECT Password FROM User WHERE UserID = " + Login.userID);
+								while (rs.next()) {
+					            actualPW = rs.getString("Password");
+								}
+					
+								if(oldpw.equals(actualPW)) {
+									if(newpw1.equals(newpw2) && newpw1.length()>0) {
+									
+										HSQLDB.getInstance()
+										.update("UPDATE user " + "SET Password = '" + newpw1 + "' WHERE UserId = " + Login.userID);
+										AlertBox.display("Congrat", "Password changed");
+										oldpassword.clear();
+										newpassword1.clear();
+										newpassword2.clear();
+									}else {
+										AlertBox.display("Error", "Password has to be identical in both fields");
+										oldpassword.clear();
+										newpassword1.clear();
+										newpassword2.clear();
+									}
 								}else {
-									AlertBox.display("Error", "Password has to be identical in both fields");
+									AlertBox.display("Error", "Wrong Password");
 									oldpassword.clear();
 									newpassword1.clear();
 									newpassword2.clear();
 								}
-							}else {
-								AlertBox.display("Error", "Wrong Password");
-								oldpassword.clear();
-								newpassword1.clear();
-								newpassword2.clear();
+							} catch (SQLException e1) {
+								e1.printStackTrace();
+							} catch (Exception e1) {
+								e1.printStackTrace();
 							}
-						} catch (SQLException e1) {
-							e1.printStackTrace();
-						} catch (Exception e1) {
-							e1.printStackTrace();
-						}
-					}else {
+							
+						}else {
 						AlertBox.display("Error", "The password must be at least 8 characters");
 						oldpassword.clear();
 						newpassword1.clear();
 						newpassword2.clear();
+						}
 					}
-					
 				});
 				
 				// Gridpane handling

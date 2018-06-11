@@ -19,8 +19,6 @@ public class Login extends Application  {
 		launch(args);			// calls the start-method of the Application class
 		
 	}
-	
-	
 
 	public void start(Stage primaryStage) throws Exception {
 		
@@ -75,7 +73,7 @@ public class Login extends Application  {
 	{
 	  	ResultSet rs;
 		try {
-			rs = db.query("SELECT * FROM user WHERE firstname = '"+usernameField.getText()+"' AND password = '"+passwordField.getText()+"'");
+			rs = db.query("SELECT * FROM user WHERE Username = '"+usernameField.getText()+"' AND password = '"+passwordField.getText()+"'");
 		if(rs.isBeforeFirst())
 		{
 			rs.next();
@@ -89,7 +87,7 @@ public class Login extends Application  {
 		}
 		else
 		{
-			rs = db.query("SELECT * FROM user WHERE firstname = '"+usernameField.getText()+"'");
+			rs = db.query("SELECT * FROM user WHERE Username = '"+usernameField.getText()+"'");
 			if(rs.isBeforeFirst())
 			{	
 				AlertBox.display("Error", "Password is wrong");
@@ -104,9 +102,31 @@ public class Login extends Application  {
 		}
 	}
 	
-	public void dbRegisterQuery(TextField firstNameField, TextField lastNameFiled, PasswordField password1, PasswordField password2)
+	public void dbRegisterQuery(TextField userNameField, TextField firstNameField, TextField lastNameFiled, TextField emailField, PasswordField password1, PasswordField password2)
 	{
+		ResultSet rs;
 		int error = 0;
+		int userExists = 0;
+		int mailCorrect = 0;
+		
+		try {
+			rs = db.query("SELECT 1 FROM user WHERE Username = '"+userNameField.getText()+"'");
+			while(rs.next()) {
+				userExists=rs.getInt(1);
+			}
+			
+			if(userExists == 1) {
+				userNameField.setText("Username already exists.");
+				error = 1;
+			}else {
+				if(userNameField.getText().matches("^[a-zA-Z].*")) {
+					userNameField.setText("Username must start with a letter.");
+					error = 1;
+				}
+			}
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
 		
 		for(int i = 0; i < firstNameField.getText().length(); i++)
 		{
@@ -126,23 +146,42 @@ public class Login extends Application  {
 				error = 1;
 			}
 		}
-		if(lastNameFiled.getText().length() < 1 || firstNameField.getText().length() <1 || password1.getText().length() < 1)
+		
+		if(emailField.getText().matches("^[a-zA-Z].*")) {
+			
+			if(emailField.getText().matches("[0-9a-zA-Z\\-\\_\\.]+@[0-9a-zA-Z]+\\.[a-z]{2,3}")) {
+				mailCorrect = 1;
+			}else {
+				emailField.setText("Insert only valid character");
+				error = 1;
+			}
+			
+		}else {
+			emailField.setText("Must start with a letter");
+			error = 1;
+		}
+	
+		if(userNameField.getText().length() < 1 || lastNameFiled.getText().length() < 1 || firstNameField.getText().length() <1 || 
+				password1.getText().length() < 1 || emailField.getText().length() < 1)
 		{
 			error = 1;
 			AlertBox.display("Error", "Fill out all fields");
 			
-		} else if(password1.getText().equals(password2.getText()) && error==0)
+		} else if(password1.getText().equals(password2.getText()) && userExists==0 && mailCorrect==1 && error==0)
 		{
 			try {
-				db.update("INSERT INTO user (firstname, lastname, password) VALUES('"+firstNameField.getText()+"','"+lastNameFiled.getText()+"','"+password1.getText()+"')");
-				AlertBox.display("Congrat", firstNameField.getText()+" is now in the system");
+				db.update("INSERT INTO user (Username, firstname, lastname, Email, password) VALUES('"+userNameField.getText()+"','"+firstNameField.getText()+"','"+lastNameFiled.getText()+"','"+emailField.getText()+"','"+password1.getText()+"')");
+				AlertBox.display("Congrat", userNameField.getText()+" is now in the system");
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		} else
+		} else if(!password1.getText().equals(password2.getText()))
 		{
 			AlertBox.display("Error", "Password has to be identical in both fields");
+		} else 
+		{
+			AlertBox.display("Error", "Registration failed");
 		}
 	}
 }
