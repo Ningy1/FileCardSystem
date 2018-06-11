@@ -644,7 +644,15 @@ cbLvlFilterDef.setOnAction(e -> {
 		if(!barflow.get(0).isEmpty() || !barflow.get(1).isEmpty() ||
 				!barflow.get(2).isEmpty() || !barflow.get(3).isEmpty()) {
 		//To avoid the default empty BarChart Y-Axis boundary
-		yAxis.setUpperBound(Collections.max(barflow.get(lvl))+5);	
+			ArrayList<Integer> maxValue = new ArrayList<Integer>();
+			for(int i=0; i<3;i++) {
+				for(int x=0; x<barflow.get(i).size();x++) {
+					maxValue.add(barflow.get(i).get(x));
+				}
+			}
+			yAxis.setUpperBound(Collections.max(maxValue)+5);
+			
+		//yAxis.setUpperBound(Collections.max(barflow.get(lvl))+5);	
 		Timeline timeline = new Timeline();
 		timeline.getKeyFrames().add(new KeyFrame(Duration.millis(50), new EventHandler<ActionEvent>() {
 		@Override
