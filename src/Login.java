@@ -102,13 +102,12 @@ public class Login extends Application  {
 		}
 	}
 	
-	public void dbRegisterQuery(TextField userNameField, TextField firstNameField, TextField lastNameFiled, TextField emailField, PasswordField password1, PasswordField password2)
+	public int dbRegisterQuery(TextField userNameField, TextField firstNameField, TextField lastNameFiled, TextField emailField, PasswordField password1, PasswordField password2)
 	{
 		ResultSet rs;
 		int error = 0;
 		int userExists = 0;
 		int mailCorrect = 0;
-		
 		try {
 			rs = db.query("SELECT 1 FROM user WHERE Username = '"+userNameField.getText()+"'");
 			while(rs.next()) {
@@ -160,6 +159,7 @@ public class Login extends Application  {
 			emailField.setText("Must start with a letter");
 			error = 1;
 		}
+		
 	
 		if(userNameField.getText().length() < 1 || lastNameFiled.getText().length() < 1 || firstNameField.getText().length() <1 || 
 				password1.getText().length() < 1 || emailField.getText().length() < 1)
@@ -169,19 +169,27 @@ public class Login extends Application  {
 			
 		} else if(password1.getText().equals(password2.getText()) && userExists==0 && mailCorrect==1 && error==0)
 		{
+			if(password1.getLength()<=7) {
+				AlertBox.display("Error", "The password must be at least 8 characters");
+				error = 1;
+			} else {
+			
 			try {
 				db.update("INSERT INTO user (Username, firstname, lastname, Email, password) VALUES('"+userNameField.getText()+"','"+firstNameField.getText()+"','"+lastNameFiled.getText()+"','"+emailField.getText()+"','"+password1.getText()+"')");
 				AlertBox.display("Congrat", userNameField.getText()+" is now in the system");
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}
+			} }
 		} else if(!password1.getText().equals(password2.getText()))
 		{
 			AlertBox.display("Error", "Password has to be identical in both fields");
+			error=1;
 		} else 
 		{
 			AlertBox.display("Error", "Registration failed");
+			error = 1;
 		}
+		return error;
 	}
 }

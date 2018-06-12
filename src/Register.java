@@ -56,10 +56,13 @@ public class Register extends GridPane {
 	cancelButton.setId("button");
 	
 	registerButton.setOnAction(e-> {
-		this.LoginViewControl.dbRegisterQuery(userNameField, firstNameField, lastNameField, emailField, passwordField1, passwordField2);
+		int error=0;
+		error = this.LoginViewControl.dbRegisterQuery(userNameField, firstNameField, lastNameField, emailField, passwordField1, passwordField2);
+		if(error==0) {
 		Scene cssStyle = new Scene(new LoginLayout(create,this.LoginViewControl),1000,600);
 		cssStyle.getStylesheets().addAll(this.getClass().getResource("Style.css").toExternalForm());
 		create.setScene(cssStyle);
+		}
 	});
 	cancelButton.setOnAction(e -> {
 		Scene cssStyle = new Scene(new LoginLayout(create,this.LoginViewControl),1000,600);
@@ -101,8 +104,8 @@ public class Register extends GridPane {
 	setHalignment(cancelButton, HPos.CENTER);
 	
 	getChildren().addAll(title, firstName, userName, userNameField,
-			firstNameField, lastName, lastNameField, password1, passwordField1,
-			password2, passwordField2, email, emailField, registerButton, cancelButton);
+			firstNameField, lastName, lastNameField, email, emailField, password1, passwordField1,
+			password2, passwordField2, registerButton, cancelButton);
 	//loginWindowLayout.setGridLinesVisible(true);
 	
 	//Scene registerScene = new Scene(loginWindowLayout, 1000, 600);
