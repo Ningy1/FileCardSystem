@@ -171,6 +171,8 @@ public class Login extends Application  {
 		{
 			if(password1.getLength()<=7) {
 				AlertBox.display("Error", "The password must be at least 8 characters");
+				password1.clear();
+				password2.clear();
 				error = 1;
 			} else {
 			
