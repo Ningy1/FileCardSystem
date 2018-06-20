@@ -151,7 +151,7 @@ public class Login extends Application  {
 			if(emailField.getText().matches("[0-9a-zA-Z\\-\\_\\.]+@[0-9a-zA-Z]+\\.[a-z]{2,3}")) {
 				mailCorrect = 1;
 			}else {
-				emailField.setText("Insert only valid character");
+				emailField.setText("Insert only valid email address");
 				error = 1;
 			}
 			
