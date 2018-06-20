@@ -108,6 +108,10 @@ public class Login extends Application  {
 		int error = 0;
 		int userExists = 0;
 		int mailCorrect = 0;
+		
+		if(!(userNameField.getText().length() < 1 || lastNameFiled.getText().length() < 1 || firstNameField.getText().length() <1 || 
+				password1.getText().length() < 1 || emailField.getText().length() < 1)) {
+		
 		try {
 			rs = db.query("SELECT 1 FROM user WHERE Username = '"+userNameField.getText()+"'");
 			while(rs.next()) {
@@ -193,5 +197,10 @@ public class Login extends Application  {
 			error = 1;
 		}
 		return error;
+	} else {
+		AlertBox.display("Error", "Fill out all fields");
+		error = 1;
+		return error;
+	}
 	}
 }
