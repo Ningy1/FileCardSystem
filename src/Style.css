@@ -52,6 +52,60 @@
 	-fx-opacity: 1;
 }
 
+#buttonSettingsNavigation{
+	-fx-background-color: linear-gradient(#99d6ff, #4dc3ff);
+	-fx-text-align: center;
+	-fx-opacity:0.9;
+	-fx-transition:0.3s;
+	-fx-font-size: 15px;
+	-fx-font-family: "Segoe UI Semibold";
+	-fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
+}
+
+#buttonSettingsNavigation:disabled{
+	-fx-background-color: linear-gradient(#e6e6ff, #666666);
+}
+
+#buttonSettingsNavigation:hover{
+	-fx-opacity: 1;
+}
+
+#buttonSettings{
+	-fx-background-color: linear-gradient(#99d6ff, #4dc3ff);
+	-fx-text-align: center;
+	-fx-opacity:0.9;
+	-fx-transition:0.3s;
+	-fx-font-size: 16px;
+	-fx-font-family: "Segoe UI Semibold";
+	-fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
+}
+
+#buttonSettings:disabled{
+	-fx-background-color: linear-gradient(#e6e6ff, #666666);
+}
+
+#buttonSettings:hover{
+	-fx-opacity: 1;
+}
+
+
+#buttonSettingsSmall{
+	-fx-background-color: linear-gradient(#99d6ff, #4dc3ff);
+	-fx-opacity:0.9;
+	-fx-transition:0.3s;
+	-fx-font-family: "Segoe UI Semibold";
+	-fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
+}
+
+#buttonSettingsSmall:disabled{
+	-fx-background-color: linear-gradient(#e6e6ff, #666666);
+}
+
+#buttonSettingsSmall:hover{
+	-fx-opacity: 1;
+}
+
+
 #buttonEditFileCards{
 	-fx-background-color: linear-gradient(#99d6ff, #4dc3ff);
 	-fx-opacity:0.9;

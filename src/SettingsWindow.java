@@ -105,7 +105,7 @@ public class SettingsWindow extends PictureRowSetListener{
 		//nodes of window
 		btnBack = new Button("Back");
 		btnBack.setPrefSize(115, 45);
-		//btnBack.setId("button");
+		btnBack.setId("buttonSettings");
 		
 		navigation = addNavigation();
 		page = addPage(primaryStage);
@@ -290,21 +290,22 @@ public class SettingsWindow extends PictureRowSetListener{
 	    btnPrf = new Button("Profile");
 	    btnPrf.setPrefSize(198, 30);
 	    btnPrf.setMaxSize(298, 30);
-	    //btnPrf.setId("button");
+	    btnPrf.setId("buttonSettingsNavigation");
 	        
 	    btnPic = new Button("Picture");
 	    btnPic.setPrefSize(198,30);
 	    btnPic.setMaxSize(298, 30);
-	    //btnpic.setId("button");
+	    btnPic.setId("buttonSettingsNavigation");
 	        
 	    btnAcc = new Button("Account");
 	    btnAcc.setPrefSize(198,30);
 	    btnAcc.setMaxSize(298, 30);
-	    //btnAcc.setId("button");
+	    btnAcc.setId("buttonSettingsNavigation");
 	    
 	    btnReset = new Button("Reset");
 	    btnReset.setPrefSize(198, 30);
 	    btnReset.setMaxSize(298, 30);
+	    btnReset.setId("buttonSettingsNavigation");
 		
 		//Set the ColumnContraints and add them
 		ColumnConstraints column0 = new ColumnConstraints();
@@ -441,7 +442,7 @@ public class SettingsWindow extends PictureRowSetListener{
 		        
 		        btnSavePrf = new Button("Save");
 				btnSavePrf.setPrefSize(115, 45);
-				//btnSavePrf.setId("button");
+				btnSavePrf.setId("buttonSettings");
 				
 				//Event handler
 				btnSavePrf.setOnAction(e ->{
@@ -541,7 +542,7 @@ public class SettingsWindow extends PictureRowSetListener{
 		        
 		        btnSaveAcc = new Button("Save");
 				btnSaveAcc.setPrefSize(115, 45);
-				//btnSaveAcc.setId("button");
+				btnSaveAcc.setId("buttonSettings");
 		        
 				//Event handler
 				btnSaveAcc.setOnAction(event ->{
@@ -593,7 +594,7 @@ public class SettingsWindow extends PictureRowSetListener{
 								.update("UPDATE user " + "SET Email = '" + newmail + "' WHERE UserId = " + Login.userID);
 								
 							}else {
-								emailField.setText("Insert only valid character");
+								emailField.setText("Insert a valid email address");
 							}
 							
 						}else {
@@ -679,7 +680,7 @@ public class SettingsWindow extends PictureRowSetListener{
 				defPic.setId("label");
 			
 				btnUpload = new Button("Upload");
-				//btnUpload.setId("button");
+				btnUpload.setId("buttonSettings");
 			    btnUpload.setPrefSize(115, 45);
 			    
 			    try {
@@ -829,11 +830,11 @@ public class SettingsWindow extends PictureRowSetListener{
 	    	
 	    	btnDelAcc = new Button("Delete Account");
 	    	btnDelAcc.setPrefSize(100, 30);
-	    	//btnDelAcc.setId("button");
+	    	btnDelAcc.setId("buttonSettingsSmall");
 	    	
 	    	btnResetLvl = new Button("Reset Level");
 	    	btnResetLvl.setPrefSize(100, 30);
-	    	//btnResetLvl.setId("button");
+	    	btnResetLvl.setId("buttonSettingsSmall");
 	    	
 	    	divLine = new Line();
 	    	divLine.setStartX(100);
