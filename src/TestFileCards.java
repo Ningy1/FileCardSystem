@@ -64,6 +64,8 @@ public class TestFileCards {
 		sideABox.setPromptText("From");	
 		sideBBox.setPromptText("To");
 		
+		testFileCardsStage.setTitle("Test");
+		
 		categoryBox.setOnAction((event) -> {
 		    String selectedCategory = categoryBox.getSelectionModel().getSelectedItem();
 		   

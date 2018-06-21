@@ -55,6 +55,7 @@ public class LoginLayout extends GridPane{
 			Scene cssStyle = new Scene(new Register(create,this.LoginViewControl),1000,600);
 			cssStyle.getStylesheets().addAll(this.getClass().getResource("Style.css").toExternalForm());
 			create.setScene(cssStyle);
+			create.setTitle("Register");
 		});						  // the scene should change after the user clicks on the register button
 		loginButton.setOnAction(e -> this.LoginViewControl.dbLoginQuery(usernameField, passwordField,create));
 		setId("pane");

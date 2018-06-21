@@ -62,12 +62,14 @@ public class Register extends GridPane {
 		Scene cssStyle = new Scene(new LoginLayout(create,this.LoginViewControl),1000,600);
 		cssStyle.getStylesheets().addAll(this.getClass().getResource("Style.css").toExternalForm());
 		create.setScene(cssStyle);
+		create.setTitle("Login");
 		}
 	});
 	cancelButton.setOnAction(e -> {
 		Scene cssStyle = new Scene(new LoginLayout(create,this.LoginViewControl),1000,600);
 		cssStyle.getStylesheets().addAll(this.getClass().getResource("Style.css").toExternalForm());
 		create.setScene(cssStyle);
+		create.setTitle("Login");
 	});	
 	
 	
